@@ -58,12 +58,13 @@
 
         .addons-loading {
             color: var(--primary-foreground-color);
-            font-size: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.6;
         }
 
         .addons-loading-bar {
             width: 90%;
-            height: 0.3em;
+            height: 0.2em;
             border-radius: var(--border-radius);
             background-color: var(--primary-accent-color);
         }
@@ -73,7 +74,9 @@
         display: flex;
         align-items: center;
         z-index: 2;
-        margin: 1em 1em 0 1em;
+        margin: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         gap: 0 0.5em;
         overflow: visible;
 
