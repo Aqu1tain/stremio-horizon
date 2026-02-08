@@ -24,8 +24,7 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
             {children}
         </Button>
     ), []);
-    const showSearchBar = searchBar && route === 'search';
-    const showSearchIcon = searchBar && route !== 'search' && route !== 'addons';
+    const showSearchIcon = searchBar && route !== 'addons';
     const showFullscreen = !isIOSPWA && fullscreenButton;
     const hasTabs = Array.isArray(tabs) && tabs.length > 0;
 
@@ -60,9 +59,6 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
             }
             {title &&
                 <h2 className={styles['title']}>{title}</h2>
-            }
-            {showSearchBar &&
-                <SearchBar className={styles['search-bar']} query={query} active={true} />
             }
             <div className={styles['buttons-container']}>
                 {showSearchIcon && <SearchBar query={query} active={false} />}

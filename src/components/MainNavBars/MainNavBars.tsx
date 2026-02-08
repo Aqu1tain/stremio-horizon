@@ -3,7 +3,8 @@
 import React, { memo, useRef } from 'react';
 import classnames from 'classnames';
 import { VerticalNavBar, HorizontalNavBar } from 'stremio/components/NavBar';
-const { useNavbarScroll } = require('stremio/common');
+import useNavbarScroll from 'stremio/common/useNavbarScroll';
+const SearchBar = require('stremio/components/NavBar/HorizontalNavBar/SearchBar');
 import styles from './MainNavBars.less';
 
 const TABS = [
@@ -42,14 +43,19 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 tabs={TOP_NAV_TABS}
                 selected={route}
                 navbarHidden={!visible}
-                navbarScrolled={scrolled}
+                navbarScrolled={scrolled || route === 'search'}
             />
+            {route === 'search' &&
+                <div className={styles['search-bar-row']}>
+                    <SearchBar className={styles['search-bar-input']} query={query} active={true} />
+                </div>
+            }
             <VerticalNavBar
                 className={styles['vertical-nav-bar']}
                 selected={route}
                 tabs={TABS}
             />
-            <div ref={contentRef} className={styles['nav-content-container']}>{children}</div>
+            <div ref={contentRef} className={classnames(styles['nav-content-container'], { [styles['search-active']]: route === 'search' })}>{children}</div>
         </div>
     );
 });
