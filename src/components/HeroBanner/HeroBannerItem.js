@@ -41,7 +41,7 @@ const getGenreLinks = (links) => {
         .filter(Boolean);
 };
 
-const HeroBannerItem = ({ className, id, name, description, releaseInfo, runtime, links, deepLinks, trailerStreams, background, logo, poster }) => {
+const HeroBannerItem = ({ className, active, id, name, description, releaseInfo, runtime, links, deepLinks, trailerStreams, background, logo, poster }) => {
     const { t } = useTranslation();
     const metahubBackground = `https://images.metahub.space/background/medium/${id}/img`;
     const metahubLogo = `https://images.metahub.space/logo/medium/${id}/img`;
@@ -70,7 +70,7 @@ const HeroBannerItem = ({ className, id, name, description, releaseInfo, runtime
     ), [name]);
 
     return (
-        <div className={classnames(className, styles['hero-banner-item'])}>
+        <div className={classnames(className, styles['hero-banner-item'], { [styles['active']]: active })}>
             <div className={styles['background-image-layer']}>
                 <Image className={styles['background-image']} src={backgroundSrc} alt={' '} />
             </div>
@@ -155,6 +155,7 @@ const HeroBannerItem = ({ className, id, name, description, releaseInfo, runtime
 
 HeroBannerItem.propTypes = {
     className: PropTypes.string,
+    active: PropTypes.bool,
     id: PropTypes.string,
     name: PropTypes.string,
     description: PropTypes.string,

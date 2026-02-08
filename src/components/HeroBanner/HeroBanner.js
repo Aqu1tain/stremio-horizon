@@ -55,26 +55,27 @@ const HeroBanner = ({ className, items }) => {
         pauseAndRestart();
     }, [pauseAndRestart]);
 
-    const activeItem = items[activeIndex];
-    if (!activeItem) return null;
+    if (!items[activeIndex]) return null;
 
     return (
         <div className={classnames(className, styles['hero-banner-container'])}>
-            <HeroBannerItem
-                key={activeIndex}
-                className={'animation-fade-in'}
-                id={activeItem.id}
-                name={activeItem.name}
-                description={activeItem.description}
-                releaseInfo={activeItem.releaseInfo}
-                runtime={activeItem.runtime}
-                links={activeItem.links}
-                deepLinks={activeItem.deepLinks}
-                trailerStreams={activeItem.trailerStreams}
-                background={activeItem.background}
-                logo={activeItem.logo}
-                poster={activeItem.poster}
-            />
+            {items.map((item, index) => (
+                <HeroBannerItem
+                    key={index}
+                    active={index === activeIndex}
+                    id={item.id}
+                    name={item.name}
+                    description={item.description}
+                    releaseInfo={item.releaseInfo}
+                    runtime={item.runtime}
+                    links={item.links}
+                    deepLinks={item.deepLinks}
+                    trailerStreams={item.trailerStreams}
+                    background={item.background}
+                    logo={item.logo}
+                    poster={item.poster}
+                />
+            ))}
             {
                 count > 1 ?
                     <div className={styles['navigation-layer']}>
