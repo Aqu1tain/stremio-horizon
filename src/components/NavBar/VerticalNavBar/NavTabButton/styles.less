@@ -14,68 +14,59 @@
     @media (pointer: fine) {
         &:hover {
             background-color: var(--overlay-color);
-
-            .label {
-                opacity: 0.6;
-            }
-
-            &:global(.selected) {
-                .label {
-                    opacity: 1;
-                }
-            }
         }
     }
 
     &:global(.selected) {
         .icon {
             opacity: 1;
-        }
-
-        .icon, .label {
             color: var(--primary-accent-color);
         }
     }
 
     .icon, .logo {
         flex: none;
-        width: 2.2rem;
-        height: 2.2rem;
-        margin-bottom: 0.5rem;
+        width: 1.8rem;
+        height: 1.8rem;
     }
 
     .icon {
         color: var(--primary-foreground-color);
-        opacity: 0.35;
+        opacity: 0.5;
     }
 
     .label {
-        flex: none;
-        position: relative;
-        max-width: 100%;
-        max-height: 2.4em;
-        padding: 0 0.5rem;
-        font-size: 0.8rem;
-        font-weight: 500;
-        letter-spacing: 0.01rem;
-        text-align: center;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: var(--primary-foreground-color);
-        opacity: 0;
-        overflow: hidden;
+        display: none;
     }
 }
 
 @media only screen and (max-width: @minimum) {
     .nav-tab-button-container {
         .label {
+            display: flex;
+            flex: none;
+            max-width: 100%;
+            max-height: 2.4em;
+            padding: 0 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.01rem;
+            text-align: center;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: var(--primary-foreground-color);
             opacity: 0.6;
+            overflow: hidden;
+        }
+
+        .icon, .logo {
+            margin-bottom: 0.25rem;
         }
 
         &:global(.selected) {
             .label {
                 opacity: 1;
+                color: var(--primary-accent-color);
             }
         }
     }
