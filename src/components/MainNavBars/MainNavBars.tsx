@@ -28,7 +28,8 @@ type Props = {
 
 const MainNavBars = memo(({ className, route, query, overlay, children }: Props) => {
     const contentRef = useRef<HTMLDivElement>(null);
-    const { visible, scrolled } = useNavbarScroll(contentRef);
+    const autoHide = route === 'board';
+    const { visible, scrolled } = useNavbarScroll(contentRef, autoHide);
 
     return (
         <div className={classnames(className, styles['main-nav-bars-container'], { [styles['overlay']]: overlay })}>
@@ -42,7 +43,7 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 navMenu={true}
                 tabs={TOP_NAV_TABS}
                 selected={route}
-                navbarHidden={!visible}
+                navbarHidden={autoHide && !visible}
                 navbarScrolled={scrolled || route === 'search'}
             />
             {route === 'search' &&
