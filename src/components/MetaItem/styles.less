@@ -37,6 +37,8 @@
             }
 
             .play-icon-layer {
+                opacity: 1;
+
                 .play-icon-outer {
                     color: transparent;
                 }
@@ -185,7 +187,8 @@
             justify-content: center;
             height: @play-icon-size;
             width: @play-icon-size;
-            transition: transform 0.1s ease-out;
+            opacity: 0;
+            transition: transform 0.1s ease-out, opacity 0.2s ease;
 
             .play-icon {
                 z-index: 2;
