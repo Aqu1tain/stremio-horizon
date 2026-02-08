@@ -63,12 +63,18 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                     null
             }
             {
-                searchBar && route !== 'addons' ?
-                    <SearchBar className={styles['search-bar']} query={query} active={route === 'search'} />
+                searchBar && route === 'search' ?
+                    <SearchBar className={styles['search-bar']} query={query} active={true} />
                     :
                     null
             }
             <div className={styles['buttons-container']}>
+                {
+                    searchBar && route !== 'search' && route !== 'addons' ?
+                        <SearchBar query={query} active={false} />
+                        :
+                        null
+                }
                 {
                     !isIOSPWA && fullscreenButton ?
                         <Button className={styles['button-container']} title={fullscreen ? t('EXIT_FULLSCREEN') : t('ENTER_FULLSCREEN')} tabIndex={-1} onClick={fullscreen ? exitFullscreen : requestFullscreen}>

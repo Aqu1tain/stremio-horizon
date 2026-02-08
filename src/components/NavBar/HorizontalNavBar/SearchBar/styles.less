@@ -2,6 +2,38 @@
 
 @import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
 
+.search-icon-button {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+
+    .icon {
+        flex: none;
+        width: 1.6rem;
+        height: 1.6rem;
+        color: var(--primary-foreground-color);
+        opacity: 0.6;
+    }
+
+    .active() {
+        background-color: var(--overlay-color);
+
+        .icon {
+            opacity: 0.8;
+        }
+    }
+
+    @media (pointer: fine) {
+        &:hover {
+            .active();
+        }
+    }
+}
+
 .search-bar-container {
     --search-bar-size: 3.25rem;
     display: flex;

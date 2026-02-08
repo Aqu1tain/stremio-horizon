@@ -29,12 +29,6 @@ const SearchBar = React.memo(({ className, query, active }) => {
     const searchInputRef = React.useRef(null);
     const containerRef = React.useRef(null);
 
-    const searchBarOnClick = React.useCallback(() => {
-        if (!active) {
-            window.location = '#/search';
-        }
-    }, [active]);
-
     const searchHistoryOnClose = React.useCallback((event) => {
         if (historyOpen && containerRef.current && !containerRef.current.contains(event.target)) {
             closeHistory();
@@ -95,27 +89,28 @@ const SearchBar = React.memo(({ className, query, active }) => {
         };
     }, []);
 
+    if (!active) {
+        return (
+            <Button className={classnames(className, styles['search-icon-button'])} tabIndex={-1} href={'#/search'}>
+                <Icon className={styles['icon']} name={'search'} />
+            </Button>
+        );
+    }
+
     return (
-        <div className={classnames(className, styles['search-bar-container'], { 'active': active })} onClick={searchBarOnClick} ref={containerRef}>
-            {
-                active ?
-                    <TextInput
-                        key={query}
-                        ref={searchInputRef}
-                        className={styles['search-input']}
-                        type={'text'}
-                        placeholder={t('SEARCH_OR_PASTE_LINK')}
-                        defaultValue={query}
-                        tabIndex={-1}
-                        onChange={queryInputOnChange}
-                        onSubmit={queryInputOnSubmit}
-                        onClick={openHistory}
-                    />
-                    :
-                    <div className={styles['search-input']}>
-                        <div className={styles['placeholder-label']}>{ t('SEARCH_OR_PASTE_LINK') }</div>
-                    </div>
-            }
+        <div className={classnames(className, styles['search-bar-container'], 'active')} ref={containerRef}>
+            <TextInput
+                key={query}
+                ref={searchInputRef}
+                className={styles['search-input']}
+                type={'text'}
+                placeholder={t('SEARCH_OR_PASTE_LINK')}
+                defaultValue={query}
+                tabIndex={-1}
+                onChange={queryInputOnChange}
+                onSubmit={queryInputOnSubmit}
+                onClick={openHistory}
+            />
             {
                 currentQuery.length > 0 ?
                     <Button className={styles['submit-button-container']} onClick={queryInputClear}>
@@ -183,16 +178,10 @@ SearchBar.propTypes = {
 };
 
 const SearchBarFallback = ({ className }) => {
-    const { t } = useTranslation();
     return (
-        <label className={classnames(className, styles['search-bar-container'])}>
-            <div className={styles['search-input']}>
-                <div className={styles['placeholder-label']}>{ t('SEARCH_OR_PASTE_LINK') }</div>
-            </div>
-            <Button className={styles['submit-button-container']} tabIndex={-1}>
-                <Icon className={styles['icon']} name={'search'} />
-            </Button>
-        </label>
+        <Button className={classnames(className, styles['search-icon-button'])} tabIndex={-1} href={'#/search'}>
+            <Icon className={styles['icon']} name={'search'} />
+        </Button>
     );
 };
 
