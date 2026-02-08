@@ -88,20 +88,19 @@
         }
 
         .meta-preview {
-            flex: 0 1 auto;
+            flex: 0 0 auto;
+            max-width: 28rem;
             align-self: stretch;
-            padding: 0 4rem 2rem 4rem;
-
-            padding-left: max(1rem, calc(4rem - var(--safe-area-inset-left)));
+            padding: 0 3rem 2rem 3rem;
+            padding-left: max(1rem, calc(3rem - var(--safe-area-inset-left)));
         }
 
         .spacing {
-            flex: 1;
-            max-width: 4rem;
+            flex: 0 0 2rem;
         }
 
         .videos-list, .streams-list {
-            flex: 0 0 30rem;
+            flex: 1 1 30rem;
             align-self: stretch;
             border-radius: var(--border-radius) 0 0 var(--border-radius);
             background-color: rgba(0, 0, 0, 0.4);
