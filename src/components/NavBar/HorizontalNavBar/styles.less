@@ -9,29 +9,11 @@
     align-items: center;
     justify-content: space-between;
     height: var(--horizontal-nav-bar-size);
-    padding-right: 1rem;
+    padding: 0 1rem;
+    padding-top: var(--safe-area-inset-top);
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
     overflow: visible;
-    padding-top: var(--safe-area-inset-top);
     box-sizing: content-box;
-
-    .logo-container {
-        flex: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--vertical-nav-bar-size);
-        height: var(--horizontal-nav-bar-size);
-
-        .logo {
-            flex: none;
-            width: 2.5rem;
-            height: 2.5rem;
-            object-position: center;
-            object-fit: contain;
-            opacity: 0.9;
-        }
-    }
 
     .back-button-container {
         margin-left: max(0rem, calc(1rem - var(--safe-area-inset-left)));
@@ -105,10 +87,6 @@
     .horizontal-nav-bar-container {
         justify-content: space-between;
         padding-right: 0;
-
-        .logo-container {
-            width: var(--horizontal-nav-bar-size);
-        }
 
         .button-container {
             margin: 0 1rem;

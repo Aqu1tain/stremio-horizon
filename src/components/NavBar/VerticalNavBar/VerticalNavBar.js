@@ -4,6 +4,7 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
+const { Image } = require('stremio/components');
 const NavTabButton = require('./NavTabButton');
 const styles = require('./styles');
 
@@ -11,6 +12,11 @@ const VerticalNavBar = React.memo(({ className, selected, tabs }) => {
     const { t } = useTranslation();
     return (
         <nav className={classnames(className, styles['vertical-nav-bar-container'])}>
+            <Image
+                className={styles['logo']}
+                src={require('/assets/images/stremio_symbol.png')}
+                alt={' '}
+            />
             {
                 Array.isArray(tabs) ?
                     tabs.map((tab, index) => (

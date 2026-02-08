@@ -4,7 +4,7 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('@stremio/stremio-icons/react');
-const { Button, Image } = require('stremio/components');
+const { Button } = require('stremio/components');
 const { default: useFullscreen } = require('stremio/common/useFullscreen');
 const usePWA = require('stremio/common/usePWA');
 const SearchBar = require('./SearchBar');
@@ -32,13 +32,7 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                         <Icon className={styles['icon']} name={'chevron-back'} />
                     </Button>
                     :
-                    <div className={styles['logo-container']}>
-                        <Image
-                            className={styles['logo']}
-                            src={require('/assets/images/stremio_symbol.png')}
-                            alt={' '}
-                        />
-                    </div>
+                    null
             }
             {
                 typeof title === 'string' && title.length > 0 ?

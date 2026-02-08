@@ -19,6 +19,16 @@
         display: none;
     }
 
+    .logo {
+        flex: none;
+        width: 1.8rem;
+        height: 1.8rem;
+        object-fit: contain;
+        object-position: center;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+
     .nav-tab-button {
         width: calc(var(--vertical-nav-bar-size) - 1.2rem);
         height: calc(var(--vertical-nav-bar-size) - 1.2rem);
@@ -36,6 +46,10 @@
         padding: 0 1rem;
         overflow-y: hidden;
         overflow-x: auto;
+
+        .logo {
+            display: none;
+        }
 
         .nav-tab-button {
             flex: none;
