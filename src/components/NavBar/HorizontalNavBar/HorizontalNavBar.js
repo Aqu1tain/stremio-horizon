@@ -24,74 +24,54 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
             {children}
         </Button>
     ), []);
+    const showSearchBar = searchBar && route === 'search';
+    const showSearchIcon = searchBar && route !== 'search' && route !== 'addons';
+    const showFullscreen = !isIOSPWA && fullscreenButton;
+    const hasTabs = Array.isArray(tabs) && tabs.length > 0;
+
     return (
         <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'], {
             [styles['navbar-hidden']]: navbarHidden,
             [styles['navbar-scrolled']]: navbarScrolled,
         })}>
-            {
-                Array.isArray(tabs) && tabs.length > 0 ?
-                    <div className={styles['nav-tabs-container']}>
-                        <Image
-                            className={styles['nav-logo']}
-                            src={require('/assets/images/stremio_symbol.png')}
-                            alt={' '}
-                        />
-                        {tabs.map((tab) => (
-                            <Button
-                                key={tab.id}
-                                className={classnames(styles['nav-tab'], { [styles['nav-tab-active']]: tab.id === selected })}
-                                href={tab.href}
-                                tabIndex={-1}
-                            >
-                                {t(tab.label)}
-                            </Button>
-                        ))}
-                    </div>
-                    :
-                    null
+            {hasTabs &&
+                <div className={styles['nav-tabs-container']}>
+                    <Image
+                        className={styles['nav-logo']}
+                        src={require('/assets/images/stremio_symbol.png')}
+                        alt={' '}
+                    />
+                    {tabs.map((tab) => (
+                        <Button
+                            key={tab.id}
+                            className={classnames(styles['nav-tab'], { [styles['nav-tab-active']]: tab.id === selected })}
+                            href={tab.href}
+                            tabIndex={-1}
+                        >
+                            {t(tab.label)}
+                        </Button>
+                    ))}
+                </div>
             }
-            {
-                backButton ?
-                    <Button className={classnames(styles['button-container'], styles['back-button-container'])} tabIndex={-1} onClick={backButtonOnClick}>
-                        <Icon className={styles['icon']} name={'chevron-back'} />
-                    </Button>
-                    :
-                    null
+            {backButton &&
+                <Button className={classnames(styles['button-container'], styles['back-button-container'])} tabIndex={-1} onClick={backButtonOnClick}>
+                    <Icon className={styles['icon']} name={'chevron-back'} />
+                </Button>
             }
-            {
-                typeof title === 'string' && title.length > 0 ?
-                    <h2 className={styles['title']}>{title}</h2>
-                    :
-                    null
+            {title &&
+                <h2 className={styles['title']}>{title}</h2>
             }
-            {
-                searchBar && route === 'search' ?
-                    <SearchBar className={styles['search-bar']} query={query} active={true} />
-                    :
-                    null
+            {showSearchBar &&
+                <SearchBar className={styles['search-bar']} query={query} active={true} />
             }
             <div className={styles['buttons-container']}>
-                {
-                    searchBar && route !== 'search' && route !== 'addons' ?
-                        <SearchBar query={query} active={false} />
-                        :
-                        null
+                {showSearchIcon && <SearchBar query={query} active={false} />}
+                {showFullscreen &&
+                    <Button className={styles['button-container']} title={fullscreen ? t('EXIT_FULLSCREEN') : t('ENTER_FULLSCREEN')} tabIndex={-1} onClick={fullscreen ? exitFullscreen : requestFullscreen}>
+                        <Icon className={styles['icon']} name={fullscreen ? 'minimize' : 'maximize'} />
+                    </Button>
                 }
-                {
-                    !isIOSPWA && fullscreenButton ?
-                        <Button className={styles['button-container']} title={fullscreen ? t('EXIT_FULLSCREEN') : t('ENTER_FULLSCREEN')} tabIndex={-1} onClick={fullscreen ? exitFullscreen : requestFullscreen}>
-                            <Icon className={styles['icon']} name={fullscreen ? 'minimize' : 'maximize'} />
-                        </Button>
-                        :
-                        null
-                }
-                {
-                    navMenu ?
-                        <NavMenu renderLabel={renderNavMenuLabel} />
-                        :
-                        null
-                }
+                {navMenu && <NavMenu renderLabel={renderNavMenuLabel} />}
             </div>
         </nav>
     );
