@@ -17,9 +17,8 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 1rem;
-    padding: 0.5rem 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
     &:hover, &:focus {
         background-color: var(--overlay-color);
@@ -57,9 +56,13 @@
         }
 
         .addon-name {
-            width: 7rem;
-            font-size: 1.1rem;
+            min-width: 5rem;
+            max-width: 10rem;
+            font-size: 0.85rem;
             text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.03rem;
+            opacity: 0.6;
             color: var(--primary-foreground-color);
         }
 
@@ -96,9 +99,9 @@
         gap: 0.35rem;
 
         .quality-badge {
-            padding: 0.15rem 0.45rem;
+            padding: 0.2rem 0.5rem;
             border-radius: 0.25rem;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: white;
             white-space: nowrap;
@@ -111,7 +114,7 @@
         flex-direction: column;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
-        white-space: pre;
+        white-space: pre-wrap;
         overflow-y: visible;
         text-overflow: ellipsis;
         color: var(--primary-foreground-color);
@@ -123,7 +126,8 @@
         height: 3rem;
         padding: 0.7rem;
         border-radius: 50%;
-        opacity: 0;
+        opacity: 0.3;
+        transition: opacity 0.15s ease;
         color: var(--primary-foreground-color);
         background-color: var(--secondary-accent-color);
     }
@@ -182,7 +186,7 @@
 
         .info-container {
             .addon-name {
-                font-size: 0.9rem;
+                font-size: 0.8rem;
             }
         }
     }
