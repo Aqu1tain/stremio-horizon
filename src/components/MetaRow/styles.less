@@ -70,19 +70,23 @@
         display: flex;
         flex-direction: row;
         align-items: stretch;
-        overflow: visible;
+        gap: 0.25rem;
+        scroll-snap-type: x proximity;
 
         .meta-item {
+            flex: none;
+            scroll-snap-align: start;
+
             &.poster-shape-poster {
-                flex: calc(1 / var(--poster-shape-ratio));
+                width: 11rem;
             }
 
             &.poster-shape-square {
-                flex: 1;
+                width: 11rem;
             }
 
             &.poster-shape-landscape {
-                flex: calc(1 / var(--landscape-shape-ratio));
+                width: 19.5rem;
             }
         }
     }
@@ -102,8 +106,13 @@
 
         .meta-items-container {
             .meta-item {
-                &:not(:first-child) {
-                    margin-left: 0;
+                &.poster-shape-poster,
+                &.poster-shape-square {
+                    width: 9rem;
+                }
+
+                &.poster-shape-landscape {
+                    width: 16rem;
                 }
             }
         }

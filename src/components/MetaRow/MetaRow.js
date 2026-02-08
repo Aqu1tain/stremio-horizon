@@ -5,7 +5,7 @@ const ReactIs = require('react-is');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('@stremio/stremio-icons/react');
-const { Button } = require('stremio/components');
+const { Button, HorizontalScroll } = require('stremio/components');
 const CONSTANTS = require('stremio/common/CONSTANTS');
 const useTranslate = require('stremio/common/useTranslate');
 const MetaRowPlaceholder = require('./MetaRowPlaceholder');
@@ -49,10 +49,10 @@ const MetaRow = ({ className, title, catalog, message, itemComponent, notificati
                 typeof message === 'string' && message.length > 0 ?
                     <div className={styles['message-container']} title={message}>{message}</div>
                     :
-                    <div className={styles['meta-items-container']}>
+                    <HorizontalScroll className={styles['meta-items-container']}>
                         {
                             ReactIs.isValidElementType(itemComponent) ?
-                                items.slice(0, CONSTANTS.CATALOG_PREVIEW_SIZE).map((item, index) => {
+                                items.map((item, index) => {
                                     return React.createElement(itemComponent, {
                                         ...item,
                                         key: index,
@@ -63,10 +63,7 @@ const MetaRow = ({ className, title, catalog, message, itemComponent, notificati
                                 :
                                 null
                         }
-                        {Array(Math.max(0, CONSTANTS.CATALOG_PREVIEW_SIZE - items.length)).fill(null).map((_, index) => (
-                            <div key={index} className={classnames(styles['meta-item'], styles['poster-shape-poster'])} />
-                        ))}
-                    </div>
+                    </HorizontalScroll>
             }
         </div>
     );

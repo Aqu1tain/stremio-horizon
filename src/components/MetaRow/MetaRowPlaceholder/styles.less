@@ -58,14 +58,12 @@
         display: flex;
         flex-direction: row;
         align-items: stretch;
+        gap: 0.25rem;
 
         .meta-item {
-            flex: 1;
-            margin: 1rem;
-
-            &:not(:first-child) {
-                margin-left: 1.5rem;
-            }
+            flex: none;
+            width: 11rem;
+            padding: 0.65rem;
 
             .poster-container {
                 border-radius: var(--border-radius);
@@ -96,15 +94,8 @@
     .meta-row-placeholder-container {
         .meta-items-container {
             .meta-item {
-                margin: 0.5rem;
-
-                &:not(:first-child) {
-                    margin-left: 0.5rem;
-                }
-
-                .title-bar-container {
-                    margin-top: 0.5rem;
-                }
+                width: 9rem;
+                padding: 0.5rem;
             }
         }
     }
