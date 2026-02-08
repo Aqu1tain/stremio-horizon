@@ -104,6 +104,20 @@
 
     .description-container {
         display: none;
+        flex-basis: 100%;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        color: @color-surface-light5-90;
+        padding-top: 0.4rem;
+        word-break: break-word;
+    }
+
+    &.expanded {
+        flex-wrap: wrap;
+
+        .description-container {
+            display: block;
+        }
     }
 
     .icon {

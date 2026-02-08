@@ -21,6 +21,12 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
     const routeFocused = useRouteFocused();
 
     const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
+    const [expanded, setExpanded] = React.useState(false);
+    const toggleExpanded = React.useCallback((event) => {
+        if (!event.nativeEvent.buttonClickPrevented) {
+            setExpanded((prev) => !prev);
+        }
+    }, []);
 
     const popupLabelOnMouseUp = React.useCallback((event) => {
         if (!event.nativeEvent.togglePopupPrevented) {
@@ -173,8 +179,8 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
 
     const renderLabel = React.useMemo(() => function renderLabel({ className, children, ...props }) {
         return (
-            <Button className={classnames(className, styles['stream-container'])} title={addonName} href={href} target={target} download={download} onClick={onClick} {...props}>
-                <div className={styles['info-container']}>
+            <Button className={classnames(className, styles['stream-container'], { [styles['expanded']]: expanded })} title={addonName} href={href} target={target} download={download} onClick={onClick} {...props}>
+                <div className={styles['info-container']} onClick={toggleExpanded}>
                     {
                         typeof thumbnail === 'string' && thumbnail.length > 0 ?
                             <div className={styles['thumbnail-container']} title={name || addonName}>
@@ -215,7 +221,7 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
                 {children}
             </Button>
         );
-    }, [thumbnail, progress, addonName, name, description, href, target, download, onClick]);
+    }, [thumbnail, progress, addonName, name, description, href, target, download, onClick, expanded, toggleExpanded]);
 
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (
