@@ -22,9 +22,9 @@ const Discover = ({ urlParams, queryParams }) => {
     const [inputsModalOpen, openInputsModal, closeInputsModal] = useBinaryState(false);
     const [addonModalOpen, openAddonModal, closeAddonModal] = useBinaryState(false);
     const [selectedMetaItemIndex, setSelectedMetaItemIndex] = React.useState(0);
+    const [previewOpen, setPreviewOpen] = React.useState(false);
 
     const metasContainerRef = React.useRef();
-    const metaPreviewRef = React.useRef();
 
     React.useEffect(() => {
         if (discover.catalog?.content.type === 'Loading') {
@@ -80,10 +80,13 @@ const Discover = ({ urlParams, queryParams }) => {
         }
     }, []);
     const metaItemOnClick = React.useCallback((event) => {
-        const visible = window.getComputedStyle(metaPreviewRef.current).display !== 'none';
-        if (event.currentTarget.dataset.index !== selectedMetaItemIndex.toString() && visible) {
+        const index = parseInt(event.currentTarget.dataset.index, 10);
+        if (index !== selectedMetaItemIndex) {
             event.preventDefault();
             event.currentTarget.focus();
+            setPreviewOpen(true);
+        } else {
+            setPreviewOpen((prev) => !prev);
         }
     }, [selectedMetaItemIndex]);
     const onScrollToBottom = React.useCallback(() => {
@@ -96,6 +99,7 @@ const Discover = ({ urlParams, queryParams }) => {
         closeInputsModal();
         closeAddonModal();
         setSelectedMetaItemIndex(0);
+        setPreviewOpen(false);
     }, [discover.selected]);
     return (
         <MainNavBars className={styles['discover-container']} route={'discover'}>
@@ -176,32 +180,39 @@ const Discover = ({ urlParams, queryParams }) => {
                     }
                 </div>
                 {
-                    selectedMetaItem !== null ?
-                        <MetaPreview
-                            className={styles['meta-preview-container']}
-                            compact={true}
-                            ref={metaPreviewRef}
-                            name={selectedMetaItem.name}
-                            logo={selectedMetaItem.logo}
-                            background={selectedMetaItem.poster}
-                            runtime={selectedMetaItem.runtime}
-                            releaseInfo={selectedMetaItem.releaseInfo}
-                            released={selectedMetaItem.released}
-                            description={selectedMetaItem.description}
-                            links={selectedMetaItem.links}
-                            deepLinks={selectedMetaItem.deepLinks}
-                            trailerStreams={selectedMetaItem.trailerStreams}
-                            inLibrary={selectedMetaItem.inLibrary}
-                            toggleInLibrary={selectedMetaItem.inLibrary ? removeFromLibrary : addToLibrary}
-                            metaId={selectedMetaItem.id}
-                            like={selectedMetaItem.like}
-                        />
+                    previewOpen && selectedMetaItem !== null ?
+                        <div className={styles['preview-backdrop']} onClick={() => setPreviewOpen(false)} />
                         :
-                        discover.catalog !== null && discover.catalog.content.type === 'Loading' ?
-                            <div className={styles['meta-preview-container']} />
+                        null
+                }
+                <div className={classnames(styles['preview-panel'], { [styles['open']]: previewOpen && selectedMetaItem !== null })}>
+                    <Button className={styles['preview-close-button']} onClick={() => setPreviewOpen(false)}>
+                        <Icon className={styles['icon']} name={'close'} />
+                    </Button>
+                    {
+                        selectedMetaItem !== null ?
+                            <MetaPreview
+                                className={styles['meta-preview-container']}
+                                compact={true}
+                                name={selectedMetaItem.name}
+                                logo={selectedMetaItem.logo}
+                                background={selectedMetaItem.poster}
+                                runtime={selectedMetaItem.runtime}
+                                releaseInfo={selectedMetaItem.releaseInfo}
+                                released={selectedMetaItem.released}
+                                description={selectedMetaItem.description}
+                                links={selectedMetaItem.links}
+                                deepLinks={selectedMetaItem.deepLinks}
+                                trailerStreams={selectedMetaItem.trailerStreams}
+                                inLibrary={selectedMetaItem.inLibrary}
+                                toggleInLibrary={selectedMetaItem.inLibrary ? removeFromLibrary : addToLibrary}
+                                metaId={selectedMetaItem.id}
+                                like={selectedMetaItem.like}
+                            />
                             :
                             null
-                }
+                    }
+                </div>
             </div>
             {
                 inputsModalOpen ?

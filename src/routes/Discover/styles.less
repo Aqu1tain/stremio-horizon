@@ -178,7 +178,6 @@
                 grid-auto-rows: max-content;
                 align-items: center;
                 grid-gap: 0.5rem;
-                margin-right: var(--content-padding);
                 overflow-y: auto;
 
                 .meta-item-placeholder {
@@ -209,13 +208,58 @@
             }
         }
 
-        .meta-preview-container {
-            flex: none;
-            align-self: stretch;
-            width: 29rem;
-            padding: 2rem 2.5rem;
-            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        .preview-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 9;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 26rem;
+            z-index: 10;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
             background-color: var(--modal-background-color);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            overflow-y: auto;
+
+            &.open {
+                transform: translateX(0);
+            }
+
+            .preview-close-button {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                background-color: var(--overlay-color);
+                cursor: pointer;
+
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.15);
+                }
+
+                .icon {
+                    width: 1.2rem;
+                    height: 1.2rem;
+                    color: var(--primary-foreground-color);
+                }
+            }
+
+            .meta-preview-container {
+                padding: 2rem 2.5rem;
+            }
         }
     }
 }
@@ -338,12 +382,7 @@
             .catalog-container {
                 .meta-items-container {
                     grid-template-columns: repeat(5, 1fr);
-                    margin-right: 0;
                 }
-            }
-
-            .meta-preview-container {
-                display: none;
             }
         }
     }
@@ -355,12 +394,7 @@
             .catalog-container {
                 .meta-items-container {
                     grid-template-columns: repeat(4, 1fr);
-                    margin-right: 0;
                 }
-            }
-
-            .meta-preview-container {
-                display: none;
             }
         }
     }
