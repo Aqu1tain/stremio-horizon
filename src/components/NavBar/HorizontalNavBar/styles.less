@@ -16,7 +16,7 @@
     box-sizing: content-box;
 
     .nav-tabs-container {
-        display: none;
+        display: flex;
         flex-direction: row;
         align-items: center;
         gap: 0.25rem;
@@ -116,6 +116,10 @@
     .horizontal-nav-bar-container {
         justify-content: space-between;
         padding-right: 0;
+
+        .nav-tabs-container {
+            display: none;
+        }
 
         .button-container {
             margin: 0 1rem;
