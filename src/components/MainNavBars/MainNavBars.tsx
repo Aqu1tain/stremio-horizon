@@ -14,6 +14,8 @@ const TABS = [
     { id: 'settings', label: 'SETTINGS', icon: 'settings', href: '#/settings' },
 ];
 
+const TOP_NAV_TABS = TABS.filter((tab) => tab.id !== 'settings');
+
 type Props = {
     className: string,
     route?: string,
@@ -33,6 +35,8 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 searchBar={true}
                 fullscreenButton={true}
                 navMenu={true}
+                tabs={TOP_NAV_TABS}
+                selected={route}
             />
             <VerticalNavBar
                 className={styles['vertical-nav-bar']}
