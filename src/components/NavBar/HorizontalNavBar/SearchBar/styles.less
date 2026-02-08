@@ -83,66 +83,69 @@
 
     .menu-container {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 0.5rem);
         left: 0;
         width: 100%;
         max-width: 30rem;
         height: auto;
         z-index: 10;
-        padding: 1rem;
-        margin: 0 auto;
+        padding: 0.75rem;
         display: flex;
-        justify-content: center;
-        align-items: flex-start;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 0.25rem;
         background-color: var(--modal-background-color);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: var(--border-radius);
-        
-        .label {
-            font-size: 0.9rem;
-            color: var(--primary-foreground-color);
-        }
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 
         .title {
             display: flex;
             justify-content: space-between;
-            width: 100%;
-            opacity: 0.8;
-            padding-bottom: 1rem;
+            align-items: center;
+            padding: 0.5rem 0.75rem 0.25rem;
+
+            .label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.04rem;
+                color: var(--primary-foreground-color);
+                opacity: 0.4;
+            }
 
             .search-history-clear {
                 cursor: pointer;
-                color: var(--primary-foreground-color);
-                font-size: 0.9rem;
+                font-size: 0.75rem;
+                color: var(--primary-accent-color);
+                opacity: 0.8;
 
                 &:hover {
-                    opacity: 0.6;
+                    opacity: 1;
                 }
             }
         }
 
         .items {
-            width: 100%;
-            margin: 0 auto;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
             flex-direction: column;
 
+            & + .items {
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
+                padding-top: 0.25rem;
+                margin-top: 0.25rem;
+            }
+
             .item {
-                width: 90%;
                 color: var(--primary-foreground-color);
                 text-align: left;
                 text-decoration: none;
-                padding: 0.5rem 1rem;
-                border-radius: var(--border-radius);
-                width: 100%;
+                padding: 0.5rem 0.75rem;
+                border-radius: 0.5rem;
                 cursor: pointer;
-                z-index: 10;
+                font-size: 0.9rem;
 
                 &:hover {
-                    background-color: var(--secondary-background-color);
+                    background-color: rgba(255, 255, 255, 0.08);
                 }
             }
         }
