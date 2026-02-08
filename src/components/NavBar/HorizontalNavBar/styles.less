@@ -15,6 +15,36 @@
     overflow: visible;
     box-sizing: content-box;
 
+    .nav-tabs-container {
+        display: none;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
+
+        .nav-logo {
+            width: 1.75rem;
+            height: 1.75rem;
+            margin-right: 1rem;
+            object-fit: contain;
+        }
+
+        .nav-tab {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-foreground-color);
+            opacity: 0.6;
+            white-space: nowrap;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .nav-tab-active {
+            opacity: 1;
+        }
+    }
+
     .back-button-container {
         margin-left: max(0rem, calc(1rem - var(--safe-area-inset-left)));
     }

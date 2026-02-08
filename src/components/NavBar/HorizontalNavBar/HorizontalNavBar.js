@@ -4,7 +4,7 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('@stremio/stremio-icons/react');
-const { Button } = require('stremio/components');
+const { Button, Image } = require('stremio/components');
 const { default: useFullscreen } = require('stremio/common/useFullscreen');
 const usePWA = require('stremio/common/usePWA');
 const SearchBar = require('./SearchBar');
@@ -12,7 +12,7 @@ const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
 
-const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, ...props }) => {
+const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, tabs, selected, ...props }) => {
     const backButtonOnClick = React.useCallback(() => {
         window.history.back();
     }, []);
@@ -26,6 +26,28 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
     ), []);
     return (
         <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'])}>
+            {
+                Array.isArray(tabs) && tabs.length > 0 ?
+                    <div className={styles['nav-tabs-container']}>
+                        <Image
+                            className={styles['nav-logo']}
+                            src={require('/assets/images/stremio_symbol.png')}
+                            alt={' '}
+                        />
+                        {tabs.map((tab) => (
+                            <Button
+                                key={tab.id}
+                                className={classnames(styles['nav-tab'], { [styles['nav-tab-active']]: tab.id === selected })}
+                                href={tab.href}
+                                tabIndex={-1}
+                            >
+                                {t(tab.label)}
+                            </Button>
+                        ))}
+                    </div>
+                    :
+                    null
+            }
             {
                 backButton ?
                     <Button className={classnames(styles['button-container'], styles['back-button-container'])} tabIndex={-1} onClick={backButtonOnClick}>
@@ -76,7 +98,13 @@ HorizontalNavBar.propTypes = {
     backButton: PropTypes.bool,
     searchBar: PropTypes.bool,
     fullscreenButton: PropTypes.bool,
-    navMenu: PropTypes.bool
+    navMenu: PropTypes.bool,
+    tabs: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string,
+        label: PropTypes.string,
+        href: PropTypes.string,
+    })),
+    selected: PropTypes.string,
 };
 
 module.exports = HorizontalNavBar;
