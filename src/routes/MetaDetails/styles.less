@@ -1,5 +1,3 @@
-// Copyright (C) 2017-2024 Smart code 203358507
-
 @import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
 @import (reference) '~stremio/common/screen-sizes.less';
 
@@ -9,102 +7,217 @@
 }
 
 .metadetails-container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
-    padding-left: var(--safe-area-inset-left);
-    padding-right: var(--safe-area-inset-right);
-    box-sizing: border-box;
 
-    .background-image-layer {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: -1;
-        background-color: var(--modal-background-color);
+    .meta-message-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 2rem;
 
-        .background-image {
-            pointer-events: none; 
-            display: block;
+        .message-image {
+            width: 12rem;
+            height: 12rem;
+            max-width: 100%;
+            margin-bottom: 1rem;
+            object-fit: contain;
+            opacity: 0.9;
+        }
+
+        .message-label {
+            font-size: 2rem;
+            text-align: center;
+            color: var(--primary-foreground-color);
+        }
+    }
+
+    .loading-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .metadetails-scroll-container {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .hero-section {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 7;
+        max-height: 70vh;
+        min-height: 22rem;
+        overflow: hidden;
+
+        .hero-background-image {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: top left;
-            opacity: 0.3;
-        }
-    }
-
-    .nav-bar {
-        z-index: 1;
-        flex: none;
-        align-self: stretch;
-    }
-
-    .metadetails-content {
-        flex: 1;
-        align-self: stretch;
-        position: relative;
-        z-index: 0;
-        display: flex;
-        flex-direction: row;
-        margin-top: calc(var(--top-overlay-size) * -1);
-        padding-top: var(--top-overlay-size);
-        padding-bottom: var(--safe-area-inset-bottom, 0rem);
-        .vertical-nav-bar {
-            flex: none;
+            object-position: center top;
+            opacity: 0.55;
         }
 
-        .meta-message-container {
-            align-self: stretch;
+        .hero-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 70%),
+                        linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            width: 100%;
-            height: 100%;
+            padding: 2.5rem 4rem;
+            gap: 0.75rem;
 
-            .image {
-                flex: none;
-                width: 12rem;
-                height: 12rem;
-                max-width: 100%;
-                margin-bottom: 1rem;
+            .hero-logo {
+                height: 6rem;
+                max-width: 20rem;
                 object-fit: contain;
-                object-position: center;
-                opacity: 0.9;
+                object-position: left center;
             }
 
-            .message-label {
-                flex: none;
-                align-self: stretch;
-                font-size: 2rem;
-                text-align: center;
+            .hero-title {
+                font-size: 2.5rem;
+                font-weight: 700;
                 color: var(--primary-foreground-color);
+                line-height: 1.1;
+            }
+
+            .hero-meta-row {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 0.5rem 1.25rem;
+
+                .meta-info {
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: @color-surface-light5-90;
+                }
+
+                .imdb-badge {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.1rem 0.5rem;
+                    border-radius: 0.4rem;
+                    border: var(--focus-outline-size) solid transparent;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: var(--primary-foreground-color);
+
+                    &:focus {
+                        outline: none;
+                        border-color: @color-surface-light5;
+                    }
+
+                    .imdb-icon {
+                        width: 2.5rem;
+                        height: 2.5rem;
+                        color: var(--color-imdb);
+                    }
+                }
+            }
+
+            .hero-description {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                color: @color-surface-light5-90;
+                max-width: 40rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .hero-actions {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                margin-top: 0.5rem;
+
+                .play-button {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem 2rem 0.75rem 1.5rem;
+                    border-radius: 2rem;
+                    background-color: var(--primary-accent-color);
+                    color: var(--primary-foreground-color);
+                    font-size: 1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: opacity 0.15s ease, transform 0.15s ease;
+
+                    &:hover {
+                        opacity: 0.9;
+                        transform: scale(1.03);
+                    }
+
+                    &:focus {
+                        outline: var(--focus-outline-size) solid var(--primary-accent-color);
+                        outline-offset: 2px;
+                    }
+
+                    .play-icon {
+                        width: 1.5rem;
+                        height: 1.5rem;
+                    }
+                }
+
+                .action-button {
+                    height: 3rem;
+                    padding: 0 1.25rem;
+                    border-radius: 2rem;
+                }
+
+                .ratings {
+                    margin-right: 0.5rem;
+                }
             }
         }
+    }
 
-        .meta-preview {
-            flex: 1 1 auto;
-            align-self: stretch;
-            padding: 0 4rem 2rem 4rem;
-            padding-left: max(1rem, calc(4rem - var(--safe-area-inset-left)));
+    .tab-bar {
+        flex: none;
+    }
+
+    .tab-content {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: 1rem 4rem 2rem;
+        width: 100%;
+        box-sizing: border-box;
+
+        .streams-list, .videos-list {
+            width: 100%;
         }
 
-        .spacing {
-            flex: 0 0 2rem;
+        .details-panel {
+            width: 100%;
         }
+    }
 
-        .videos-list, .streams-list {
-            flex: 0 0 26rem;
-            align-self: stretch;
-            border-radius: var(--border-radius) 0 0 var(--border-radius);
-            background-color: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(15px);
-        }
+    .share-prompt {
+        width: 30rem;
     }
 }
 
@@ -126,39 +239,99 @@
 
 @media @phone-landscape {
     .metadetails-container {
-        .metadetails-content {
-            .meta-preview {
-                padding: 0 1.5rem 1rem;
-            }
+        .hero-section {
+            min-height: 16rem;
+            max-height: 50vh;
 
-            .spacing {
-                flex: 0 0 1rem;
-            }
+            .hero-content {
+                padding: 1.5rem;
 
-            .videos-list, .streams-list {
-                flex: 0 0 22rem;
+                .hero-logo {
+                    height: 4rem;
+                    max-width: 14rem;
+                }
+
+                .hero-title {
+                    font-size: 1.5rem;
+                }
+
+                .hero-description {
+                    display: none;
+                }
+
+                .hero-actions {
+                    gap: 0.5rem;
+
+                    .play-button {
+                        padding: 0.5rem 1.5rem 0.5rem 1rem;
+                        font-size: 0.9rem;
+
+                        .play-icon {
+                            width: 1.2rem;
+                            height: 1.2rem;
+                        }
+                    }
+                }
             }
+        }
+
+        .tab-content {
+            padding: 1rem 1.5rem;
         }
     }
 }
 
 @media only screen and (max-width: @minimum) {
     .metadetails-container {
-        .metadetails-content {
-            display: block;
-            overflow-y: auto;
+        .hero-section {
+            aspect-ratio: unset;
+            min-height: 18rem;
+            max-height: 45vh;
 
-            .spacing {
-                display: none;
-            }
+            .hero-content {
+                padding: 1.5rem;
 
-            .meta-preview {
-                padding: 0 1.5rem 2rem;
-            }
+                .hero-logo {
+                    height: 3.5rem;
+                    max-width: 12rem;
+                }
 
-            .videos-list, .streams-list {
-                border-radius: var(--border-radius) var(--border-radius) 0 0;
+                .hero-title {
+                    font-size: 1.4rem;
+                }
+
+                .hero-description {
+                    -webkit-line-clamp: 2;
+                    font-size: 0.85rem;
+                }
+
+                .hero-meta-row {
+                    gap: 0.4rem 0.75rem;
+
+                    .meta-info {
+                        font-size: 0.85rem;
+                    }
+                }
+
+                .hero-actions {
+                    gap: 0.5rem;
+
+                    .play-button {
+                        padding: 0.6rem 1.25rem 0.6rem 1rem;
+                        font-size: 0.85rem;
+                    }
+
+                    .action-button {
+                        height: 2.5rem;
+                        padding: 0 1rem;
+                    }
+                }
             }
+        }
+
+        .tab-content {
+            padding: 1rem;
+            max-width: 100%;
         }
     }
 }
