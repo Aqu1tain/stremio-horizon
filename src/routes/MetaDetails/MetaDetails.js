@@ -1,14 +1,25 @@
-// Copyright (C) 2017-2023 Smart code 203358507
-
 const React = require('react');
-const { useTranslation } = require('react-i18next');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
+const { useTranslation } = require('react-i18next');
+const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Button } = require('stremio/components/Button');
+const { default: Image } = require('stremio/components/Image');
+const { default: MainNavBars } = require('stremio/components/MainNavBars');
+const ModalDialog = require('stremio/components/ModalDialog');
+const SharePrompt = require('stremio/components/SharePrompt');
+const { DelayedRenderer, HorizontalNavBar } = require('stremio/components');
 const { useServices } = require('stremio/services');
 const { withCoreSuspender } = require('stremio/common');
-const { VerticalNavBar, HorizontalNavBar, DelayedRenderer, Image, MetaPreview, ModalDialog } = require('stremio/components');
+const useBinaryState = require('stremio/common/useBinaryState');
+const CONSTANTS = require('stremio/common/CONSTANTS');
+const useLinksGroups = require('stremio/components/MetaPreview/useLinksGroups');
+const ActionButton = require('stremio/components/MetaPreview/ActionButton');
+const { Ratings } = require('stremio/components/MetaPreview/Ratings');
 const StreamsList = require('./StreamsList');
 const VideosList = require('./VideosList');
+const TabBar = require('./TabBar');
+const DetailsPanel = require('./DetailsPanel');
 const useMetaDetails = require('./useMetaDetails');
 const useSeason = require('./useSeason');
 const useMetaExtensionTabs = require('./useMetaExtensionTabs');
@@ -19,167 +30,240 @@ const MetaDetails = ({ urlParams, queryParams }) => {
     const { core } = useServices();
     const metaDetails = useMetaDetails(urlParams);
     const [season, setSeason] = useSeason(urlParams, queryParams);
-    const [tabs, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
+    const [extensionTabs, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
+    const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
+    const [activeTab, setActiveTab] = React.useState('streams');
+
     const [metaPath, streamPath] = React.useMemo(() => {
-        return metaDetails.selected !== null ?
-            [metaDetails.selected.metaPath, metaDetails.selected.streamPath]
-            :
-            [null, null];
+        return metaDetails.selected !== null
+            ? [metaDetails.selected.metaPath, metaDetails.selected.streamPath]
+            : [null, null];
     }, [metaDetails.selected]);
+
+    const metaItem = metaDetails.metaItem;
+    const isReady = metaItem !== null && metaItem.content.type === 'Ready';
+    const meta = isReady ? metaItem.content.content : null;
+
+    const linksGroups = useLinksGroups(meta?.links);
+
     const video = React.useMemo(() => {
-        return streamPath !== null && metaDetails.metaItem !== null && metaDetails.metaItem.content.type === 'Ready' ?
-            metaDetails.metaItem.content.content.videos.reduce((result, video) => {
-                if (video.id === streamPath.id) {
-                    return video;
-                }
+        if (streamPath === null || !isReady) return null;
+        return meta.videos.find((v) => v.id === streamPath.id) ?? null;
+    }, [metaItem, streamPath, isReady]);
 
-                return result;
-            }, null)
-            :
-            null;
-    }, [metaDetails.metaItem, streamPath]);
+    const hasVideos = React.useMemo(() => {
+        return isReady && meta.videos.length > 0;
+    }, [isReady, meta]);
+
+    const firstStreamHref = React.useMemo(() => {
+        const ready = metaDetails.streams
+            .filter((s) => s.content.type === 'Ready')
+            .flatMap((s) => s.content.content);
+        return ready[0]?.deepLinks?.player ?? null;
+    }, [metaDetails.streams]);
+
+    const trailerHref = React.useMemo(() => {
+        if (!isReady || !Array.isArray(meta.trailerStreams) || meta.trailerStreams.length === 0) return null;
+        return meta.trailerStreams[0].deepLinks.player;
+    }, [isReady, meta]);
+
+    const tabs = React.useMemo(() => {
+        const result = [];
+        if (streamPath) result.push({ id: 'streams', label: 'Streams' });
+        if (hasVideos) result.push({ id: 'episodes', label: 'Episodes' });
+        result.push({ id: 'details', label: 'Details' });
+        return result;
+    }, [metaPath, streamPath, hasVideos]);
+
+    React.useEffect(() => {
+        if (streamPath !== null) setActiveTab('streams');
+        else if (metaPath !== null && hasVideos) setActiveTab('episodes');
+        else setActiveTab('details');
+    }, [streamPath, metaPath, hasVideos]);
+
     const addToLibrary = React.useCallback(() => {
-        if (metaDetails.metaItem === null || metaDetails.metaItem.content.type !== 'Ready') {
-            return;
-        }
-
+        if (!isReady) return;
         core.transport.dispatch({
             action: 'Ctx',
-            args: {
-                action: 'AddToLibrary',
-                args: metaDetails.metaItem.content.content
-            }
+            args: { action: 'AddToLibrary', args: meta }
         });
     }, [metaDetails]);
+
     const removeFromLibrary = React.useCallback(() => {
-        if (metaDetails.metaItem === null || metaDetails.metaItem.content.type !== 'Ready') {
-            return;
-        }
+        if (!isReady) return;
+        core.transport.dispatch({
+            action: 'Ctx',
+            args: { action: 'RemoveFromLibrary', args: meta.id }
+        });
+    }, [metaDetails]);
 
+    const toggleNotifications = React.useCallback(() => {
+        if (!metaDetails.libraryItem) return;
         core.transport.dispatch({
             action: 'Ctx',
             args: {
-                action: 'RemoveFromLibrary',
-                args: metaDetails.metaItem.content.content.id
+                action: 'ToggleLibraryItemNotifications',
+                args: [metaDetails.libraryItem._id, !metaDetails.libraryItem.state.noNotif],
             }
         });
-    }, [metaDetails]);
-    const toggleNotifications = React.useCallback(() => {
-        if (metaDetails.libraryItem) {
-            core.transport.dispatch({
-                action: 'Ctx',
-                args: {
-                    action: 'ToggleLibraryItemNotifications',
-                    args: [metaDetails.libraryItem._id, !metaDetails.libraryItem.state.noNotif],
-                }
-            });
-        }
     }, [metaDetails.libraryItem]);
+
     const seasonOnSelect = React.useCallback((event) => {
         setSeason(event.value);
     }, [setSeason]);
-    const handleEpisodeSearch = React.useCallback((season, episode) => {
-        const searchVideoHash = encodeURIComponent(`${urlParams.id}:${season}:${episode}`);
+
+    const handleEpisodeSearch = React.useCallback((seasonNum, episode) => {
+        const searchVideoHash = encodeURIComponent(`${urlParams.id}:${seasonNum}:${episode}`);
         const url = window.location.hash;
-
-        const searchVideoPath = (urlParams.videoId === undefined || urlParams.videoId === null || urlParams.videoId === '') ?
-            url + (!url.endsWith('/') ? '/' : '') + searchVideoHash
+        const searchVideoPath = (!urlParams.videoId)
+            ? url + (!url.endsWith('/') ? '/' : '') + searchVideoHash
             : url.replace(encodeURIComponent(urlParams.videoId), searchVideoHash);
-
         window.location = searchVideoPath;
-    }, [urlParams, window.location]);
+    }, [urlParams]);
 
     const renderBackgroundImageFallback = React.useCallback(() => null, []);
-    const renderBackground = React.useMemo(() => !!(
-        metaPath &&
-        metaDetails?.metaItem &&
-        metaDetails.metaItem.content.type !== 'Loading' &&
-        typeof metaDetails.metaItem.content.content?.background === 'string' &&
-        metaDetails.metaItem.content.content.background.length > 0
-    ), [metaPath, metaDetails]);
+
+    const description = React.useMemo(() => {
+        if (video !== null && typeof video.overview === 'string' && video.overview.length > 0) return video.overview;
+        return meta?.description ?? null;
+    }, [video, meta]);
+
+    if (metaPath === null) {
+        return (
+            <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
+                <DelayedRenderer delay={500}>
+                    <div className={styles['meta-message-container']}>
+                        <Image className={styles['message-image']} src={require('/assets/images/empty.png')} alt={' '} />
+                        <div className={styles['message-label']}>{t('ERR_NO_META_SELECTED')}</div>
+                    </div>
+                </DelayedRenderer>
+            </MainNavBars>
+        );
+    }
+
+    if (metaItem === null) {
+        return (
+            <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
+                <div className={styles['meta-message-container']}>
+                    <Image className={styles['message-image']} src={require('/assets/images/empty.png')} alt={' '} />
+                    <div className={styles['message-label']}>{t('ERR_NO_ADDONS_FOR_META')}</div>
+                </div>
+            </MainNavBars>
+        );
+    }
+
+    if (metaItem.content.type === 'Err') {
+        return (
+            <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
+                <div className={styles['meta-message-container']}>
+                    <Image className={styles['message-image']} src={require('/assets/images/empty.png')} alt={' '} />
+                    <div className={styles['message-label']}>{t('ERR_NO_META_FOUND')}</div>
+                </div>
+            </MainNavBars>
+        );
+    }
+
+    if (metaItem.content.type === 'Loading') {
+        return (
+            <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
+                <div className={styles['loading-container']} />
+            </MainNavBars>
+        );
+    }
 
     return (
-        <div className={styles['metadetails-container']}>
-            {
-                renderBackground ?
-                    <div className={styles['background-image-layer']}>
+        <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
+            <div className={styles['metadetails-scroll-container']}>
+                <div className={styles['hero-section']}>
+                    {typeof meta.background === 'string' && meta.background.length > 0 &&
                         <Image
-                            className={styles['background-image']}
-                            src={metaDetails.metaItem.content.content.background}
+                            className={styles['hero-background-image']}
+                            src={meta.background}
                             renderFallback={renderBackgroundImageFallback}
                             alt={' '}
                         />
+                    }
+                    <div className={styles['hero-gradient']} />
+                    <div className={styles['hero-content']}>
+                        {typeof meta.logo === 'string' && meta.logo.length > 0
+                            ? <Image className={styles['hero-logo']} src={meta.logo} alt={meta.name} renderFallback={() => (
+                                <div className={styles['hero-title']}>{meta.name}</div>
+                            )} />
+                            : <div className={styles['hero-title']}>{meta.name}</div>
+                        }
+                        <div className={styles['hero-meta-row']}>
+                            {typeof meta.runtime === 'string' && meta.runtime.length > 0 &&
+                                <span className={styles['meta-info']}>{meta.runtime}</span>
+                            }
+                            {typeof meta.releaseInfo === 'string' && meta.releaseInfo.length > 0
+                                ? <span className={styles['meta-info']}>{meta.releaseInfo}</span>
+                                : meta.released instanceof Date && !isNaN(meta.released.getTime()) &&
+                                    <span className={styles['meta-info']}>{meta.released.getFullYear()}</span>
+                            }
+                            {linksGroups.has(CONSTANTS.IMDB_LINK_CATEGORY) &&
+                                <Button
+                                    className={styles['imdb-badge']}
+                                    title={linksGroups.get(CONSTANTS.IMDB_LINK_CATEGORY).label}
+                                    href={linksGroups.get(CONSTANTS.IMDB_LINK_CATEGORY).href}
+                                    target={'_blank'}
+                                >
+                                    <span>{linksGroups.get(CONSTANTS.IMDB_LINK_CATEGORY).label}</span>
+                                    <Icon className={styles['imdb-icon']} name={'imdb'} />
+                                </Button>
+                            }
+                        </div>
+                        {typeof description === 'string' && description.length > 0 &&
+                            <div className={styles['hero-description']}>{description}</div>
+                        }
+                        <div className={styles['hero-actions']}>
+                            {typeof firstStreamHref === 'string' &&
+                                <Button className={styles['play-button']} href={firstStreamHref}>
+                                    <Icon className={styles['play-icon']} name={'play'} />
+                                    <span>Play</span>
+                                </Button>
+                            }
+                            {typeof meta.inLibrary === 'boolean' &&
+                                <ActionButton
+                                    className={styles['action-button']}
+                                    icon={meta.inLibrary ? 'remove-from-library' : 'add-to-library'}
+                                    label={meta.inLibrary ? t('REMOVE_FROM_LIB') : t('ADD_TO_LIB')}
+                                    onClick={meta.inLibrary ? removeFromLibrary : addToLibrary}
+                                />
+                            }
+                            {typeof trailerHref === 'string' &&
+                                <ActionButton
+                                    className={styles['action-button']}
+                                    icon={'trailer'}
+                                    label={t('TRAILER')}
+                                    href={trailerHref}
+                                />
+                            }
+                            {metaDetails.ratingInfo !== null &&
+                                <Ratings
+                                    ratingInfo={metaDetails.ratingInfo}
+                                    className={styles['ratings']}
+                                />
+                            }
+                            {linksGroups.has(CONSTANTS.SHARE_LINK_CATEGORY) &&
+                                <ActionButton
+                                    className={styles['action-button']}
+                                    icon={'share'}
+                                    label={t('CTX_SHARE')}
+                                    tooltip={true}
+                                    onClick={openShareModal}
+                                />
+                            }
+                        </div>
                     </div>
-                    :
-                    null
-            }
-            <HorizontalNavBar
-                className={styles['nav-bar']}
-                backButton={true}
-                fullscreenButton={true}
-                navMenu={true}
-            />
-            <div className={styles['metadetails-content']}>
-                {
-                    tabs.length > 0 ?
-                        <VerticalNavBar
-                            className={styles['vertical-nav-bar']}
-                            tabs={tabs}
-                            selected={metaExtension !== null ? metaExtension.url : null}
-                        />
-                        :
-                        null
-                }
-                {
-                    metaPath === null ?
-                        <DelayedRenderer delay={500}>
-                            <div className={styles['meta-message-container']}>
-                                <Image className={styles['image']} src={require('/assets/images/empty.png')} alt={' '} />
-                                <div className={styles['message-label']}>{t('ERR_NO_META_SELECTED')}</div>
-                            </div>
-                        </DelayedRenderer>
-                        :
-                        metaDetails.metaItem === null ?
-                            <div className={styles['meta-message-container']}>
-                                <Image className={styles['image']} src={require('/assets/images/empty.png')} alt={' '} />
-                                <div className={styles['message-label']}>{t('ERR_NO_ADDONS_FOR_META')}</div>
-                            </div>
-                            :
-                            metaDetails.metaItem.content.type === 'Err' ?
-                                <div className={styles['meta-message-container']}>
-                                    <Image className={styles['image']} src={require('/assets/images/empty.png')} alt={' '} />
-                                    <div className={styles['message-label']}>{t('ERR_NO_META_FOUND')}</div>
-                                </div>
-                                :
-                                metaDetails.metaItem.content.type === 'Loading' ?
-                                    <MetaPreview.Placeholder className={styles['meta-preview']} />
-                                    :
-                                    <React.Fragment>
-                                        <MetaPreview
-                                            className={classnames(styles['meta-preview'], 'animation-fade-in')}
-                                            name={metaDetails.metaItem.content.content.name}
-                                            logo={metaDetails.metaItem.content.content.logo}
-                                            runtime={metaDetails.metaItem.content.content.runtime}
-                                            releaseInfo={metaDetails.metaItem.content.content.releaseInfo}
-                                            released={metaDetails.metaItem.content.content.released}
-                                            description={
-                                                video !== null && typeof video.overview === 'string' && video.overview.length > 0 ?
-                                                    video.overview
-                                                    :
-                                                    metaDetails.metaItem.content.content.description
-                                            }
-                                            links={metaDetails.metaItem.content.content.links}
-                                            trailerStreams={metaDetails.metaItem.content.content.trailerStreams}
-                                            inLibrary={metaDetails.metaItem.content.content.inLibrary}
-                                            toggleInLibrary={metaDetails.metaItem.content.content.inLibrary ? removeFromLibrary : addToLibrary}
-                                            metaId={metaDetails.metaItem.content.content.id}
-                                            ratingInfo={metaDetails.ratingInfo}
-                                        />
-                                    </React.Fragment>
-                }
-                <div className={styles['spacing']} />
-                {
-                    streamPath !== null ?
+                </div>
+                <TabBar
+                    className={styles['tab-bar']}
+                    tabs={tabs}
+                    selected={activeTab}
+                    onSelect={setActiveTab}
+                />
+                <div className={styles['tab-content']}>
+                    {activeTab === 'streams' && streamPath !== null &&
                         <StreamsList
                             className={styles['streams-list']}
                             streams={metaDetails.streams}
@@ -187,37 +271,48 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             type={streamPath.type}
                             onEpisodeSearch={handleEpisodeSearch}
                         />
-                        :
-                        metaPath !== null ?
-                            <VideosList
-                                className={styles['videos-list']}
-                                metaItem={metaDetails.metaItem}
-                                libraryItem={metaDetails.libraryItem}
-                                season={season}
-                                selectedVideoId={metaDetails.libraryItem?.state?.video_id}
-                                seasonOnSelect={seasonOnSelect}
-                                toggleNotifications={toggleNotifications}
-                            />
-                            :
-                            null
-                }
-            </div>
-            {
-                metaExtension !== null ?
-                    <ModalDialog
-                        className={styles['meta-extension-modal-container']}
-                        title={metaExtension.name}
-                        onCloseRequest={clearMetaExtension}>
-                        <iframe
-                            className={styles['meta-extension-modal-iframe']}
-                            sandbox={'allow-forms allow-scripts allow-same-origin'}
-                            src={metaExtension.url}
+                    }
+                    {activeTab === 'episodes' && metaPath !== null &&
+                        <VideosList
+                            className={styles['videos-list']}
+                            metaItem={metaDetails.metaItem}
+                            libraryItem={metaDetails.libraryItem}
+                            season={season}
+                            selectedVideoId={metaDetails.libraryItem?.state?.video_id}
+                            seasonOnSelect={seasonOnSelect}
+                            toggleNotifications={toggleNotifications}
                         />
-                    </ModalDialog>
-                    :
-                    null
+                    }
+                    {activeTab === 'details' &&
+                        <DetailsPanel
+                            className={styles['details-panel']}
+                            description={meta.description}
+                            linksGroups={linksGroups}
+                        />
+                    }
+                </div>
+            </div>
+            {shareModalOpen &&
+                <ModalDialog title={t('CTX_SHARE')} onCloseRequest={closeShareModal}>
+                    <SharePrompt
+                        className={styles['share-prompt']}
+                        url={linksGroups.get(CONSTANTS.SHARE_LINK_CATEGORY).href}
+                    />
+                </ModalDialog>
             }
-        </div>
+            {metaExtension !== null &&
+                <ModalDialog
+                    className={styles['meta-extension-modal-container']}
+                    title={metaExtension.name}
+                    onCloseRequest={clearMetaExtension}>
+                    <iframe
+                        className={styles['meta-extension-modal-iframe']}
+                        sandbox={'allow-forms allow-scripts allow-same-origin'}
+                        src={metaExtension.url}
+                    />
+                </ModalDialog>
+            }
+        </MainNavBars>
     );
 };
 
