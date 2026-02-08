@@ -4,20 +4,39 @@
 @import (reference) '~stremio/common/screen-sizes.less';
 
 .nav-tab-button-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: transparent;
     border-radius: 0.75rem;
+    transition: background-color 0.15s ease-out;
 
     @media (pointer: fine) {
         &:hover {
-            background-color: var(--overlay-color);
+            background-color: rgba(255, 255, 255, 0.08);
+
+            .icon {
+                opacity: 0.7;
+            }
         }
     }
 
     &:global(.selected) {
+        background-color: var(--overlay-color);
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 25%;
+            bottom: 25%;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background-color: var(--primary-accent-color);
+        }
+
         .icon {
             opacity: 1;
             color: var(--primary-accent-color);
@@ -64,6 +83,16 @@
         }
 
         &:global(.selected) {
+            &::before {
+                left: 25%;
+                right: 25%;
+                top: 0;
+                bottom: auto;
+                width: auto;
+                height: 3px;
+                border-radius: 0 0 3px 3px;
+            }
+
             .label {
                 opacity: 1;
                 color: var(--primary-accent-color);
