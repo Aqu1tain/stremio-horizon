@@ -18,12 +18,13 @@ type Props = {
     className: string,
     route?: string,
     query?: string,
+    overlay?: boolean,
     children?: React.ReactNode,
 };
 
-const MainNavBars = memo(({ className, route, query, children }: Props) => {
+const MainNavBars = memo(({ className, route, query, overlay, children }: Props) => {
     return (
-        <div className={classnames(className, styles['main-nav-bars-container'])}>
+        <div className={classnames(className, styles['main-nav-bars-container'], { [styles['overlay']]: overlay })}>
             <HorizontalNavBar
                 className={styles['horizontal-nav-bar']}
                 route={route}

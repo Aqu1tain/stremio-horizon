@@ -53,7 +53,7 @@ const Board = () => {
     return (
         <div className={styles['board-container']}>
             <EventModal />
-            <MainNavBars className={styles['board-content-container']} route={'board'}>
+            <MainNavBars className={styles['board-content-container']} route={'board'} overlay>
                 <div ref={scrollContainerRef} className={styles['board-content']} onScroll={onScroll}>
                     {
                         heroItems !== null ?
