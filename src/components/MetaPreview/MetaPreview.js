@@ -3,7 +3,6 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
-const UrlUtils = require('url');
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('@stremio/stremio-icons/react');
 const { default: Button } = require('stremio/components/Button');
@@ -11,68 +10,18 @@ const { default: Image } = require('stremio/components/Image');
 const ModalDialog = require('stremio/components/ModalDialog');
 const SharePrompt = require('stremio/components/SharePrompt');
 const CONSTANTS = require('stremio/common/CONSTANTS');
-const routesRegexp = require('stremio/common/routesRegexp');
 const useBinaryState = require('stremio/common/useBinaryState');
+const useLinksGroups = require('./useLinksGroups');
 const ActionButton = require('./ActionButton');
 const MetaLinks = require('./MetaLinks');
 const MetaPreviewPlaceholder = require('./MetaPreviewPlaceholder');
 const styles = require('./styles');
 const { Ratings } = require('./Ratings');
 
-const ALLOWED_LINK_REDIRECTS = [
-    routesRegexp.search.regexp,
-    routesRegexp.discover.regexp,
-    routesRegexp.metadetails.regexp
-];
-
 const MetaPreview = React.forwardRef(({ className, compact, name, logo, background, runtime, releaseInfo, released, description, deepLinks, links, trailerStreams, inLibrary, toggleInLibrary, ratingInfo }, ref) => {
     const { t } = useTranslation();
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
-    const linksGroups = React.useMemo(() => {
-        return Array.isArray(links) ?
-            links
-                .filter((link) => link && typeof link.category === 'string' && typeof link.url === 'string')
-                .reduce((linksGroups, { category, name, url }) => {
-                    const { protocol, path, pathname, hostname } = UrlUtils.parse(url);
-                    if (category === CONSTANTS.IMDB_LINK_CATEGORY) {
-                        if (hostname === 'imdb.com') {
-                            linksGroups.set(category, {
-                                label: name,
-                                href: `https://www.stremio.com/warning#${encodeURIComponent(url)}`
-                            });
-                        }
-                    } else if (category === CONSTANTS.SHARE_LINK_CATEGORY) {
-                        linksGroups.set(category, {
-                            label: name,
-                            href: url
-                        });
-                    } else {
-                        if (protocol === 'stremio:') {
-                            if (pathname !== null && ALLOWED_LINK_REDIRECTS.some((regexp) => pathname.match(regexp))) {
-                                if (!linksGroups.has(category)) {
-                                    linksGroups.set(category, []);
-                                }
-                                linksGroups.get(category).push({
-                                    label: name,
-                                    href: `#${path}`
-                                });
-                            }
-                        } else if (typeof hostname === 'string' && hostname.length > 0) {
-                            if (!linksGroups.has(category)) {
-                                linksGroups.set(category, []);
-                            }
-                            linksGroups.get(category).push({
-                                label: name,
-                                href: `https://www.stremio.com/warning#${encodeURIComponent(url)}`
-                            });
-                        }
-                    }
-
-                    return linksGroups;
-                }, new Map())
-            :
-            new Map();
-    }, [links]);
+    const linksGroups = useLinksGroups(links);
     const showHref = React.useMemo(() => {
         return deepLinks ?
             typeof deepLinks.player === 'string' ?
