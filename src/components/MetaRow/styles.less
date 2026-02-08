@@ -70,23 +70,27 @@
         display: flex;
         flex-direction: row;
         align-items: stretch;
-        gap: 0.25rem;
         scroll-snap-type: x proximity;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         .meta-item {
             flex: none;
             scroll-snap-align: start;
 
             &.poster-shape-poster {
-                width: 11rem;
+                width: 16rem;
             }
 
             &.poster-shape-square {
-                width: 11rem;
+                width: 16rem;
             }
 
             &.poster-shape-landscape {
-                width: 19.5rem;
+                width: 27rem;
             }
         }
     }
@@ -108,11 +112,11 @@
             .meta-item {
                 &.poster-shape-poster,
                 &.poster-shape-square {
-                    width: 9rem;
+                    width: 11rem;
                 }
 
                 &.poster-shape-landscape {
-                    width: 16rem;
+                    width: 19rem;
                 }
             }
         }
