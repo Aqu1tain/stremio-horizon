@@ -9,17 +9,51 @@ const HeroBannerItem = require('./HeroBannerItem');
 const HeroBannerPlaceholder = require('./HeroBannerPlaceholder');
 const styles = require('./styles');
 
+const AUTO_ROTATE_INTERVAL = 7000;
+const PAUSE_AFTER_INTERACTION = 12000;
+
 const HeroBanner = ({ className, items }) => {
     const [activeIndex, setActiveIndex] = React.useState(0);
     const count = items.length;
+    const intervalRef = React.useRef(null);
+    const pauseTimeoutRef = React.useRef(null);
+
+    const startAutoRotation = React.useCallback(() => {
+        if (count <= 1) return;
+        clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % count);
+        }, AUTO_ROTATE_INTERVAL);
+    }, [count]);
+
+    const pauseAndRestart = React.useCallback(() => {
+        clearInterval(intervalRef.current);
+        clearTimeout(pauseTimeoutRef.current);
+        pauseTimeoutRef.current = setTimeout(startAutoRotation, PAUSE_AFTER_INTERACTION);
+    }, [startAutoRotation]);
+
+    React.useEffect(() => {
+        startAutoRotation();
+        return () => {
+            clearInterval(intervalRef.current);
+            clearTimeout(pauseTimeoutRef.current);
+        };
+    }, [startAutoRotation]);
 
     const goToPrev = React.useCallback(() => {
         setActiveIndex((prev) => (prev - 1 + count) % count);
-    }, [count]);
+        pauseAndRestart();
+    }, [count, pauseAndRestart]);
 
     const goToNext = React.useCallback(() => {
         setActiveIndex((prev) => (prev + 1) % count);
-    }, [count]);
+        pauseAndRestart();
+    }, [count, pauseAndRestart]);
+
+    const goToIndex = React.useCallback((index) => {
+        setActiveIndex(index);
+        pauseAndRestart();
+    }, [pauseAndRestart]);
 
     const activeItem = items[activeIndex];
     if (!activeItem) return null;
@@ -52,7 +86,7 @@ const HeroBanner = ({ className, items }) => {
                                 <button
                                     key={index}
                                     className={classnames(styles['dot'], { [styles['active']]: index === activeIndex })}
-                                    onClick={() => setActiveIndex(index)}
+                                    onClick={() => goToIndex(index)}
                                 />
                             ))}
                         </div>
