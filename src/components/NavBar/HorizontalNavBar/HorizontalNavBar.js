@@ -12,7 +12,7 @@ const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
 
-const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, tabs, selected, ...props }) => {
+const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, tabs, selected, navbarHidden, navbarScrolled, ...props }) => {
     const backButtonOnClick = React.useCallback(() => {
         window.history.back();
     }, []);
@@ -25,7 +25,10 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
         </Button>
     ), []);
     return (
-        <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'])}>
+        <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'], {
+            [styles['navbar-hidden']]: navbarHidden,
+            [styles['navbar-scrolled']]: navbarScrolled,
+        })}>
             {
                 Array.isArray(tabs) && tabs.length > 0 ?
                     <div className={styles['nav-tabs-container']}>
@@ -111,6 +114,8 @@ HorizontalNavBar.propTypes = {
         href: PropTypes.string,
     })),
     selected: PropTypes.string,
+    navbarHidden: PropTypes.bool,
+    navbarScrolled: PropTypes.bool,
 };
 
 module.exports = HorizontalNavBar;

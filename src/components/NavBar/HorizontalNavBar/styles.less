@@ -14,6 +14,17 @@
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
     overflow: visible;
     box-sizing: content-box;
+    transition: transform 0.3s ease, background 0.3s ease;
+
+    &.navbar-hidden {
+        transform: translateY(-100%);
+        pointer-events: none;
+    }
+
+    &.navbar-scrolled {
+        background: rgba(12, 11, 17, 0.85);
+        backdrop-filter: blur(10px);
+    }
 
     .nav-tabs-container {
         display: flex;
