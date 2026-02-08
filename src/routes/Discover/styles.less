@@ -35,7 +35,7 @@
             contain: strict;
 
             .meta-items-container {
-                padding: 0 1.5rem;
+                padding: 0 var(--content-padding);
                 z-index: 1;
             }
 
@@ -44,7 +44,7 @@
                 align-self: stretch;
                 display: flex;
                 flex-direction: row;
-                padding: 1.5rem;
+                padding: var(--content-padding);
                 overflow: visible;
                 z-index: 2;
 
@@ -103,7 +103,7 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 0 1.5rem 1.5rem 1.5rem;
+                padding: 0 var(--content-padding) var(--content-padding) var(--content-padding);
 
                 .warning-label {
                     flex: none;
@@ -145,7 +145,7 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 0 1.5rem;
+                padding: 0 var(--content-padding);
                 overflow-y: auto;
 
                 &:first-child {
@@ -178,7 +178,7 @@
                 grid-auto-rows: max-content;
                 align-items: center;
                 grid-gap: 0.5rem;
-                margin-right: 1.5rem;
+                margin-right: var(--content-padding);
                 overflow-y: auto;
 
                 .meta-item-placeholder {

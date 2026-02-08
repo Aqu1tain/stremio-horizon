@@ -6,8 +6,8 @@
 .hero-banner-container {
     position: relative;
     z-index: 0;
-    width: calc(100% + 3rem);
-    margin: 0 -1.5rem;
+    width: calc(100% + 2 * var(--content-padding));
+    margin: 0 calc(-1 * var(--content-padding));
     aspect-ratio: 16 / 7;
     max-height: 70vh;
     min-height: 20rem;
@@ -231,8 +231,8 @@
 }
 
 .hero-banner-placeholder {
-    width: calc(100% + 3rem);
-    margin: 0 -1.5rem;
+    width: calc(100% + 2 * var(--content-padding));
+    margin: 0 calc(-1 * var(--content-padding));
     aspect-ratio: 16 / 7;
     max-height: 70vh;
     min-height: 20rem;
