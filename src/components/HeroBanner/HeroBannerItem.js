@@ -41,10 +41,12 @@ const getGenreLinks = (links) => {
         .filter(Boolean);
 };
 
-const HeroBannerItem = ({ className, id, name, description, releaseInfo, runtime, links, deepLinks, trailerStreams }) => {
+const HeroBannerItem = ({ className, id, name, description, releaseInfo, runtime, links, deepLinks, trailerStreams, background, logo, poster }) => {
     const { t } = useTranslation();
-    const backgroundSrc = `https://images.metahub.space/background/medium/${id}/img`;
-    const logoSrc = `https://images.metahub.space/logo/medium/${id}/img`;
+    const metahubBackground = `https://images.metahub.space/background/medium/${id}/img`;
+    const metahubLogo = `https://images.metahub.space/logo/medium/${id}/img`;
+    const backgroundSrc = background || poster || metahubBackground;
+    const logoSrc = logo || metahubLogo;
 
     const genreLinks = React.useMemo(() => getGenreLinks(links), [links]);
 
@@ -165,6 +167,9 @@ HeroBannerItem.propTypes = {
         player: PropTypes.string
     }),
     trailerStreams: PropTypes.array,
+    background: PropTypes.string,
+    logo: PropTypes.string,
+    poster: PropTypes.string,
 };
 
 module.exports = HeroBannerItem;

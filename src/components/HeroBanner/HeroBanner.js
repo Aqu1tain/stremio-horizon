@@ -37,6 +37,9 @@ const HeroBanner = ({ className, items }) => {
                 links={activeItem.links}
                 deepLinks={activeItem.deepLinks}
                 trailerStreams={activeItem.trailerStreams}
+                background={activeItem.background}
+                logo={activeItem.logo}
+                poster={activeItem.poster}
             />
             {
                 count > 1 ?
