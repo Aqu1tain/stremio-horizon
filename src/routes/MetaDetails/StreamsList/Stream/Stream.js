@@ -9,6 +9,7 @@ const { useProfile, usePlatform, useToast, useBinaryState } = require('stremio/c
 const { Button, Image, Popup } = require('stremio/components');
 const { useServices } = require('stremio/services');
 const { useRouteFocused } = require('stremio-router');
+const parseStreamBadges = require('stremio/common/parseStreamBadges');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 
@@ -164,6 +165,8 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
         }
     }, [streamLink]);
 
+    const badges = React.useMemo(() => parseStreamBadges(name, description), [name, description]);
+
     const renderThumbnailFallback = React.useCallback(() => (
         <Icon className={styles['placeholder-icon']} name={'ic_broken_link'} />
     ), []);
@@ -197,6 +200,16 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
                             null
                     }
                 </div>
+                {
+                    badges.length > 0 ?
+                        <div className={styles['quality-badges']}>
+                            {badges.map(({ label, color }) => (
+                                <span key={label} className={styles['quality-badge']} style={{ backgroundColor: color }}>{label}</span>
+                            ))}
+                        </div>
+                        :
+                        null
+                }
                 <div className={styles['description-container']} title={description}>{description}</div>
                 <Icon className={styles['icon']} name={'play'} />
                 {children}
