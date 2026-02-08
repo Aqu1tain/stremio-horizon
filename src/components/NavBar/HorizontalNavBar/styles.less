@@ -38,10 +38,29 @@
             text-decoration: none;
             border-radius: 0.5rem;
             position: relative;
+            transition: opacity 0.15s ease;
+
+            @media (pointer: fine) {
+                &:hover {
+                    opacity: 0.85;
+                    background-color: rgba(255, 255, 255, 0.08);
+                }
+            }
         }
 
         .nav-tab-active {
             opacity: 1;
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: -0.25rem;
+                left: 0.5rem;
+                right: 0.5rem;
+                height: 2px;
+                background-color: var(--primary-accent-color);
+                border-radius: 1px;
+            }
         }
     }
 
@@ -107,6 +126,19 @@
         @media (pointer: fine) {
             &:hover {
                 .active();
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: @small) {
+    .horizontal-nav-bar-container {
+        .nav-tabs-container {
+            gap: 0;
+
+            .nav-tab {
+                padding: 0.4rem 0.5rem;
+                font-size: 0.85rem;
             }
         }
     }
