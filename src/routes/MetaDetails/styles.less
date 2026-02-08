@@ -88,11 +88,10 @@
         }
 
         .meta-preview {
-            flex: 0 0 auto;
-            max-width: 28rem;
+            flex: 1 1 auto;
             align-self: stretch;
-            padding: 0 3rem 2rem 3rem;
-            padding-left: max(1rem, calc(3rem - var(--safe-area-inset-left)));
+            padding: 0 4rem 2rem 4rem;
+            padding-left: max(1rem, calc(4rem - var(--safe-area-inset-left)));
         }
 
         .spacing {
@@ -100,7 +99,7 @@
         }
 
         .videos-list, .streams-list {
-            flex: 1 1 30rem;
+            flex: 0 0 26rem;
             align-self: stretch;
             border-radius: var(--border-radius) 0 0 var(--border-radius);
             background-color: rgba(0, 0, 0, 0.4);
@@ -129,12 +128,15 @@
     .metadetails-container {
         .metadetails-content {
             .meta-preview {
-                max-width: 18rem;
                 padding: 0 1.5rem 1rem;
             }
 
             .spacing {
                 flex: 0 0 1rem;
+            }
+
+            .videos-list, .streams-list {
+                flex: 0 0 22rem;
             }
         }
     }
