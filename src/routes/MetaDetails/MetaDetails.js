@@ -326,7 +326,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                                 metaItem={metaDetails.metaItem}
                                 libraryItem={metaDetails.libraryItem}
                                 season={season}
-                                selectedVideoId={metaDetails.libraryItem?.state?.video_id}
+                                selectedVideoId={null}
                                 seasonOnSelect={seasonOnSelect}
                                 toggleNotifications={toggleNotifications}
                             />
