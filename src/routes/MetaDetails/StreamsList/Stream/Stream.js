@@ -46,6 +46,11 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
             toggleMenu();
         }
     }, [toggleMenu]);
+    const onMoreClick = React.useCallback((event) => {
+        event.nativeEvent.togglePopupPrevented = true;
+        event.preventDefault();
+        toggleMenu();
+    }, [toggleMenu]);
     const popupMenuOnPointerDown = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
     }, []);
@@ -217,11 +222,14 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
                         null
                 }
                 <div className={styles['description-container']} title={description}>{description}</div>
+                <div className={styles['more-button']} onClick={onMoreClick}>
+                    <Icon className={styles['more-icon']} name={'more-vertical'} />
+                </div>
                 <Icon className={styles['icon']} name={'play'} />
                 {children}
             </Button>
         );
-    }, [thumbnail, progress, addonName, name, description, href, target, download, onClick, expanded, toggleExpanded]);
+    }, [thumbnail, progress, addonName, name, description, href, target, download, onClick, expanded, toggleExpanded, onMoreClick]);
 
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (

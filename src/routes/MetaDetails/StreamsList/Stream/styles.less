@@ -120,6 +120,33 @@
         }
     }
 
+    .more-button {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: var(--overlay-color);
+        }
+
+        .more-icon {
+            width: 1.2rem;
+            height: 1.2rem;
+            color: var(--primary-foreground-color);
+            opacity: 0.5;
+        }
+    }
+
+    &:hover .more-button .more-icon {
+        opacity: 0.8;
+    }
+
     .icon {
         flex: none;
         width: 2.5rem;
@@ -134,48 +161,53 @@
 
     .menu-icon {
         flex: none;
-        width: 1.7rem;
-        height: 1.7rem;
+        width: 1.4rem;
+        height: 1.4rem;
         margin-right: 1rem;
-        color: var(--color-placeholder);
+        color: var(--primary-foreground-color);
+        opacity: 0.6;
     }
 
-	.context-menu-container {
-		max-width: calc(90% - 1.5rem);
-		z-index: 2;
-	
-		.context-menu-content {
-			--spatial-navigation-contain: contain;
+    .context-menu-container {
+        max-width: 22rem;
+        min-width: 16rem;
+        z-index: 2;
+
+        .context-menu-content {
+            --spatial-navigation-contain: contain;
+            padding: 0.25rem 0;
 
             .context-menu-title {
-                font-size: 0.9rem;
-                padding: 1rem 1.5rem;
-                font-weight: 100;
-                border-bottom: 1px solid var(--color-placeholder);
-                color: var(--primary-foreground-color);
+                font-size: 0.8rem;
+                line-height: 1.4;
+                padding: 0.75rem 1rem;
+                font-weight: 400;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                color: @color-surface-light5-90;
                 white-space: break-spaces;
+                max-height: 4rem;
+                overflow: hidden;
             }
-	
-			.context-menu-option-container {
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-				padding: 1rem 1.5rem;
-	
-				&:hover,
-				&:focus {
-					background-color: var(--overlay-color);
-				}
-	
-				.context-menu-option-label {
-					font-size: 1rem;
-					font-weight: 300;
-					color: var(--primary-foreground-color);
-                    text-transform: capitalize;
-				}
-			}
-		}
-	}
+
+            .context-menu-option-container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 0.75rem 1rem;
+
+                &:hover,
+                &:focus {
+                    background-color: var(--overlay-color);
+                }
+
+                .context-menu-option-label {
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    color: var(--primary-foreground-color);
+                }
+            }
+        }
+    }
 }
 
 @media only screen and (max-width: @small) {
