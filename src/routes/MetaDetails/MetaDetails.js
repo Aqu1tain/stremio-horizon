@@ -311,8 +311,16 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             onEpisodeSearch={handleEpisodeSearch}
                         />
                     }
-                    {activeTab === 'episodes' && metaPath !== null &&
-                        <React.Fragment>
+                    {activeTab === 'episodes' && metaPath !== null && (
+                        streamPath !== null ?
+                            <StreamsList
+                                className={styles['streams-list']}
+                                streams={metaDetails.streams}
+                                video={video}
+                                type={streamPath.type}
+                                onEpisodeSearch={handleEpisodeSearch}
+                            />
+                            :
                             <VideosList
                                 className={styles['videos-list']}
                                 metaItem={metaDetails.metaItem}
@@ -322,17 +330,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                                 seasonOnSelect={seasonOnSelect}
                                 toggleNotifications={toggleNotifications}
                             />
-                            {streamPath !== null &&
-                                <StreamsList
-                                    className={styles['streams-list']}
-                                    streams={metaDetails.streams}
-                                    video={video}
-                                    type={streamPath.type}
-                                    onEpisodeSearch={handleEpisodeSearch}
-                                />
-                            }
-                        </React.Fragment>
-                    }
+                    )}
                     {activeTab === 'details' &&
                         <DetailsPanel
                             className={styles['details-panel']}
