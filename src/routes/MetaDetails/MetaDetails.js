@@ -62,6 +62,39 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         return ready[0]?.deepLinks?.player ?? null;
     }, [metaDetails.streams]);
 
+    const seriesPlayAction = React.useMemo(() => {
+        if (!hasVideos || !isReady) return null;
+
+        const sorted = [...meta.videos].sort((a, b) => {
+            if ((a.season ?? 0) !== (b.season ?? 0)) return (a.season ?? 0) - (b.season ?? 0);
+            return (a.episode ?? 0) - (b.episode ?? 0);
+        });
+
+        const libraryVideoId = metaDetails.libraryItem?.state?.video_id;
+        if (libraryVideoId) {
+            const resumeVideo = sorted.find((v) => v.id === libraryVideoId);
+            if (resumeVideo && !resumeVideo.watched) {
+                const href = resumeVideo.deepLinks?.player ?? resumeVideo.deepLinks?.metaDetailsStreams ?? null;
+                const label = resumeVideo.season != null
+                    ? `Resume S${resumeVideo.season} E${resumeVideo.episode}`
+                    : `Resume E${resumeVideo.episode}`;
+                return { label, href };
+            }
+        }
+
+        const nonSpecials = sorted.filter((v) => v.season !== 0);
+        const candidates = nonSpecials.length > 0 ? nonSpecials : sorted;
+        const firstUnwatched = candidates.find((v) => !v.watched && !v.upcoming);
+        const target = firstUnwatched ?? candidates[0];
+        if (!target) return null;
+
+        const href = target.deepLinks?.player ?? target.deepLinks?.metaDetailsStreams ?? null;
+        const label = target.season != null
+            ? `Play S${target.season} E${target.episode}`
+            : `Play E${target.episode}`;
+        return { label, href };
+    }, [hasVideos, isReady, meta, metaDetails.libraryItem]);
+
     const trailerHref = React.useMemo(() => {
         if (!isReady || !Array.isArray(meta.trailerStreams) || meta.trailerStreams.length === 0) return null;
         return meta.trailerStreams[0].deepLinks.player;
@@ -69,15 +102,15 @@ const MetaDetails = ({ urlParams, queryParams }) => {
 
     const tabs = React.useMemo(() => {
         const result = [];
-        if (streamPath) result.push({ id: 'streams', label: 'Streams' });
+        if (streamPath && !hasVideos) result.push({ id: 'streams', label: 'Streams' });
         if (hasVideos) result.push({ id: 'episodes', label: 'Episodes' });
         result.push({ id: 'details', label: 'Details' });
         return result;
     }, [metaPath, streamPath, hasVideos]);
 
     React.useEffect(() => {
-        if (streamPath !== null) setActiveTab('streams');
-        else if (metaPath !== null && hasVideos) setActiveTab('episodes');
+        if (streamPath !== null && !hasVideos) setActiveTab('streams');
+        else if (hasVideos) setActiveTab('episodes');
         else setActiveTab('details');
     }, [streamPath, metaPath, hasVideos]);
 
@@ -216,7 +249,13 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             <div className={styles['hero-description']}>{description}</div>
                         }
                         <div className={styles['hero-actions']}>
-                            {typeof firstStreamHref === 'string' &&
+                            {hasVideos && seriesPlayAction !== null && typeof seriesPlayAction.href === 'string' &&
+                                <Button className={styles['play-button']} href={seriesPlayAction.href}>
+                                    <Icon className={styles['play-icon']} name={'play'} />
+                                    <span>{seriesPlayAction.label}</span>
+                                </Button>
+                            }
+                            {!hasVideos && typeof firstStreamHref === 'string' &&
                                 <Button className={styles['play-button']} href={firstStreamHref}>
                                     <Icon className={styles['play-icon']} name={'play'} />
                                     <span>Play</span>
@@ -273,15 +312,26 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                         />
                     }
                     {activeTab === 'episodes' && metaPath !== null &&
-                        <VideosList
-                            className={styles['videos-list']}
-                            metaItem={metaDetails.metaItem}
-                            libraryItem={metaDetails.libraryItem}
-                            season={season}
-                            selectedVideoId={metaDetails.libraryItem?.state?.video_id}
-                            seasonOnSelect={seasonOnSelect}
-                            toggleNotifications={toggleNotifications}
-                        />
+                        <React.Fragment>
+                            <VideosList
+                                className={styles['videos-list']}
+                                metaItem={metaDetails.metaItem}
+                                libraryItem={metaDetails.libraryItem}
+                                season={season}
+                                selectedVideoId={metaDetails.libraryItem?.state?.video_id}
+                                seasonOnSelect={seasonOnSelect}
+                                toggleNotifications={toggleNotifications}
+                            />
+                            {streamPath !== null &&
+                                <StreamsList
+                                    className={styles['streams-list']}
+                                    streams={metaDetails.streams}
+                                    video={video}
+                                    type={streamPath.type}
+                                    onEpisodeSearch={handleEpisodeSearch}
+                                />
+                            }
+                        </React.Fragment>
                     }
                     {activeTab === 'details' &&
                         <DetailsPanel
