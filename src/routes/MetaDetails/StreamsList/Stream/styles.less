@@ -161,32 +161,31 @@
 
     .menu-icon {
         flex: none;
-        width: 1.4rem;
-        height: 1.4rem;
-        margin-right: 1rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.75rem;
         color: var(--primary-foreground-color);
         opacity: 0.6;
     }
 
     .context-menu-container {
-        max-width: 22rem;
-        min-width: 16rem;
+        min-width: 12rem;
+        max-width: 16rem;
         z-index: 2;
 
         .context-menu-content {
             --spatial-navigation-contain: contain;
-            padding: 0.25rem 0;
 
             .context-menu-title {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 line-height: 1.4;
-                padding: 0.75rem 1rem;
+                padding: 0.6rem 1rem;
                 font-weight: 400;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 color: @color-surface-light5-90;
-                white-space: break-spaces;
-                max-height: 4rem;
+                white-space: nowrap;
                 overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .context-menu-option-container {
@@ -197,13 +196,15 @@
 
                 &:hover,
                 &:focus {
+                    outline: none;
                     background-color: var(--overlay-color);
                 }
 
                 .context-menu-option-label {
-                    font-size: 0.9rem;
-                    font-weight: 400;
+                    font-size: 0.85rem;
+                    font-weight: 500;
                     color: var(--primary-foreground-color);
+                    opacity: 0.8;
                 }
             }
         }
