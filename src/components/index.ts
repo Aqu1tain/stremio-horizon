@@ -9,6 +9,7 @@ import ContinueWatchingItem from './ContinueWatchingItem';
 import DelayedRenderer from './DelayedRenderer';
 import EventModal from './EventModal';
 import HeroBanner from './HeroBanner';
+import Icon from './Icon';
 import HorizontalScroll from './HorizontalScroll';
 import Image from './Image';
 import LibItem from './LibItem';
@@ -45,6 +46,7 @@ export {
     EventModal,
     HeroBanner,
     HorizontalScroll,
+    Icon,
     Image,
     LibItem,
     MainNavBars,
