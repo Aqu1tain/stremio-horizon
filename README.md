@@ -42,6 +42,23 @@ Based on [Stremio Web 5](https://github.com/Stremio/stremio-web), but going in a
 - Subtler background gradients
 - Play button on hover for catalog items
 
+## Screenshots
+
+### Board
+![Board](/assets/screenshots/board.png)
+
+### Discover
+![Discover](/assets/screenshots/discover.png)
+
+### MetaDetails — Movie
+![MetaDetails Movie](/assets/screenshots/metadetails.png)
+
+### MetaDetails — Series
+![MetaDetails Series](/assets/screenshots/metadetails-series.png)
+
+### Search
+![Search](/assets/screenshots/search.png)
+
 ## Build
 
 ### Prerequisites
