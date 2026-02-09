@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import { useShortcuts } from 'stremio/common';
 import { Button, ShortcutsGroup } from 'stremio/components';
 import styles from './styles.less';

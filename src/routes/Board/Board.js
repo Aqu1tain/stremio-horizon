@@ -5,7 +5,7 @@ const classnames = require('classnames');
 const debounce = require('lodash.debounce');
 const useTranslate = require('stremio/common/useTranslate');
 const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChildrenRange, useProfile } = require('stremio/common');
-const { ContinueWatchingItem, EventModal, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
+const { ContinueWatchingItem, EventModal, HeroBanner, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
 const useBoard = require('./useBoard');
 const useContinueWatchingPreview = require('./useContinueWatchingPreview');
 const styles = require('./styles');
@@ -20,7 +20,12 @@ const Board = () => {
     const [board, loadBoardRows] = useBoard();
     const notifications = useNotifications();
     const profile = useProfile();
-    const boardCatalogsOffset = continueWatchingPreview.items.length > 0 ? 1 : 0;
+    const heroItems = React.useMemo(() => {
+        const catalog = board.catalogs.find((c) => c.content?.type === 'Ready');
+        if (!catalog) return null;
+        return catalog.content.content.slice(0, 5);
+    }, [board.catalogs]);
+    const boardCatalogsOffset = (continueWatchingPreview.items.length > 0 ? 1 : 0) + 1;
     const scrollContainerRef = React.useRef();
     const showStreamingServerWarning = React.useMemo(() => {
         return streamingServer.settings !== null && streamingServer.settings.type === 'Err' && (
@@ -48,8 +53,17 @@ const Board = () => {
     return (
         <div className={styles['board-container']}>
             <EventModal />
-            <MainNavBars className={styles['board-content-container']} route={'board'}>
+            <MainNavBars className={styles['board-content-container']} route={'board'} overlay>
                 <div ref={scrollContainerRef} className={styles['board-content']} onScroll={onScroll}>
+                    {
+                        heroItems !== null ?
+                            <HeroBanner
+                                className={classnames(styles['hero-banner'], 'animation-fade-in')}
+                                items={heroItems}
+                            />
+                            :
+                            <HeroBanner.Placeholder className={styles['hero-banner']} />
+                    }
                     {
                         continueWatchingPreview.items.length > 0 ?
                             <MetaRow

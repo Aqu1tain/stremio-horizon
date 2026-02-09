@@ -1,12 +1,14 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
-import React, { memo } from 'react';
+import React, { memo, useRef } from 'react';
 import classnames from 'classnames';
 import { VerticalNavBar, HorizontalNavBar } from 'stremio/components/NavBar';
+import useNavbarScroll from 'stremio/common/useNavbarScroll';
+const SearchBar = require('stremio/components/NavBar/HorizontalNavBar/SearchBar');
 import styles from './MainNavBars.less';
 
 const TABS = [
-    { id: 'board', label: 'Board', icon: 'home', href: '#/' },
+    { id: 'board', label: 'Home', icon: 'home', href: '#/' },
     { id: 'discover', label: 'Discover', icon: 'discover', href: '#/discover' },
     { id: 'library', label: 'Library', icon: 'library', href: '#/library' },
     { id: 'calendar', label: 'Calendar', icon: 'calendar', href: '#/calendar' },
@@ -14,31 +16,46 @@ const TABS = [
     { id: 'settings', label: 'SETTINGS', icon: 'settings', href: '#/settings' },
 ];
 
+const TOP_NAV_TABS = TABS.filter((tab) => tab.id !== 'settings');
+
 type Props = {
     className: string,
     route?: string,
     query?: string,
+    overlay?: boolean,
     children?: React.ReactNode,
 };
 
-const MainNavBars = memo(({ className, route, query, children }: Props) => {
+const MainNavBars = memo(({ className, route, query, overlay, children }: Props) => {
+    const contentRef = useRef<HTMLDivElement>(null);
+    const autoHide = route === 'board' || route === 'metadetails';
+    const { visible, scrolled } = useNavbarScroll(contentRef, autoHide);
+
     return (
-        <div className={classnames(className, styles['main-nav-bars-container'])}>
+        <div className={classnames(className, styles['main-nav-bars-container'], { [styles['overlay']]: overlay })}>
             <HorizontalNavBar
                 className={styles['horizontal-nav-bar']}
                 route={route}
                 query={query}
                 backButton={false}
                 searchBar={true}
-                fullscreenButton={true}
                 navMenu={true}
+                tabs={TOP_NAV_TABS}
+                selected={route}
+                navbarHidden={autoHide && !visible}
+                navbarScrolled={scrolled || route === 'search'}
             />
+            {route === 'search' &&
+                <div className={styles['search-bar-row']}>
+                    <SearchBar className={styles['search-bar-input']} query={query} active={true} />
+                </div>
+            }
             <VerticalNavBar
                 className={styles['vertical-nav-bar']}
                 selected={route}
                 tabs={TABS}
             />
-            <div className={styles['nav-content-container']}>{children}</div>
+            <div ref={contentRef} className={classnames(styles['nav-content-container'], { [styles['search-active']]: route === 'search' })}>{children}</div>
         </div>
     );
 });

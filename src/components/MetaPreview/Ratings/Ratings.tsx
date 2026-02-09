@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import useRating from './useRating';
 import styles from './Ratings.less';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import classNames from 'classnames';
 
 type Props = {

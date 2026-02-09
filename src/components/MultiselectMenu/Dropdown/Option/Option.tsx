@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, forwardRef } from 'react';
 import classNames from 'classnames';
 import { Button } from 'stremio/components';
 import styles from './Option.less';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 
 type Props = {
     option: MultiselectMenuOption;

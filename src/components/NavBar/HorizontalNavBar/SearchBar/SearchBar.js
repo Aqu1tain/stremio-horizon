@@ -5,7 +5,7 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const debounce = require('lodash.debounce');
 const { useTranslation } = require('react-i18next');
-const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Icon } = require('stremio/components/Icon');
 const { useRouteFocused } = require('stremio-router');
 const Button = require('stremio/components/Button').default;
 const TextInput = require('stremio/components/TextInput').default;
@@ -28,12 +28,6 @@ const SearchBar = React.memo(({ className, query, active }) => {
 
     const searchInputRef = React.useRef(null);
     const containerRef = React.useRef(null);
-
-    const searchBarOnClick = React.useCallback(() => {
-        if (!active) {
-            window.location = '#/search';
-        }
-    }, [active]);
 
     const searchHistoryOnClose = React.useCallback((event) => {
         if (historyOpen && containerRef.current && !containerRef.current.contains(event.target)) {
@@ -95,80 +89,57 @@ const SearchBar = React.memo(({ className, query, active }) => {
         };
     }, []);
 
+    if (!active) return <SearchIconButton className={className} />;
+
+    const hasDropdown = historyOpen && (searchHistory?.items?.length || localSearch?.items?.length);
+
     return (
-        <div className={classnames(className, styles['search-bar-container'], { 'active': active })} onClick={searchBarOnClick} ref={containerRef}>
-            {
-                active ?
-                    <TextInput
-                        key={query}
-                        ref={searchInputRef}
-                        className={styles['search-input']}
-                        type={'text'}
-                        placeholder={t('SEARCH_OR_PASTE_LINK')}
-                        defaultValue={query}
-                        tabIndex={-1}
-                        onChange={queryInputOnChange}
-                        onSubmit={queryInputOnSubmit}
-                        onClick={openHistory}
-                    />
-                    :
-                    <div className={styles['search-input']}>
-                        <div className={styles['placeholder-label']}>{ t('SEARCH_OR_PASTE_LINK') }</div>
-                    </div>
-            }
-            {
-                currentQuery.length > 0 ?
-                    <Button className={styles['submit-button-container']} onClick={queryInputClear}>
-                        <Icon className={styles['icon']} name={'close'} />
-                    </Button>
-                    :
-                    <Button className={styles['submit-button-container']}>
-                        <Icon className={styles['icon']} name={'search'} />
-                    </Button>
-            }
-            {
-                historyOpen && (searchHistory?.items?.length || localSearch?.items?.length) ?
-                    <div className={styles['menu-container']}>
-                        {
-                            searchHistory?.items?.length > 0 ?
-                                <div className={styles['items']}>
-                                    <div className={styles['title']}>
-                                        <div className={styles['label']}>{ t('STREMIO_TV_SEARCH_HISTORY_TITLE') }</div>
-                                        <button className={styles['search-history-clear']} onClick={searchHistory.clear}>
-                                            { t('CLEAR_HISTORY') }
-                                        </button>
-                                    </div>
-                                    {
-                                        searchHistory.items.slice(0, 8).map(({ query, deepLinks }, index) => (
-                                            <Button key={index} className={styles['item']} href={deepLinks.search} onClick={closeHistory}>
-                                                {query}
-                                            </Button>
-                                        ))
-                                    }
-                                </div>
-                                :
-                                null
-                        }
-                        {
-                            localSearch?.items?.length ?
-                                <div className={styles['items']}>
-                                    <div className={styles['title']}>
-                                        <div className={styles['label']}>{ t('SEARCH_SUGGESTIONS') }</div>
-                                    </div>
-                                    {
-                                        localSearch.items.map(({ query, deepLinks }, index) => (
-                                            <Button key={index} className={styles['item']} href={deepLinks.search} onClick={closeHistory}>
-                                                {query}
-                                            </Button>
-                                        ))
-                                    }
-                                </div>
-                                :
-                                null
-                        }
-                    </div>
-                    :
-                    null
+        <div className={classnames(className, styles['search-bar-container'], 'active')} ref={containerRef}>
+            <TextInput
+                key={query}
+                ref={searchInputRef}
+                className={styles['search-input']}
+                type={'text'}
+                placeholder={t('SEARCH_OR_PASTE_LINK')}
+                defaultValue={query}
+                tabIndex={-1}
+                onChange={queryInputOnChange}
+                onSubmit={queryInputOnSubmit}
+                onClick={openHistory}
+            />
+            <Button className={styles['submit-button-container']} onClick={currentQuery.length > 0 ? queryInputClear : undefined}>
+                <Icon className={styles['icon']} name={currentQuery.length > 0 ? 'close' : 'search'} />
+            </Button>
+            {hasDropdown &&
+                <div className={styles['menu-container']}>
+                    {searchHistory?.items?.length > 0 &&
+                        <div className={styles['items']}>
+                            <div className={styles['title']}>
+                                <div className={styles['label']}>{t('STREMIO_TV_SEARCH_HISTORY_TITLE')}</div>
+                                <button className={styles['search-history-clear']} onClick={searchHistory.clear}>
+                                    {t('CLEAR_HISTORY')}
+                                </button>
+                            </div>
+                            {searchHistory.items.slice(0, 8).map(({ query, deepLinks }, index) => (
+                                <Button key={index} className={styles['item']} href={deepLinks.search} onClick={closeHistory}>
+                                    {query}
+                                </Button>
+                            ))}
+                        </div>
+                    }
+                    {localSearch?.items?.length > 0 &&
+                        <div className={styles['items']}>
+                            <div className={styles['title']}>
+                                <div className={styles['label']}>{t('SEARCH_SUGGESTIONS')}</div>
+                            </div>
+                            {localSearch.items.map(({ query, deepLinks }, index) => (
+                                <Button key={index} className={styles['item']} href={deepLinks.search} onClick={closeHistory}>
+                                    {query}
+                                </Button>
+                            ))}
+                        </div>
+                    }
+                </div>
             }
         </div>
     );
@@ -182,19 +153,13 @@ SearchBar.propTypes = {
     active: PropTypes.bool
 };
 
-const SearchBarFallback = ({ className }) => {
-    const { t } = useTranslation();
-    return (
-        <label className={classnames(className, styles['search-bar-container'])}>
-            <div className={styles['search-input']}>
-                <div className={styles['placeholder-label']}>{ t('SEARCH_OR_PASTE_LINK') }</div>
-            </div>
-            <Button className={styles['submit-button-container']} tabIndex={-1}>
-                <Icon className={styles['icon']} name={'search'} />
-            </Button>
-        </label>
-    );
-};
+const SearchIconButton = ({ className }) => (
+    <Button className={classnames(className, styles['search-icon-button'])} tabIndex={-1} href={'#/search'}>
+        <Icon className={styles['icon']} name={'search'} />
+    </Button>
+);
+
+const SearchBarFallback = SearchIconButton;
 
 SearchBarFallback.propTypes = SearchBar.propTypes;
 

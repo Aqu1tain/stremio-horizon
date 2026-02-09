@@ -4,9 +4,10 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
-const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Icon } = require('stremio/components/Icon');
 const { Button, Image, MultiselectMenu } = require('stremio/components');
 const { useServices } = require('stremio/services');
+const parseStreamBadges = require('stremio/common/parseStreamBadges');
 const Stream = require('./Stream');
 const styles = require('./styles');
 const { usePlatform, useProfile } = require('stremio/common');
@@ -94,6 +95,22 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
         };
     }, [streamsByAddon, selectedAddon]);
 
+    const [qualityFilter, setQualityFilter] = React.useState(null);
+    const availableQualities = React.useMemo(() => {
+        const labels = new Set();
+        filteredStreams.forEach((stream) => {
+            parseStreamBadges(stream.name, stream.description).forEach(({ label }) => labels.add(label));
+        });
+        return Array.from(labels);
+    }, [filteredStreams]);
+    const qualityFilteredStreams = React.useMemo(() => {
+        if (!qualityFilter) return filteredStreams;
+        return filteredStreams.filter((stream) => {
+            const badges = parseStreamBadges(stream.name, stream.description);
+            return badges.some(({ label }) => label === qualityFilter);
+        });
+    }, [filteredStreams, qualityFilter]);
+
     const handleEpisodePicker = React.useCallback((season, episode) => {
         onEpisodeSearch(season, episode);
     }, [onEpisodeSearch]);
@@ -179,8 +196,30 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                                         :
                                         null
                                 }
+                                {
+                                    availableQualities.length > 0 ?
+                                        <div className={styles['quality-filters']}>
+                                            <button
+                                                className={classnames(styles['quality-filter-chip'], { [styles['active']]: qualityFilter === null })}
+                                                onClick={() => setQualityFilter(null)}
+                                            >
+                                                All
+                                            </button>
+                                            {availableQualities.map((label) => (
+                                                <button
+                                                    key={label}
+                                                    className={classnames(styles['quality-filter-chip'], { [styles['active']]: qualityFilter === label })}
+                                                    onClick={() => setQualityFilter((prev) => prev === label ? null : label)}
+                                                >
+                                                    {label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        :
+                                        null
+                                }
                                 <div className={styles['streams-container']} ref={streamsContainerRef}>
-                                    {filteredStreams.map((stream, index) => (
+                                    {qualityFilteredStreams.map((stream, index) => (
                                         <Stream
                                             key={index}
                                             videoId={video?.id}

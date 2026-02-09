@@ -3,12 +3,13 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
-const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Icon } = require('stremio/components/Icon');
 const { t } = require('i18next');
 const { useProfile, usePlatform, useToast, useBinaryState } = require('stremio/common');
 const { Button, Image, Popup } = require('stremio/components');
 const { useServices } = require('stremio/services');
 const { useRouteFocused } = require('stremio-router');
+const parseStreamBadges = require('stremio/common/parseStreamBadges');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 
@@ -20,6 +21,12 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
     const routeFocused = useRouteFocused();
 
     const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
+    const [expanded, setExpanded] = React.useState(false);
+    const toggleExpanded = React.useCallback((event) => {
+        if (!event.nativeEvent.buttonClickPrevented) {
+            setExpanded((prev) => !prev);
+        }
+    }, []);
 
     const popupLabelOnMouseUp = React.useCallback((event) => {
         if (!event.nativeEvent.togglePopupPrevented) {
@@ -38,6 +45,11 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
         if (event.nativeEvent.pointerType !== 'mouse' && !event.nativeEvent.togglePopupPrevented) {
             toggleMenu();
         }
+    }, [toggleMenu]);
+    const onMoreClick = React.useCallback((event) => {
+        event.nativeEvent.togglePopupPrevented = true;
+        event.preventDefault();
+        toggleMenu();
     }, [toggleMenu]);
     const popupMenuOnPointerDown = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
@@ -164,14 +176,16 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
         }
     }, [streamLink]);
 
+    const badges = React.useMemo(() => parseStreamBadges(name, description), [name, description]);
+
     const renderThumbnailFallback = React.useCallback(() => (
         <Icon className={styles['placeholder-icon']} name={'ic_broken_link'} />
     ), []);
 
     const renderLabel = React.useMemo(() => function renderLabel({ className, children, ...props }) {
         return (
-            <Button className={classnames(className, styles['stream-container'])} title={addonName} href={href} target={target} download={download} onClick={onClick} {...props}>
-                <div className={styles['info-container']}>
+            <Button className={classnames(className, styles['stream-container'], { [styles['expanded']]: expanded })} title={addonName} href={href} target={target} download={download} onClick={onClick} {...props}>
+                <div className={styles['info-container']} onClick={toggleExpanded}>
                     {
                         typeof thumbnail === 'string' && thumbnail.length > 0 ?
                             <div className={styles['thumbnail-container']} title={name || addonName}>
@@ -197,12 +211,25 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
                             null
                     }
                 </div>
+                {
+                    badges.length > 0 ?
+                        <div className={styles['quality-badges']}>
+                            {badges.map(({ label, color }) => (
+                                <span key={label} className={styles['quality-badge']} style={{ backgroundColor: color }}>{label}</span>
+                            ))}
+                        </div>
+                        :
+                        null
+                }
                 <div className={styles['description-container']} title={description}>{description}</div>
+                <div className={styles['more-button']} onClick={onMoreClick}>
+                    <Icon className={styles['more-icon']} name={'more-vertical'} />
+                </div>
                 <Icon className={styles['icon']} name={'play'} />
                 {children}
             </Button>
         );
-    }, [thumbnail, progress, addonName, name, description, href, target, download, onClick]);
+    }, [thumbnail, progress, addonName, name, description, href, target, download, onClick, expanded, toggleExpanded, onMoreClick]);
 
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (

@@ -16,7 +16,7 @@
         .sections-container {
             flex: 1;
             align-self: stretch;
-            padding: 0 3rem;
+            padding: 0 calc(2 * var(--content-padding));
             overflow-y: auto;
         }
     }
@@ -28,7 +28,7 @@
             flex-direction: column-reverse;
 
             .sections-container {
-                padding: 0 1.5rem;
+                padding: 0 var(--content-padding);
             }
         }
     }

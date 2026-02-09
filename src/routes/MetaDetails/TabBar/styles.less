@@ -1,0 +1,66 @@
+@import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
+@import (reference) '~stremio/common/screen-sizes.less';
+
+.tab-bar-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 4rem;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    .tab {
+        position: relative;
+        padding: 1rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        &.active {
+            color: var(--primary-foreground-color);
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 1.25rem;
+                right: 1.25rem;
+                height: 2px;
+                background-color: var(--primary-accent-color);
+                border-radius: 1px;
+            }
+        }
+    }
+}
+
+@media @phone-landscape {
+    .tab-bar-container {
+        padding: 0 1.5rem;
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .tab-bar-container {
+        padding: 0 1rem;
+
+        .tab {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import { useTranslation } from 'react-i18next';
 import { useServices } from 'stremio/services';
 import { useBinaryState, useShell } from 'stremio/common';

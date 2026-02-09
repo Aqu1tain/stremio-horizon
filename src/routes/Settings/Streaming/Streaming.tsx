@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import { Button, MultiselectMenu } from 'stremio/components';
 import { useToast } from 'stremio/common';
 import { Section, Option } from '../components';

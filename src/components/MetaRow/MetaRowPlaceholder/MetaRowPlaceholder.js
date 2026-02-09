@@ -4,8 +4,8 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
-const { default: Icon } = require('@stremio/stremio-icons/react');
-const { Button } = require('stremio/components');
+const { default: Icon } = require('stremio/components/Icon');
+const { Button, HorizontalScroll } = require('stremio/components');
 const CONSTANTS = require('stremio/common/CONSTANTS');
 const styles = require('./styles');
 
@@ -27,7 +27,7 @@ const MetaRowPlaceholder = ({ className, title, deepLinks }) => {
                         null
                 }
             </div>
-            <div className={styles['meta-items-container']}>
+            <HorizontalScroll className={styles['meta-items-container']}>
                 {Array(CONSTANTS.CATALOG_PREVIEW_SIZE).fill(null).map((_, index) => (
                     <div key={index} className={styles['meta-item']}>
                         <div className={styles['poster-container']} />
@@ -36,7 +36,7 @@ const MetaRowPlaceholder = ({ className, title, deepLinks }) => {
                         </div>
                     </div>
                 ))}
-            </div>
+            </HorizontalScroll>
         </div>
     );
 };

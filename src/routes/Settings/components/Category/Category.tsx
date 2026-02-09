@@ -1,6 +1,6 @@
 import React from 'react';
 import { t } from 'i18next';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import styles from './Category.less';
 
 type Props = {

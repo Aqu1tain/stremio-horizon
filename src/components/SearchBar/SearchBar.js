@@ -3,7 +3,7 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
-const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Icon } = require('stremio/components/Icon');
 const { default: TextInput } = require('stremio/components/TextInput');
 const SearchBarPlaceholder = require('./SearchBarPlaceholder');
 const styles = require('./styles');

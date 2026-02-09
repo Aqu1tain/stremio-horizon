@@ -33,6 +33,7 @@
         "lodash.debounce": "4.0.8",
         "lodash.intersection": "4.4.0",
         "lodash.throttle": "4.1.1",
+        "lucide-react": "^0.563.0",
         "magnet-uri": "6.2.0",
         "prop-types": "15.8.1",
         "react": "18.3.1",

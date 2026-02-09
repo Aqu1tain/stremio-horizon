@@ -4,7 +4,7 @@ import React, { useCallback, ChangeEvent, KeyboardEvent, RefCallback } from 'rea
 import classNames from 'classnames';
 import styles from './Checkbox.less';
 import Button from '../Button';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 
 type Props = {
     ref?: RefCallback<HTMLInputElement>;

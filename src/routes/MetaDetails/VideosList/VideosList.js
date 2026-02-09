@@ -111,7 +111,7 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                 !metaItem || metaItem.content.type === 'Loading' ?
                     <React.Fragment>
                         <SeasonsBar.Placeholder className={styles['seasons-bar']} />
-                        <SearchBar.Placeholder className={styles['search-bar']} title={t('SEARCH_VIDEOS')} />
+                        <SearchBar.Placeholder className={styles['search-bar']} title={'Search episodes'} />
                         <div className={styles['videos-scroll-container']}>
                             <Video.Placeholder />
                             <Video.Placeholder />
@@ -150,7 +150,7 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                             }
                             <SearchBar
                                 className={styles['search-bar']}
-                                title={t('SEARCH_VIDEOS')}
+                                title={'Search episodes'}
                                 value={search}
                                 onChange={searchInputOnChange}
                             />

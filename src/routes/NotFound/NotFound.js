@@ -13,7 +13,6 @@ const NotFound = () => {
                 className={styles['nav-bar']}
                 title={t('PAGE_NOT_FOUND')}
                 backButton={true}
-                fullscreenButton={true}
                 navMenu={true}
             />
             <div className={styles['not-found-content']}>

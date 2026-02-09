@@ -5,7 +5,7 @@ import { Button } from 'stremio/components';
 import useBinaryState from 'stremio/common/useBinaryState';
 import Dropdown from './Dropdown';
 import classNames from 'classnames';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import styles from './MultiselectMenu.less';
 import useOutsideClick from 'stremio/common/useOutsideClick';
 
