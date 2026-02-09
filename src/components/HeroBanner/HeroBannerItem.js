@@ -60,11 +60,6 @@ const HeroBannerItem = ({ className, active, id, name, description, releaseInfo,
         return trailerStreams[0].deepLinks.player;
     }, [trailerStreams]);
 
-    const detailsHref = React.useMemo(() => {
-        if (!deepLinks) return null;
-        return deepLinks.metaDetailsVideos ?? deepLinks.metaDetailsStreams ?? null;
-    }, [deepLinks]);
-
     const renderLogoFallback = React.useCallback(() => (
         <div className={styles['logo-placeholder']}>{name}</div>
     ), [name]);
@@ -134,15 +129,6 @@ const HeroBannerItem = ({ className, active, id, name, description, releaseInfo,
                             <Button className={classnames(styles['action-button'], styles['secondary-action'])} href={trailerHref}>
                                 <Icon className={styles['icon']} name={'trailer'} />
                                 <span>{t('TRAILER')}</span>
-                            </Button>
-                            :
-                            null
-                    }
-                    {
-                        typeof detailsHref === 'string' ?
-                            <Button className={classnames(styles['action-button'], styles['secondary-action'])} href={detailsHref}>
-                                <Icon className={styles['icon']} name={'info'} />
-                                <span>{t('LIBRARY_DETAILS')}</span>
                             </Button>
                             :
                             null

@@ -130,11 +130,14 @@
                 }
 
                 .label {
-                    flex: none;
+                    flex: 1 1 0;
                     max-height: 2.4em;
                     font-size: 1.1rem;
                     font-weight: 500;
                     color: var(--primary-foreground-color);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 &.dismiss {
