@@ -39,7 +39,6 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 query={query}
                 backButton={false}
                 searchBar={true}
-                fullscreenButton={true}
                 navMenu={true}
                 tabs={TOP_NAV_TABS}
                 selected={route}

@@ -172,10 +172,18 @@ const MetaDetails = ({ urlParams, queryParams }) => {
 
     const renderBackgroundImageFallback = React.useCallback(() => null, []);
 
+    const resumeVideo = React.useMemo(() => {
+        if (!isReady || !hasVideos) return null;
+        const libraryVideoId = metaDetails.libraryItem?.state?.video_id;
+        if (!libraryVideoId) return null;
+        return meta.videos.find((v) => v.id === libraryVideoId) ?? null;
+    }, [isReady, hasVideos, meta, metaDetails.libraryItem]);
+
     const description = React.useMemo(() => {
         if (video !== null && typeof video.overview === 'string' && video.overview.length > 0) return video.overview;
+        if (resumeVideo !== null && typeof resumeVideo.overview === 'string' && resumeVideo.overview.length > 0) return resumeVideo.overview;
         return meta?.description ?? null;
-    }, [video, meta]);
+    }, [video, resumeVideo, meta]);
 
     if (metaPath === null) {
         return (
@@ -399,7 +407,6 @@ const MetaDetailsFallback = () => (
         <HorizontalNavBar
             className={styles['nav-bar']}
             backButton={true}
-            fullscreenButton={true}
             navMenu={true}
         />
     </div>
