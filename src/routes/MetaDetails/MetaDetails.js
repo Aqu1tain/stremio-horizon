@@ -72,13 +72,24 @@ const MetaDetails = ({ urlParams, queryParams }) => {
 
         const libraryVideoId = metaDetails.libraryItem?.state?.video_id;
         if (libraryVideoId) {
-            const resumeVideo = sorted.find((v) => v.id === libraryVideoId);
-            if (resumeVideo && !resumeVideo.watched) {
-                const href = resumeVideo.deepLinks?.player ?? resumeVideo.deepLinks?.metaDetailsStreams ?? null;
-                const label = resumeVideo.season != null
-                    ? `Resume S${resumeVideo.season} E${resumeVideo.episode}`
-                    : `Resume E${resumeVideo.episode}`;
-                return { label, href };
+            const resumeIdx = sorted.findIndex((v) => v.id === libraryVideoId);
+            if (resumeIdx !== -1) {
+                const resumeVideo = sorted[resumeIdx];
+                if (!resumeVideo.watched) {
+                    const href = resumeVideo.deepLinks?.player ?? resumeVideo.deepLinks?.metaDetailsStreams ?? null;
+                    const label = resumeVideo.season != null
+                        ? `Resume S${resumeVideo.season} E${resumeVideo.episode}`
+                        : `Resume E${resumeVideo.episode}`;
+                    return { label, href };
+                }
+                const nextUnwatched = sorted.slice(resumeIdx + 1).find((v) => !v.watched && !v.upcoming);
+                if (nextUnwatched) {
+                    const href = nextUnwatched.deepLinks?.player ?? nextUnwatched.deepLinks?.metaDetailsStreams ?? null;
+                    const label = nextUnwatched.season != null
+                        ? `Play S${nextUnwatched.season} E${nextUnwatched.episode}`
+                        : `Play E${nextUnwatched.episode}`;
+                    return { label, href };
+                }
             }
         }
 
