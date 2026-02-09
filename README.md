@@ -1,9 +1,46 @@
-# Stremio - Freedom to Stream
+# Stremio Horizon
 
-[![Build](https://github.com/Stremio/stremio-web/actions/workflows/build.yml/badge.svg)](https://github.com/Stremio/stremio-web/actions/workflows/build.yml)
-[![Github Page](https://img.shields.io/website?label=Page&logo=github&up_message=online&down_message=offline&url=https%3A%2F%2Fstremio.github.io%2Fstremio-web%2F)](https://stremio.github.io/stremio-web/development)
+An alternative web UI for [Stremio](https://www.stremio.com), focused on modern design and usability.
 
-Stremio is a modern media center that's a one-stop solution for your video entertainment. You discover, watch and organize video content from easy to install addons.
+Based on [Stremio Web 5](https://github.com/Stremio/stremio-web), but going in a different direction — rethinking navigation, layout, and visual identity while keeping full compatibility with the Stremio ecosystem and addons.
+
+> **Early stage** — usable but not fully stable. Expect rough edges.
+
+## What's different
+
+### Navigation
+- Horizontal top navbar with tabs (replaces the sidebar on desktop)
+- Auto-hide navbar on scroll (Board and MetaDetails pages)
+- Full-width search bar on dedicated search page
+- Redesigned search history and suggestions dropdown
+
+### Board
+- Hero banner carousel with auto-rotation and crossfade transitions
+- Horizontally scrolling catalog rows with redesigned cards
+
+### MetaDetails
+- Single-column hero layout with full-width background
+- Tabbed navigation (Details / Videos / Streams)
+- Play / Resume buttons with smart episode tracking
+- Episode drill-down directly to streams
+- See-more link on truncated descriptions
+
+### Discover
+- Slide-out preview panel (replaces the sidebar)
+
+### Streams
+- Quality badge parser (4K, HDR, Dolby, etc.)
+- Filter chips to narrow results by quality
+- Restyled stream popups
+
+### Icons
+- Migrated to [Lucide](https://lucide.dev) icons with automatic fallback to stremio-icons for brand/custom icons
+
+### Visual polish
+- Overlay borders replacing outer-glow shadows
+- Consistent spacing and typography across pages
+- Subtler background gradients
+- Play button on hover for catalog items
 
 ## Build
 
@@ -33,24 +70,10 @@ pnpm run build
 ### Run with Docker
 
 ```bash
-docker build -t stremio-web .
-docker run -p 8080:8080 stremio-web
+docker build -t stremio-horizon .
+docker run -p 8080:8080 stremio-horizon
 ```
 
-## Screenshots
+## Credits
 
-### Board
-
-![Board](/assets/screenshots/board.png)
-
-### Discover
-
-![Discover](/assets/screenshots/discover.png)
-
-### Meta Details
-
-![Meta Details](/assets/screenshots/metadetails.png)
-
-## License
-
-Stremio is copyright 2017-2023 Smart code and available under GPLv2 license. See the [LICENSE](/LICENSE.md) file in the project for more information.
+Based on [stremio-web](https://github.com/Stremio/stremio-web) by [Smart code](https://www.stremio.com). Original code is copyright 2017-2023 Smart code and available under the GPLv2 license. See the [LICENSE](/LICENSE.md) file for details.
