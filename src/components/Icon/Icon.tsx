@@ -7,6 +7,9 @@ import {
     RotateCcw, SkipForward, Maximize, Minimize,
     VolumeOff, VolumeX, Volume, Volume1, Volume2,
     Calendar, Cast, Globe, Gauge,
+    Heart, ThumbsUp, CircleAlert,
+    Captions, AudioLines, ListVideo, SlidersHorizontal,
+    Clapperboard, Users, Megaphone, Glasses, Smartphone,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import StremioIcon from '@stremio/stremio-icons/react';
@@ -50,6 +53,18 @@ const LUCIDE_MAP: Record<string, LucideIcon> = {
     'cast': Cast,
     'network': Globe,
     'speed': Gauge,
+    'heart': Heart,
+    'thumbs-up': ThumbsUp,
+    'about': CircleAlert,
+    'subtitles': Captions,
+    'audio-tracks': AudioLines,
+    'episodes': ListVideo,
+    'filters': SlidersHorizontal,
+    'trailer': Clapperboard,
+    'actors': Users,
+    'megaphone': Megaphone,
+    'glasses': Glasses,
+    'remote': Smartphone,
 };
 
 type IconProps = {
