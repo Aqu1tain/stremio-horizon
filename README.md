@@ -4,6 +4,8 @@
 
 An alternative web UI for [Stremio](https://www.stremio.com), focused on modern design and usability.
 
+This is not a replacement for Stremio — just one person's take on what a great UI could look like. If you like [Stremio](https://www.stremio.com), go give it a star!
+
 Based on [Stremio Web 5](https://github.com/Stremio/stremio-web), but going in a different direction — rethinking navigation, layout, and visual identity while keeping full compatibility with the Stremio ecosystem and addons.
 
 > **Early stage** — usable but not fully stable. Expect rough edges.
