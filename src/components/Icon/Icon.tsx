@@ -54,7 +54,9 @@ const LUCIDE_MAP: Record<string, LucideIcon> = {
     'network': Globe,
     'speed': Gauge,
     'heart': Heart,
+    'heart-outline': Heart,
     'thumbs-up': ThumbsUp,
+    'thumbs-up-outline': ThumbsUp,
     'about': CircleAlert,
     'subtitles': Captions,
     'audio-tracks': AudioLines,
@@ -67,6 +69,8 @@ const LUCIDE_MAP: Record<string, LucideIcon> = {
     'remote': Smartphone,
 };
 
+const FILLED_ICONS = new Set(['heart', 'thumbs-up']);
+
 type IconProps = {
     name: string;
     className?: string;
@@ -76,7 +80,15 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(({ name, className }, ref) => 
     const LucideComponent = LUCIDE_MAP[name];
 
     if (LucideComponent) {
-        return <LucideComponent ref={ref} className={className} />;
+        const filled = FILLED_ICONS.has(name);
+        return (
+            <LucideComponent
+                ref={ref}
+                className={className}
+                fill={filled ? 'currentColor' : 'none'}
+                strokeWidth={filled ? 0 : 2}
+            />
+        );
     }
 
     return <StremioIcon ref={ref} name={name} className={className} />;
