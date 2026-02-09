@@ -6,7 +6,7 @@ const { default: Button } = require('stremio/components/Button');
 const ModalDialog = require('stremio/components/ModalDialog');
 const useEvents = require('./useEvents');
 const styles = require('./styles');
-const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Icon } = require('stremio/components/Icon');
 
 const EventModal = () => {
     const { t } = useTranslation();

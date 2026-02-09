@@ -1,7 +1,7 @@
 // Copyright (C) 2017-2024 Smart code 203358507
 
 import React, { useEffect, useMemo, useRef } from 'react';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import classNames from 'classnames';
 import { Button } from 'stremio/components';
 import useCalendarDate from '../../useCalendarDate';

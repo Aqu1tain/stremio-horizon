@@ -1,6 +1,6 @@
 // Copyright (C) 2017-2025 Smart code 203358507
 
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import React, { ChangeEvent, forwardRef, memo, useCallback, useState } from 'react';
 import { type KeyboardEvent, type InputHTMLAttributes } from 'react';
 import classnames from 'classnames';

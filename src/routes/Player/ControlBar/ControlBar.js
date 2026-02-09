@@ -3,7 +3,7 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
-const { default: Icon } = require('@stremio/stremio-icons/react');
+const { default: Icon } = require('stremio/components/Icon');
 const { Button } = require('stremio/components');
 const { useServices } = require('stremio/services');
 const SeekBar = require('./SeekBar');

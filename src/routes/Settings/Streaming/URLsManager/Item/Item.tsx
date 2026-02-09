@@ -6,7 +6,7 @@ import { DEFAULT_STREAMING_SERVER_URL } from 'stremio/common/CONSTANTS';
 import { useTranslation } from 'react-i18next';
 import { Button, RadioButton } from 'stremio/components';
 import useStreamingServer from 'stremio/common/useStreamingServer';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import styles from './Item.less';
 import classNames from 'classnames';
 import useStreamingServerUrls from '../useStreamingServerUrls';

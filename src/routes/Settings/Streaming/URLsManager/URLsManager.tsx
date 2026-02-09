@@ -6,7 +6,7 @@ import styles from './URLsManager.less';
 import { Button } from 'stremio/components';
 import Item from './Item';
 import AddItem from './AddItem';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 import useStreamingServerUrls from './useStreamingServerUrls';
 
 const URLsManager = () => {

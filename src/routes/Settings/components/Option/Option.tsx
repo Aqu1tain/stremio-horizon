@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { t } from 'i18next';
 import styles from './Option.less';
-import Icon from '@stremio/stremio-icons/react';
+import Icon from 'stremio/components/Icon';
 
 type Props = {
     className?: string,
