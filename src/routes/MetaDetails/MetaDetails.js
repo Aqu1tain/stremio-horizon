@@ -154,6 +154,22 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         window.location = searchVideoPath;
     }, [urlParams]);
 
+    const [descriptionTruncated, setDescriptionTruncated] = React.useState(false);
+
+    const descriptionRef = React.useCallback((el) => {
+        if (!el) return setDescriptionTruncated(false);
+        requestAnimationFrame(() => {
+            el.style.webkitLineClamp = 'unset';
+            el.style.display = 'block';
+            const fullHeight = el.scrollHeight;
+            el.style.webkitLineClamp = '';
+            el.style.display = '';
+            setDescriptionTruncated(fullHeight > el.clientHeight);
+        });
+    }, [description]);
+
+    const showDetails = React.useCallback(() => setActiveTab('details'), []);
+
     const renderBackgroundImageFallback = React.useCallback(() => null, []);
 
     const description = React.useMemo(() => {
@@ -246,7 +262,12 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             }
                         </div>
                         {typeof description === 'string' && description.length > 0 &&
-                            <div className={styles['hero-description']}>{description}</div>
+                            <div className={styles['hero-description-container']}>
+                                <div ref={descriptionRef} className={styles['hero-description']}>{description}</div>
+                                {descriptionTruncated &&
+                                    <Button className={styles['see-more']} onClick={showDetails}>See more</Button>
+                                }
+                            </div>
                         }
                         <div className={styles['hero-actions']}>
                             {hasVideos && seriesPlayAction !== null && typeof seriesPlayAction.href === 'string' &&
