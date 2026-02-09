@@ -172,6 +172,7 @@
         min-width: 12rem;
         max-width: 16rem;
         z-index: 2;
+        box-shadow: none;
 
         .context-menu-content {
             --spatial-navigation-contain: contain;
@@ -183,9 +184,8 @@
                 font-weight: 400;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 color: @color-surface-light5-90;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                white-space: break-spaces;
+                word-break: break-all;
             }
 
             .context-menu-option-container {
