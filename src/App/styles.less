@@ -63,7 +63,7 @@
     --quaternary-accent-color: rgba(18, 69, 166, 1);
     --overlay-color: rgba(255, 255, 255, 0.05);
     --modal-background-color: rgba(15, 13, 32, 1);
-    --outer-glow: 0px 0px 15px rgba(123, 91, 245, 0.37);
+    --overlay-border: 1px solid rgba(255, 255, 255, 0.1);
     --warning-accent-color: rgba(255, 165, 0, 1);
     --danger-accent-color: rgba(220, 38, 38, 1);  
     --border-radius: 0.75rem;
@@ -203,7 +203,7 @@ html {
                 color: var(--primary-foreground-color);
                 border-radius: var(--border-radius);
                 background-color: var(--modal-background-color);
-                box-shadow: var(--outer-glow);
+                border: var(--overlay-border);
                 transition: opacity 0.1s ease-out;
             }
 
