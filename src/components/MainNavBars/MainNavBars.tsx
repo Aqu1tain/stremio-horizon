@@ -28,7 +28,7 @@ type Props = {
 
 const MainNavBars = memo(({ className, route, query, overlay, children }: Props) => {
     const contentRef = useRef<HTMLDivElement>(null);
-    const autoHide = route === 'board';
+    const autoHide = route === 'board' || route === 'metadetails';
     const { visible, scrolled } = useNavbarScroll(contentRef, autoHide);
 
     return (
