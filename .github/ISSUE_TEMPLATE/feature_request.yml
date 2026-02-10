@@ -1,42 +1,20 @@
 name: Feature request
-description: Suggest a new feature or enhancement for Stremio-Web
+description: Suggest an idea or improvement
 title: "[Feature]: "
 labels:
   - enhancement
 body:
-  - type: markdown
-    attributes:
-      value: "Thank you for your interest in improving Stremio-Web! Please provide as much detail as possible."
-
   - type: textarea
-    id: feature_description
+    id: idea
     attributes:
-      label: "Feature Description"
-      description: "Describe the feature you would like to see implemented. What problem does it solve, or what functionality does it add?"
-      placeholder: "Describe your idea in detail..."
+      label: "What's your idea?"
+      description: "Describe what you'd like to see. Go wild."
+      placeholder: "The more detail the better, but even a rough idea is welcome..."
     validations:
       required: true
 
   - type: textarea
-    id: proposed_solution
+    id: extra
     attributes:
-      label: "Proposed Solution"
-      description: "If you have any thoughts on how this could be implemented or approached, share them here."
-      placeholder: "Suggest possible approaches or solutions..."
-
-  - type: textarea
-    id: additional_context
-    attributes:
-      label: "Additional Context or Screenshots"
-      description: "Add any other context, screenshots, or references that may help us understand the request."
-      placeholder: "Any extra info that might help..."
-
-  - type: checkboxes
-    id: code_of_conduct
-    attributes:
-      label: "Code of Conduct"
-      description: "Please confirm you have read and agree to the Code of Conduct"
-      options:
-        - label: "I agree"
-    validations:
-      required: true
+      label: "Anything else?"
+      description: "Mockups, references, screenshots — anything that helps paint the picture"
