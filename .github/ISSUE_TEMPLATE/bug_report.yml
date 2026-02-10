@@ -1,82 +1,29 @@
 name: Bug report
-description: Report a bug in Stremio-Web
+description: Something isn't working right
 title: "[Bug]: "
 labels:
   - bug
 body:
-  - type: dropdown
-    id: stremio_web_version
+  - type: input
+    id: environment
     attributes:
-      label: "Stremio-Web Version"
-      description: "Select the version of the Stremio-Web app you are using"
-      options:
-        - /development branch
-        - web.stremio.com
-        - web.strem.io
-    validations:
-      required: true
-
-  - type: dropdown
-    id: browser
-    attributes:
-      label: "Browser"
-      description: "Which browser are you using?"
-      options:
-        - Chrome
-        - Brave
-        - Firefox
-        - Arc
-        - Opera
-        - Safari
-        - Edge
-    validations:
-      required: true
-
-  - type: dropdown
-    id: platform
-    attributes:
-      label: "Platform / Device type"
-      description: "Which platform / device type are you using?"
-      options:
-        - Windows
-        - Linux
-        - MacOS
-        - Android Web
-        - Android PWA
-        - iOS Web
-        - iOS PWA
+      label: "Environment"
+      description: "Browser, OS, device — whatever is relevant"
+      placeholder: "e.g. Chrome on macOS, Firefox on Android..."
     validations:
       required: true
 
   - type: textarea
     id: what_happened
     attributes:
-      label: "What Happened?"
-      description: "Describe the issue you encountered"
-      placeholder: "Explain what you were doing, what you expected to happen, and what actually happened."
+      label: "What happened?"
+      description: "What did you do, what did you expect, and what actually happened?"
+      placeholder: "Steps to reproduce, expected vs actual behavior..."
     validations:
       required: true
 
   - type: textarea
-    id: logs
+    id: extra
     attributes:
-      label: "Logs"
-      description: "Paste any relevant logs here (optional)"
-      render: shell
-
-  - type: textarea
-    id: notes
-    attributes:
-      label: "Notes"
-      description: "Any additional information (optional)"
-
-  - type: checkboxes
-    id: code_of_conduct
-    attributes:
-      label: "Code of Conduct"
-      description: "Please confirm you have read and agree to the Code of Conduct"
-      options:
-        - label: "I agree"
-    validations:
-      required: true
-
+      label: "Anything else?"
+      description: "Logs, screenshots, ideas — whatever might help"
