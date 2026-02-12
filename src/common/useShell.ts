@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import EventEmitter from 'eventemitter3';
 
 const SHELL_EVENT_OBJECT = 'transport';
-const transport = globalThis?.chrome?.webview;
+const isTauri = !!(globalThis as any).__TAURI_INTERNALS__;
+const transport = isTauri ? null : globalThis?.chrome?.webview;
 const events = new EventEmitter();
 
 enum ShellEventType {
