@@ -65,6 +65,8 @@ const MetaDetails = ({ urlParams, queryParams }) => {
     const seriesPlayAction = React.useMemo(() => {
         if (!hasVideos || !isReady) return null;
 
+        const isReleased = (v) => !v.upcoming && v.released instanceof Date && !isNaN(v.released.getTime());
+
         const sorted = [...meta.videos].sort((a, b) => {
             if ((a.season ?? 0) !== (b.season ?? 0)) return (a.season ?? 0) - (b.season ?? 0);
             return (a.episode ?? 0) - (b.episode ?? 0);
@@ -78,16 +80,16 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                 if (!resumeVideo.watched) {
                     const href = resumeVideo.deepLinks?.player ?? resumeVideo.deepLinks?.metaDetailsStreams ?? null;
                     const label = resumeVideo.season != null
-                        ? `Resume S${resumeVideo.season} E${resumeVideo.episode}`
-                        : `Resume E${resumeVideo.episode}`;
+                        ? `${t('LIBRARY_RESUME')} S${resumeVideo.season} E${resumeVideo.episode}`
+                        : `${t('LIBRARY_RESUME')} E${resumeVideo.episode}`;
                     return { label, href };
                 }
-                const nextUnwatched = sorted.slice(resumeIdx + 1).find((v) => !v.watched && !v.upcoming);
+                const nextUnwatched = sorted.slice(resumeIdx + 1).find((v) => !v.watched && isReleased(v));
                 if (nextUnwatched) {
                     const href = nextUnwatched.deepLinks?.player ?? nextUnwatched.deepLinks?.metaDetailsStreams ?? null;
                     const label = nextUnwatched.season != null
-                        ? `Play S${nextUnwatched.season} E${nextUnwatched.episode}`
-                        : `Play E${nextUnwatched.episode}`;
+                        ? `${t('LIBRARY_PLAY')} S${nextUnwatched.season} E${nextUnwatched.episode}`
+                        : `${t('LIBRARY_PLAY')} E${nextUnwatched.episode}`;
                     return { label, href };
                 }
             }
@@ -95,14 +97,15 @@ const MetaDetails = ({ urlParams, queryParams }) => {
 
         const nonSpecials = sorted.filter((v) => v.season !== 0);
         const candidates = nonSpecials.length > 0 ? nonSpecials : sorted;
-        const firstUnwatched = candidates.find((v) => !v.watched && !v.upcoming);
-        const target = firstUnwatched ?? candidates[0];
+        const firstUnwatched = candidates.find((v) => !v.watched && isReleased(v));
+        const target = firstUnwatched ?? candidates.find((v) => isReleased(v)) ?? null;
         if (!target) return null;
 
         const href = target.deepLinks?.player ?? target.deepLinks?.metaDetailsStreams ?? null;
+        const verb = firstUnwatched ? t('LIBRARY_PLAY') : t('LIBRARY_REWATCH');
         const label = target.season != null
-            ? `Play S${target.season} E${target.episode}`
-            : `Play E${target.episode}`;
+            ? `${verb} S${target.season} E${target.episode}`
+            : `${verb} E${target.episode}`;
         return { label, href };
     }, [hasVideos, isReady, meta, metaDetails.libraryItem]);
 
@@ -298,7 +301,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             {!hasVideos && typeof firstStreamHref === 'string' &&
                                 <Button className={styles['play-button']} href={firstStreamHref}>
                                     <Icon className={styles['play-icon']} name={'play'} />
-                                    <span>Play</span>
+                                    <span>{t('LIBRARY_PLAY')}</span>
                                 </Button>
                             }
                             {typeof meta.inLibrary === 'boolean' &&

@@ -61,6 +61,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         onMarkSeasonAsWatched(season, seasonWatched);
     }, [season, seasonWatched, onMarkSeasonAsWatched]);
     const videoButtonOnClick = React.useCallback(() => {
+        if (upcoming || !(released instanceof Date) || isNaN(released.getTime())) return;
         if (deepLinks) {
             if (typeof deepLinks.player === 'string') {
                 window.location = deepLinks.player;
@@ -68,7 +69,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                 window.location.replace(deepLinks.metaDetailsStreams);
             }
         }
-    }, [deepLinks]);
+    }, [upcoming, released, deepLinks]);
     const renderLabel = React.useMemo(() => function renderLabel({ className, id, title, thumbnail, episode, released, upcoming, watched, progress, scheduled, children, ref, ...props }) {
         const blurThumbnail = profile.settings.hideSpoilers && season && episode && !watched;
 
@@ -85,7 +86,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         }, [selected]);
 
         return (
-            <Button {...props} ref={ref} className={classnames(className, styles['video-container'], { [styles['selected']]: selected })} title={title}>
+            <Button {...props} ref={ref} className={classnames(className, styles['video-container'], { [styles['selected']]: selected, [styles['disabled']]: upcoming || !(released instanceof Date) || isNaN(released.getTime()) })} title={title}>
                 {
                     typeof thumbnail === 'string' && thumbnail.length > 0 ?
                         <div className={styles['thumbnail-container']}>
