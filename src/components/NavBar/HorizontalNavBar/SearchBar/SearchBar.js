@@ -161,6 +161,10 @@ const SearchIconButton = ({ className }) => (
 
 const SearchBarFallback = SearchIconButton;
 
+SearchIconButton.propTypes = {
+    className: PropTypes.string,
+};
+
 SearchBarFallback.propTypes = SearchBar.propTypes;
 
 module.exports = withCoreSuspender(SearchBar, SearchBarFallback);
