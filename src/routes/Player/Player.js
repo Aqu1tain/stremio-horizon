@@ -22,6 +22,7 @@ const { default: AudioMenu } = require('./AudioMenu');
 const SpeedMenu = require('./SpeedMenu');
 const { default: SideDrawerButton } = require('./SideDrawerButton');
 const { default: SideDrawer } = require('./SideDrawer');
+const CastPicker = require('stremio/components/CastPicker');
 const usePlayer = require('./usePlayer');
 const useStatistics = require('./useStatistics');
 const useVideo = require('./useVideo');
@@ -984,6 +985,7 @@ const Player = ({ urlParams, queryParams }) => {
                     :
                     null
             }
+            <CastPicker />
         </div>
     );
 };
