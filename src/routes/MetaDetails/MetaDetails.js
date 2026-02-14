@@ -1,6 +1,6 @@
 const React = require('react');
 const PropTypes = require('prop-types');
-const classnames = require('classnames');
+
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('stremio/components/Icon');
 const { default: Button } = require('stremio/components/Button');
@@ -30,7 +30,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
     const { core } = useServices();
     const metaDetails = useMetaDetails(urlParams);
     const [season, setSeason] = useSeason(urlParams, queryParams);
-    const [extensionTabs, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
+    const [, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
     const [activeTab, setActiveTab] = React.useState('streams');
 
@@ -65,6 +65,15 @@ const MetaDetails = ({ urlParams, queryParams }) => {
     const seriesPlayAction = React.useMemo(() => {
         if (!hasVideos || !isReady) return null;
 
+        const isReleased = (v) => !v.upcoming && v.released instanceof Date && !isNaN(v.released.getTime());
+        const hrefOf = (v) => v.deepLinks?.player ?? v.deepLinks?.metaDetailsStreams ?? null;
+        const makeAction = (verb, video) => ({
+            href: hrefOf(video),
+            label: video.season !== null
+                ? `${verb} S${video.season} E${video.episode}`
+                : `${verb} E${video.episode}`,
+        });
+
         const sorted = [...meta.videos].sort((a, b) => {
             if ((a.season ?? 0) !== (b.season ?? 0)) return (a.season ?? 0) - (b.season ?? 0);
             return (a.episode ?? 0) - (b.episode ?? 0);
@@ -75,35 +84,20 @@ const MetaDetails = ({ urlParams, queryParams }) => {
             const resumeIdx = sorted.findIndex((v) => v.id === libraryVideoId);
             if (resumeIdx !== -1) {
                 const resumeVideo = sorted[resumeIdx];
-                if (!resumeVideo.watched) {
-                    const href = resumeVideo.deepLinks?.player ?? resumeVideo.deepLinks?.metaDetailsStreams ?? null;
-                    const label = resumeVideo.season != null
-                        ? `Resume S${resumeVideo.season} E${resumeVideo.episode}`
-                        : `Resume E${resumeVideo.episode}`;
-                    return { label, href };
-                }
-                const nextUnwatched = sorted.slice(resumeIdx + 1).find((v) => !v.watched && !v.upcoming);
-                if (nextUnwatched) {
-                    const href = nextUnwatched.deepLinks?.player ?? nextUnwatched.deepLinks?.metaDetailsStreams ?? null;
-                    const label = nextUnwatched.season != null
-                        ? `Play S${nextUnwatched.season} E${nextUnwatched.episode}`
-                        : `Play E${nextUnwatched.episode}`;
-                    return { label, href };
-                }
+                if (!resumeVideo.watched) return makeAction(t('LIBRARY_RESUME'), resumeVideo);
+                const nextUnwatched = sorted.slice(resumeIdx + 1).find((v) => !v.watched && isReleased(v));
+                if (nextUnwatched) return makeAction(t('LIBRARY_PLAY'), nextUnwatched);
             }
         }
 
         const nonSpecials = sorted.filter((v) => v.season !== 0);
         const candidates = nonSpecials.length > 0 ? nonSpecials : sorted;
-        const firstUnwatched = candidates.find((v) => !v.watched && !v.upcoming);
-        const target = firstUnwatched ?? candidates[0];
+        const firstUnwatched = candidates.find((v) => !v.watched && isReleased(v));
+        const target = firstUnwatched ?? candidates.find((v) => isReleased(v)) ?? null;
         if (!target) return null;
 
-        const href = target.deepLinks?.player ?? target.deepLinks?.metaDetailsStreams ?? null;
-        const label = target.season != null
-            ? `Play S${target.season} E${target.episode}`
-            : `Play E${target.episode}`;
-        return { label, href };
+        const verb = firstUnwatched ? t('LIBRARY_PLAY') : t('LIBRARY_REWATCH');
+        return makeAction(verb, target);
     }, [hasVideos, isReady, meta, metaDetails.libraryItem]);
 
     const trailerHref = React.useMemo(() => {
@@ -284,7 +278,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             <div className={styles['hero-description-container']}>
                                 <div ref={descriptionRef} className={styles['hero-description']}>{description}</div>
                                 {descriptionTruncated &&
-                                    <Button className={styles['see-more']} onClick={showDetails}>See more</Button>
+                                    <Button className={styles['see-more']} onClick={showDetails}>{t('SHOW_MORE')}</Button>
                                 }
                             </div>
                         }
@@ -298,7 +292,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             {!hasVideos && typeof firstStreamHref === 'string' &&
                                 <Button className={styles['play-button']} href={firstStreamHref}>
                                     <Icon className={styles['play-icon']} name={'play'} />
-                                    <span>Play</span>
+                                    <span>{t('LIBRARY_PLAY')}</span>
                                 </Button>
                             }
                             {typeof meta.inLibrary === 'boolean' &&

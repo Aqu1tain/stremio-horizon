@@ -203,7 +203,7 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                                                 className={classnames(styles['quality-filter-chip'], { [styles['active']]: qualityFilter === null })}
                                                 onClick={() => setQualityFilter(null)}
                                             >
-                                                All
+                                                {t('ALL')}
                                             </button>
                                             {availableQualities.map((label) => (
                                                 <button

@@ -6,7 +6,7 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
 const { Button, HorizontalScroll } = require('stremio/components');
-const CONSTANTS = require('stremio/common/CONSTANTS');
+
 const useTranslate = require('stremio/common/useTranslate');
 const MetaRowPlaceholder = require('./MetaRowPlaceholder');
 const styles = require('./styles');
