@@ -60,16 +60,15 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         closeMenu();
         onMarkSeasonAsWatched(season, seasonWatched);
     }, [season, seasonWatched, onMarkSeasonAsWatched]);
+    const notPlayable = upcoming || !(released instanceof Date) || isNaN(released.getTime());
     const videoButtonOnClick = React.useCallback(() => {
-        if (upcoming || !(released instanceof Date) || isNaN(released.getTime())) return;
-        if (deepLinks) {
-            if (typeof deepLinks.player === 'string') {
-                window.location = deepLinks.player;
-            } else if (typeof deepLinks.metaDetailsStreams === 'string') {
-                window.location.replace(deepLinks.metaDetailsStreams);
-            }
+        if (notPlayable) return;
+        if (typeof deepLinks?.player === 'string') {
+            window.location = deepLinks.player;
+        } else if (typeof deepLinks?.metaDetailsStreams === 'string') {
+            window.location.replace(deepLinks.metaDetailsStreams);
         }
-    }, [upcoming, released, deepLinks]);
+    }, [notPlayable, deepLinks]);
     const renderLabel = React.useMemo(() => function renderLabel({ className, id, title, thumbnail, episode, released, upcoming, watched, progress, scheduled, children, ref, ...props }) {
         const blurThumbnail = profile.settings.hideSpoilers && season && episode && !watched;
 
@@ -86,7 +85,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         }, [selected]);
 
         return (
-            <Button {...props} ref={ref} className={classnames(className, styles['video-container'], { [styles['selected']]: selected, [styles['disabled']]: upcoming || !(released instanceof Date) || isNaN(released.getTime()) })} title={title}>
+            <Button {...props} ref={ref} className={classnames(className, styles['video-container'], { [styles['selected']]: selected, [styles['disabled']]: notPlayable })} title={title}>
                 {
                     typeof thumbnail === 'string' && thumbnail.length > 0 ?
                         <div className={styles['thumbnail-container']}>

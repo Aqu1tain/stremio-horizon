@@ -66,6 +66,13 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         if (!hasVideos || !isReady) return null;
 
         const isReleased = (v) => !v.upcoming && v.released instanceof Date && !isNaN(v.released.getTime());
+        const hrefOf = (v) => v.deepLinks?.player ?? v.deepLinks?.metaDetailsStreams ?? null;
+        const makeAction = (verb, video) => ({
+            href: hrefOf(video),
+            label: video.season != null
+                ? `${verb} S${video.season} E${video.episode}`
+                : `${verb} E${video.episode}`,
+        });
 
         const sorted = [...meta.videos].sort((a, b) => {
             if ((a.season ?? 0) !== (b.season ?? 0)) return (a.season ?? 0) - (b.season ?? 0);
@@ -77,21 +84,9 @@ const MetaDetails = ({ urlParams, queryParams }) => {
             const resumeIdx = sorted.findIndex((v) => v.id === libraryVideoId);
             if (resumeIdx !== -1) {
                 const resumeVideo = sorted[resumeIdx];
-                if (!resumeVideo.watched) {
-                    const href = resumeVideo.deepLinks?.player ?? resumeVideo.deepLinks?.metaDetailsStreams ?? null;
-                    const label = resumeVideo.season != null
-                        ? `${t('LIBRARY_RESUME')} S${resumeVideo.season} E${resumeVideo.episode}`
-                        : `${t('LIBRARY_RESUME')} E${resumeVideo.episode}`;
-                    return { label, href };
-                }
+                if (!resumeVideo.watched) return makeAction(t('LIBRARY_RESUME'), resumeVideo);
                 const nextUnwatched = sorted.slice(resumeIdx + 1).find((v) => !v.watched && isReleased(v));
-                if (nextUnwatched) {
-                    const href = nextUnwatched.deepLinks?.player ?? nextUnwatched.deepLinks?.metaDetailsStreams ?? null;
-                    const label = nextUnwatched.season != null
-                        ? `${t('LIBRARY_PLAY')} S${nextUnwatched.season} E${nextUnwatched.episode}`
-                        : `${t('LIBRARY_PLAY')} E${nextUnwatched.episode}`;
-                    return { label, href };
-                }
+                if (nextUnwatched) return makeAction(t('LIBRARY_PLAY'), nextUnwatched);
             }
         }
 
@@ -101,12 +96,8 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         const target = firstUnwatched ?? candidates.find((v) => isReleased(v)) ?? null;
         if (!target) return null;
 
-        const href = target.deepLinks?.player ?? target.deepLinks?.metaDetailsStreams ?? null;
         const verb = firstUnwatched ? t('LIBRARY_PLAY') : t('LIBRARY_REWATCH');
-        const label = target.season != null
-            ? `${verb} S${target.season} E${target.episode}`
-            : `${verb} E${target.episode}`;
-        return { label, href };
+        return makeAction(verb, target);
     }, [hasVideos, isReady, meta, metaDetails.libraryItem]);
 
     const trailerHref = React.useMemo(() => {
@@ -287,7 +278,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                             <div className={styles['hero-description-container']}>
                                 <div ref={descriptionRef} className={styles['hero-description']}>{description}</div>
                                 {descriptionTruncated &&
-                                    <Button className={styles['see-more']} onClick={showDetails}>See more</Button>
+                                    <Button className={styles['see-more']} onClick={showDetails}>{t('SHOW_MORE')}</Button>
                                 }
                             </div>
                         }
