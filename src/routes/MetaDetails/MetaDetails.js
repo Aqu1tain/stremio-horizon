@@ -1,6 +1,6 @@
 const React = require('react');
 const PropTypes = require('prop-types');
-const classnames = require('classnames');
+
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('stremio/components/Icon');
 const { default: Button } = require('stremio/components/Button');
@@ -30,7 +30,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
     const { core } = useServices();
     const metaDetails = useMetaDetails(urlParams);
     const [season, setSeason] = useSeason(urlParams, queryParams);
-    const [extensionTabs, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
+    const [, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
     const [activeTab, setActiveTab] = React.useState('streams');
 
@@ -69,7 +69,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         const hrefOf = (v) => v.deepLinks?.player ?? v.deepLinks?.metaDetailsStreams ?? null;
         const makeAction = (verb, video) => ({
             href: hrefOf(video),
-            label: video.season != null
+            label: video.season !== null
                 ? `${verb} S${video.season} E${video.episode}`
                 : `${verb} E${video.episode}`,
         });
