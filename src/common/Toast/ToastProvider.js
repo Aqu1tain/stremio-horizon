@@ -3,7 +3,7 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 const ToastItem = require('./ToastItem');
-const ToastContext = require('./ToastContext');
+const { default: ToastContext } = require('./ToastContext');
 
 const DEFAULT_TIMEOUT = 3000;
 
