@@ -1,7 +1,5 @@
-// Copyright (C) 2017-2023 Smart code 203358507
-
-const comparatorWithPriorities = (priorities) => {
-    return (a, b) => {
+const comparatorWithPriorities = (priorities: Record<string, number>) => {
+    return (a: string, b: string): number => {
         if (isNaN(priorities[a]) && isNaN(priorities[b])) {
             return a.localeCompare(b);
         } else if (isNaN(priorities[a])) {
@@ -22,4 +20,4 @@ const comparatorWithPriorities = (priorities) => {
     };
 };
 
-module.exports = comparatorWithPriorities;
+export default comparatorWithPriorities;
