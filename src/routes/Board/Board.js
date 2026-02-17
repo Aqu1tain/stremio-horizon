@@ -3,7 +3,7 @@
 const React = require('react');
 const classnames = require('classnames');
 const debounce = require('lodash.debounce');
-const useTranslate = require('stremio/common/useTranslate');
+const { default: useTranslate } = require('stremio/common/useTranslate');
 const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChildrenRange, useProfile } = require('stremio/common');
 const { ContinueWatchingItem, EventModal, HeroBanner, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
 const useBoard = require('./useBoard');

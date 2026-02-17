@@ -1,7 +1,7 @@
 const React = require('react');
 const UrlUtils = require('url');
 const CONSTANTS = require('stremio/common/CONSTANTS');
-const routesRegexp = require('stremio/common/routesRegexp');
+const { default: routesRegexp } = require('stremio/common/routesRegexp');
 
 const ALLOWED_LINK_REDIRECTS = [
     routesRegexp.search.regexp,

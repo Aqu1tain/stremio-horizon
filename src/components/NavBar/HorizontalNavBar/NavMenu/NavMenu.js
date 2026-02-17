@@ -5,7 +5,7 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useRouteFocused } = require('stremio-router');
 const Popup = require('stremio/components/Popup');
-const useBinaryState = require('stremio/common/useBinaryState');
+const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const NavMenuContent = require('./NavMenuContent');
 const styles = require('./styles.less');
 

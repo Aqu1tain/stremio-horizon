@@ -14,7 +14,7 @@ const { withCoreSuspender } = require('stremio/common/CoreSuspender');
 const useSearchHistory = require('./useSearchHistory');
 const useLocalSearch = require('./useLocalSearch');
 const styles = require('./styles');
-const useBinaryState = require('stremio/common/useBinaryState');
+const { default: useBinaryState } = require('stremio/common/useBinaryState');
 
 const SearchBar = React.memo(({ className, query, active }) => {
     const { t } = useTranslation();

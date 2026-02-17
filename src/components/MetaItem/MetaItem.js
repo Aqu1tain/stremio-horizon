@@ -9,7 +9,7 @@ const { default: Icon } = require('stremio/components/Icon');
 const { default: Button } = require('stremio/components/Button');
 const { default: Image } = require('stremio/components/Image');
 const Multiselect = require('stremio/components/Multiselect');
-const useBinaryState = require('stremio/common/useBinaryState');
+const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const { ICON_FOR_TYPE } = require('stremio/common/CONSTANTS');
 const styles = require('./styles');
 
