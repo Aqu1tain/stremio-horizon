@@ -2,7 +2,7 @@
 
 const React = require('react');
 const PropTypes = require('prop-types');
-const useTooltip = require('../useTooltip');
+const { default: useTooltip } = require('../useTooltip');
 const styles = require('./styles');
 
 const createId = () => (Math.random() + 1).toString(36).substring(7);
