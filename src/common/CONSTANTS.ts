@@ -31,7 +31,7 @@ export const TYPE_PRIORITIES: Record<string, number> = {
     adult: 1,
     other: -Infinity
 };
-export const ICON_FOR_TYPE: Map<string, string> = new Map([
+export const ICON_FOR_TYPE = new Map<string, string>([
     ['movie', 'movies'],
     ['series', 'series'],
     ['channel', 'channels'],

@@ -16,9 +16,11 @@ type ToastContextValue = {
     removeFilter?: (filter: ToastFilter) => void;
 };
 
+const noop = () => void 0;
+
 const ToastContext = createContext<ToastContextValue>({
-    show: () => { },
-    clear: () => { },
+    show: noop,
+    clear: noop,
 });
 
 ToastContext.displayName = 'ToastContext';
