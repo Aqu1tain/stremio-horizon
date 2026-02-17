@@ -1,3 +1,8 @@
+type Badge = {
+    label: string;
+    color: string;
+};
+
 const BADGE_PATTERNS = [
     { pattern: /2160p|4K/i, label: '4K', color: '#16a34a' },
     { pattern: /1080p/i, label: '1080p', color: '#2563eb' },
@@ -8,10 +13,10 @@ const BADGE_PATTERNS = [
     { pattern: /ATMOS|Dolby.Atmos/i, label: 'Atmos', color: '#0891b2' },
 ];
 
-const parseStreamBadges = (name, description) => {
+const parseStreamBadges = (name?: string, description?: string): Badge[] => {
     const text = [name, description].filter(Boolean).join(' ');
-    const seen = new Set();
-    return BADGE_PATTERNS.reduce((badges, { pattern, label, color }) => {
+    const seen = new Set<string>();
+    return BADGE_PATTERNS.reduce<Badge[]>((badges, { pattern, label, color }) => {
         if (pattern.test(text) && !seen.has(label)) {
             seen.add(label);
             badges.push({ label, color });
@@ -20,4 +25,5 @@ const parseStreamBadges = (name, description) => {
     }, []);
 };
 
-module.exports = parseStreamBadges;
+export type { Badge };
+export default parseStreamBadges;
