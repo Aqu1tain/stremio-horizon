@@ -91,20 +91,6 @@ const Addon = ({ className, id, name, version, logo, description, types, behavio
                     {displayName}
                 </div>
                 {
-                    typeof version === 'string' && version.length > 0 ?
-                        <div className={styles['version-container']}>{t('ADDON_VERSION_SHORT', {version})}</div>
-                        :
-                        null
-                }
-                {
-                    Array.isArray(types) && types.length > 0 ?
-                        <div className={styles['types-container']}>
-                            {types.join(', ')}
-                        </div>
-                        :
-                        null
-                }
-                {
                     typeof description === 'string' && description.length > 0 ?
                         <div className={styles['description-container']} title={description}>{description}</div>
                         :
