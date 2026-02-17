@@ -20,14 +20,15 @@
 .addon-container {
     display: flex;
     flex-direction: column;
-    padding: 1.25rem;
+    min-height: 16rem;
+    padding: 1.5rem;
     border-radius: var(--border-radius);
     border: thin solid rgba(255, 255, 255, 0.06);
     background-color: var(--overlay-color);
 
     .logo-container {
         flex: none;
-        margin: 0 auto 0.75rem;
+        margin: 0 auto 1rem;
         .placeholder-logo(@logo-size);
     }
 
@@ -36,19 +37,19 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.3rem;
-        margin-bottom: 0.75rem;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
 
         .placeholder-pill:nth-child(1) {
-            .placeholder-pill(60%);
+            .placeholder-pill(60%, 1.3rem);
         }
 
         .placeholder-pill:nth-child(2) {
-            .placeholder-pill(40%, 0.8rem);
+            .placeholder-pill(40%, 0.9rem);
         }
 
         .placeholder-pill:nth-child(3) {
-            .placeholder-pill(80%, 0.8rem);
+            .placeholder-pill(80%, 0.9rem);
         }
     }
 

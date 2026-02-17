@@ -6,10 +6,17 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
 const { default: Image } = require('stremio/components/Image');
+const { default: Button } = require('stremio/components/Button');
 const styles = require('./styles');
 
 const AddonDetails = ({ className, id, name, version, logo, description, types, transportUrl, official }) => {
     const { t } = useTranslation();
+    const [copied, setCopied] = React.useState(false);
+    const onCopyUrl = React.useCallback(() => {
+        navigator.clipboard.writeText(transportUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }, [transportUrl]);
     const renderLogoFallback = React.useCallback(() => (
         <Icon className={styles['icon']} name={'addons'} />
     ), []);
@@ -43,8 +50,13 @@ const AddonDetails = ({ className, id, name, version, logo, description, types, 
             {
                 typeof transportUrl === 'string' && transportUrl.length > 0 ?
                     <div className={styles['section-container']}>
-                        <span className={styles['section-header']}>{`${t('URL')}:`}</span>
-                        <span className={classnames(styles['section-label'], styles['transport-url-label'])}>{transportUrl}</span>
+                        <div className={styles['url-row']}>
+                            <span className={styles['section-header']}>{`${t('URL')}:`}</span>
+                            <Button className={styles['copy-button']} title={'Copy URL'} onClick={onCopyUrl}>
+                                <Icon className={styles['copy-icon']} name={copied ? 'checkmark' : 'copy'} />
+                            </Button>
+                        </div>
+                        <span className={classnames(styles['section-label'], styles['transport-url-label'])} title={transportUrl}>{transportUrl}</span>
                     </div>
                     :
                     null
