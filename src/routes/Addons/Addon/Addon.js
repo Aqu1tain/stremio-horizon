@@ -73,6 +73,9 @@ const Addon = ({ className, id, name, version, logo, description, types, behavio
     const renderLogoFallback = React.useCallback(() => (
         <Icon className={styles['icon']} name={'addons'} />
     ), []);
+    const displayName = typeof name === 'string' && name.length > 0 ? name : id;
+    const actionLabel = installed ? t('ADDON_UNINSTALL') : behaviorHints.configurationRequired ? t('ADDON_CONFIGURE') : t('ADDON_INSTALL');
+    const actionClick = installed ? onUninstallClick : behaviorHints.configurationRequired ? configureButtonOnClick : onInstallClick;
     return (
         <Button className={classnames(className, styles['addon-container'])} onKeyDown={onKeyDown} onClick={onOpenClick}>
             <div className={styles['logo-container']}>
@@ -84,25 +87,12 @@ const Addon = ({ className, id, name, version, logo, description, types, behavio
                 />
             </div>
             <div className={styles['info-container']}>
-                <div className={styles['name-container']} title={typeof name === 'string' && name.length > 0 ? name : id}>
-                    {typeof name === 'string' && name.length > 0 ? name : id}
+                <div className={styles['name-container']} title={displayName}>
+                    {displayName}
                 </div>
                 {
                     typeof version === 'string' && version.length > 0 ?
-                        <div className={styles['version-container']} title={t('ADDON_VERSION_SHORT', {version})}>{t('ADDON_VERSION_SHORT', {version})}</div>
-                        :
-                        null
-                }
-                {
-                    Array.isArray(types) && types.length > 0 ?
-                        <div className={styles['types-container']}>
-                            {
-                                types.length === 1 ?
-                                    types.join('')
-                                    :
-                                    types.slice(0, -1).join(', ') + ' & ' + types[types.length - 1]
-                            }
-                        </div>
+                        <div className={styles['version-container']}>{t('ADDON_VERSION_SHORT', {version})}</div>
                         :
                         null
                 }
@@ -114,27 +104,24 @@ const Addon = ({ className, id, name, version, logo, description, types, behavio
                 }
             </div>
             <div className={styles['buttons-container']}>
-                <div className={styles['action-buttons-container']}>
-                    {
-                        !behaviorHints.configurationRequired && behaviorHints.configurable ?
-                            <Button className={styles['configure-button-container']} title={t('ADDON_CONFIGURE')} tabIndex={-1} onClick={configureButtonOnClick}>
-                                <Icon className={styles['icon']} name={'settings'} />
-                            </Button>
-                            :
-                            null
-                    }
-                    <Button
-                        className={installed ? styles['uninstall-button-container'] : styles['install-button-container']}
-                        title={installed ? t('ADDON_UNINSTALL') : behaviorHints.configurationRequired ? t('ADDON_CONFIGURE') : t('ADDON_INSTALL')}
-                        tabIndex={-1}
-                        onClick={installed ? onUninstallClick : behaviorHints.configurationRequired ? configureButtonOnClick : onInstallClick}
-                    >
-                        <div className={styles['label']}>{installed ? t('ADDON_UNINSTALL') : behaviorHints.configurationRequired ? t('ADDON_CONFIGURE') : t('ADDON_INSTALL')}</div>
-                    </Button>
-                </div>
+                <Button
+                    className={installed ? styles['uninstall-button-container'] : styles['install-button-container']}
+                    title={actionLabel}
+                    tabIndex={-1}
+                    onClick={actionClick}
+                >
+                    <div className={styles['label']}>{actionLabel}</div>
+                </Button>
+                {
+                    !behaviorHints.configurationRequired && behaviorHints.configurable ?
+                        <Button className={styles['configure-button-container']} title={t('ADDON_CONFIGURE')} tabIndex={-1} onClick={configureButtonOnClick}>
+                            <Icon className={styles['icon']} name={'settings'} />
+                        </Button>
+                        :
+                        null
+                }
                 <Button className={styles['share-button-container']} title={t('SHARE_ADDON')} tabIndex={-1} onClick={shareButtonOnClick}>
                     <Icon className={styles['icon']} name={'share'} />
-                    <div className={styles['label']}>{ t('SHARE_ADDON') }</div>
                 </Button>
             </div>
         </Button>
