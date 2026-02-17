@@ -1,6 +1,9 @@
-// Copyright (C) 2017-2023 Smart code 203358507
+type RouteConfig = {
+    regexp: RegExp;
+    urlParamsNames: string[];
+};
 
-const routesRegexp = {
+const routesRegexp: Record<string, RouteConfig> = {
     intro: {
         regexp: /^\/intro$/,
         urlParamsNames: []
@@ -47,4 +50,5 @@ const routesRegexp = {
     }
 };
 
-module.exports = routesRegexp;
+export type { RouteConfig };
+export default routesRegexp;

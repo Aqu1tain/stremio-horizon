@@ -3,8 +3,8 @@
 const React = require('react');
 const magnet = require('magnet-uri');
 const { useServices } = require('stremio/services');
-const useToast = require('stremio/common/Toast/useToast');
-const useStreamingServer = require('stremio/common/useStreamingServer');
+const { default: useToast } = require('stremio/common/Toast/useToast');
+const { default: useStreamingServer } = require('stremio/common/useStreamingServer');
 
 const useTorrent = () => {
     const { core } = useServices();

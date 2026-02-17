@@ -9,7 +9,7 @@ const { useProfile, usePlatform, useToast, useBinaryState } = require('stremio/c
 const { Button, Image, Popup } = require('stremio/components');
 const { useServices } = require('stremio/services');
 const { useRouteFocused } = require('stremio-router');
-const parseStreamBadges = require('stremio/common/parseStreamBadges');
+const { default: parseStreamBadges } = require('stremio/common/parseStreamBadges');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 

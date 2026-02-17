@@ -1,8 +1,6 @@
-// Copyright (C) 2017-2023 Smart code 203358507
+import useModelState from 'stremio/common/useModelState';
 
-const useModelState = require('stremio/common/useModelState');
-
-const map = (ctx) => ({
+const map = (ctx: any) => ({
     ...ctx.profile,
     settings: {
         ...ctx.profile.settings,
@@ -15,8 +13,9 @@ const map = (ctx) => ({
     }
 });
 
-const useProfile = () => {
+const useProfile = (): Profile => {
+    // @ts-expect-error useModelState is untyped, action is optional
     return useModelState({ model: 'ctx', map });
 };
 
-module.exports = useProfile;
+export default useProfile;

@@ -2,6 +2,9 @@
 
 const EventEmitter = require('eventemitter3');
 const ChromecastTransport = require('./ChromecastTransport');
+const TauriChromecastTransport = require('./TauriChromecastTransport');
+
+const isTauri = typeof window.__TAURI_INTERNALS__ !== 'undefined';
 
 function Chromecast() {
     let active = false;
@@ -66,7 +69,7 @@ function Chromecast() {
         }
 
         starting = true;
-        transport = new ChromecastTransport();
+        transport = isTauri ? new TauriChromecastTransport() : new ChromecastTransport();
         transport.on('init', onTransportInit);
         transport.on('init-error', onTransportInitError);
         onStateChanged();

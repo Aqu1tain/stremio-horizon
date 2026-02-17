@@ -8,11 +8,11 @@ const { default: Icon } = require('stremio/components/Icon');
 const { useServices } = require('stremio/services');
 const { Button } = require('stremio/components');
 const { default: useFullscreen } = require('stremio/common/useFullscreen');
-const useProfile = require('stremio/common/useProfile');
-const usePWA = require('stremio/common/usePWA');
+const { default: useProfile } = require('stremio/common/useProfile');
+const { default: usePWA } = require('stremio/common/usePWA');
 const useTorrent = require('stremio/common/useTorrent');
 const { withCoreSuspender } = require('stremio/common/CoreSuspender');
-const useStreamingServer = require('stremio/common/useStreamingServer');
+const { default: useStreamingServer } = require('stremio/common/useStreamingServer');
 const styles = require('./styles');
 
 const NavMenuContent = ({ onClick }) => {

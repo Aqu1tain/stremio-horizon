@@ -7,8 +7,8 @@ const classnames = require('classnames');
 const { useRouteFocused } = require('stremio-router');
 const { default: Icon } = require('stremio/components/Icon');
 const { Button, Image, Popup } = require('stremio/components');
-const useBinaryState = require('stremio/common/useBinaryState');
-const useProfile = require('stremio/common/useProfile');
+const { default: useBinaryState } = require('stremio/common/useBinaryState');
+const { default: useProfile } = require('stremio/common/useProfile');
 const VideoPlaceholder = require('./VideoPlaceholder');
 const styles = require('./styles');
 

@@ -1,14 +1,14 @@
-const { useState, useEffect, useCallback, useRef } = require('react');
+import { useState, useEffect, useCallback, useRef, RefObject } from 'react';
 
 const SCROLL_THRESHOLD = 10;
 
-const useNavbarScroll = (containerRef, enabled = true) => {
+const useNavbarScroll = (containerRef: RefObject<HTMLElement | null>, enabled = true) => {
     const [visible, setVisible] = useState(true);
     const [scrolled, setScrolled] = useState(false);
     const lastScrollTop = useRef(0);
 
-    const handleScroll = useCallback((event) => {
-        const target = event.target;
+    const handleScroll = useCallback((event: Event) => {
+        const target = event.target as HTMLElement;
         if (!target || target.scrollTop === undefined) return;
         if (target.scrollHeight <= target.clientHeight) return;
 
@@ -42,4 +42,4 @@ const useNavbarScroll = (containerRef, enabled = true) => {
     return { visible, scrolled };
 };
 
-module.exports = useNavbarScroll;
+export default useNavbarScroll;
