@@ -76,7 +76,6 @@ const Settings = () => {
             <div className={classnames(styles['settings-content'], 'animation-fade-in')}>
                 <Menu
                     selected={selectedSectionId}
-                    streamingServer={streamingServer}
                     onSelect={onMenuSelect}
                 />
 
