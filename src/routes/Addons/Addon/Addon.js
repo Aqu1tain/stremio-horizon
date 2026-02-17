@@ -97,6 +97,14 @@ const Addon = ({ className, id, name, version, logo, description, types, behavio
                         null
                 }
                 {
+                    Array.isArray(types) && types.length > 0 ?
+                        <div className={styles['types-container']}>
+                            {types.join(', ')}
+                        </div>
+                        :
+                        null
+                }
+                {
                     typeof description === 'string' && description.length > 0 ?
                         <div className={styles['description-container']} title={description}>{description}</div>
                         :
