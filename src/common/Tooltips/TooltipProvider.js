@@ -2,7 +2,7 @@
 
 const React = require('react');
 const PropTypes = require('prop-types');
-const TooltipContext = require('./TooltipContext');
+const { default: TooltipContext } = require('./TooltipContext');
 const TooltipItem = require('./TooltipItem');
 
 const TooltipProvider = ({ children, className }) => {
