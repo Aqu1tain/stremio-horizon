@@ -27,7 +27,7 @@ const { default: useShell } = require('./useShell');
 const { default: useStreamingServer } = require('./useStreamingServer');
 const { default: useTimeout } = require('./useTimeout');
 const useTorrent = require('./useTorrent');
-const useTranslate = require('./useTranslate');
+const { default: useTranslate } = require('./useTranslate');
 const { default: useOrientation } = require('./useOrientation');
 const { default: useLanguageSorting } = require('./useLanguageSorting');
 

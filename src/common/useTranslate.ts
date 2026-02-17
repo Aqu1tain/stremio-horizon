@@ -1,14 +1,19 @@
-// Copyright (C) 2017-2023 Smart code 203358507
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const { useCallback } = require('react');
-const { useTranslation } = require('react-i18next');
+type CatalogInfo = {
+    addon?: { manifest: { id: string } };
+    id?: string;
+    name?: string;
+    type?: string;
+};
 
 const useTranslate = () => {
     const { t } = useTranslation();
 
-    const string = useCallback((key) => t(key), [t]);
+    const string = useCallback((key: string) => t(key), [t]);
 
-    const stringWithPrefix = useCallback((value, prefix, fallback = null) => {
+    const stringWithPrefix = useCallback((value: string, prefix: string, fallback: string | null = null) => {
         const key = `${prefix}${value}`;
         const defaultValue = fallback ?? value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -17,7 +22,8 @@ const useTranslate = () => {
         });
     }, [t]);
 
-    const catalogTitle = useCallback(({ addon, id, name, type } = {}, withType = true) => {
+    const catalogTitle = useCallback((info: CatalogInfo = {}, withType = true) => {
+        const { addon, id, name, type } = info;
         if (addon && id && name) {
             const partialKey = `${addon.manifest.id.split('.').join('_')}_${id}`;
             const translatedName = stringWithPrefix(partialKey, 'CATALOG_', name);
@@ -40,4 +46,5 @@ const useTranslate = () => {
     };
 };
 
-module.exports = useTranslate;
+export type { CatalogInfo };
+export default useTranslate;
