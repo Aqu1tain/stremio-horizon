@@ -2,6 +2,7 @@
 
 const React = require('react');
 const classnames = require('classnames');
+const { useTranslation } = require('react-i18next');
 const { useServices } = require('stremio/services');
 const { ModalDialog } = require('stremio/components');
 const { default: Button } = require('stremio/components/Button');
@@ -9,6 +10,7 @@ const { default: Icon } = require('stremio/components/Icon');
 const styles = require('./styles');
 
 const CastPicker = () => {
+    const { t } = useTranslation();
     const { chromecast } = useServices();
     const [open, setOpen] = React.useState(false);
     const [devices, setDevices] = React.useState([]);
@@ -72,18 +74,18 @@ const CastPicker = () => {
     return (
         <ModalDialog
             className={styles['cast-picker-modal']}
-            title={'Cast to'}
+            title={t('CAST_TO')}
             onCloseRequest={onClose}
         >
             <div className={styles['cast-picker-content']}>
                 {loading && !connecting && (
                     <div className={styles['status-message']}>
-                        Searching for devices...
+                        {t('CAST_SEARCHING_DEVICES')}
                     </div>
                 )}
                 {connecting && (
                     <div className={styles['status-message']}>
-                        {`Connecting to ${connecting}...`}
+                        {t('CAST_CONNECTING_TO', { name: connecting })}
                     </div>
                 )}
                 {error && (
@@ -93,7 +95,7 @@ const CastPicker = () => {
                 )}
                 {!loading && !connecting && devices.length === 0 && !error && (
                     <div className={styles['status-message']}>
-                        No devices found
+                        {t('CAST_NO_DEVICES_FOUND')}
                     </div>
                 )}
                 {!connecting && devices.length > 0 && (
@@ -113,7 +115,7 @@ const CastPicker = () => {
                 {!loading && !connecting && (
                     <Button className={styles['refresh-button']} onClick={discover}>
                         <Icon className={styles['refresh-icon']} name={'reset'} />
-                        <div className={styles['refresh-label']}>Scan again</div>
+                        <div className={styles['refresh-label']}>{t('CAST_SCAN_AGAIN')}</div>
                     </Button>
                 )}
             </div>
