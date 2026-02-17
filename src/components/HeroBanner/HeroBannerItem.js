@@ -9,7 +9,7 @@ const { default: Icon } = require('stremio/components/Icon');
 const { default: Button } = require('stremio/components/Button');
 const { default: Image } = require('stremio/components/Image');
 const CONSTANTS = require('stremio/common/CONSTANTS');
-const routesRegexp = require('stremio/common/routesRegexp');
+const { default: routesRegexp } = require('stremio/common/routesRegexp');
 const styles = require('./styles');
 
 const ALLOWED_LINK_REDIRECTS = [

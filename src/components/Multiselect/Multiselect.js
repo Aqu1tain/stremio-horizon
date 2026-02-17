@@ -8,7 +8,7 @@ const { default: Icon } = require('stremio/components/Icon');
 const { Button } = require('stremio/components');
 const Popup = require('stremio/components/Popup');
 const ModalDialog = require('stremio/components/ModalDialog');
-const useBinaryState = require('stremio/common/useBinaryState');
+const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const styles = require('./styles');
 
 const Multiselect = ({ className, mode, direction, title, disabled, dataset, options, renderLabelContent, renderLabelText, onOpen, onClose, onSelect, ...props }) => {
