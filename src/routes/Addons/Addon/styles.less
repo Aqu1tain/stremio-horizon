@@ -17,9 +17,9 @@
 
     .logo-container {
         flex: none;
-        width: 5rem;
-        height: 5rem;
-        margin: 0.5rem auto 1rem;
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 0.75rem;
 
         .logo {
             display: block;
@@ -33,7 +33,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            padding: 0.75rem;
+            padding: 0.5rem;
             color: var(--primary-foreground-color);
         }
     }
@@ -44,13 +44,11 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
-        margin-bottom: 1rem;
-        min-height: 3.5rem;
-        overflow: hidden;
+        margin-bottom: 0.75rem;
 
         .name-container {
             width: 100%;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--primary-foreground-color);
             white-space: nowrap;
@@ -59,23 +57,28 @@
         }
 
         .version-container {
-            margin-top: 0.25rem;
-            font-size: 0.8rem;
+            margin-top: 0.2rem;
+            font-size: 0.75rem;
             color: var(--primary-foreground-color);
             opacity: 0.4;
         }
 
         .types-container {
-            margin-top: 0.25rem;
-            font-size: 0.8rem;
+            margin-top: 0.2rem;
+            font-size: 0.75rem;
             color: var(--primary-foreground-color);
             text-transform: capitalize;
             opacity: 0.4;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 100%;
         }
 
         .description-container {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            font-size: 0.8rem;
+            line-height: 1.3;
             color: var(--primary-foreground-color);
             opacity: 0.6;
             display: -webkit-box;
@@ -87,19 +90,16 @@
 
     .buttons-container {
         flex: none;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
 
         .install-button-container, .uninstall-button-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 2.75rem;
-            border-radius: 2.75rem;
+            height: 2.5rem;
+            border-radius: 2.5rem;
 
             .label {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 font-weight: 600;
                 color: var(--primary-foreground-color);
             }
