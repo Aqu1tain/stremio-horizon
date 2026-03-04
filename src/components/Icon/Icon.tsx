@@ -9,7 +9,7 @@ import {
     Calendar, Cast, Globe, Gauge,
     Heart, ThumbsUp, CircleAlert,
     Captions, AudioLines, ListVideo, SlidersHorizontal,
-    Clapperboard, Users, Megaphone, Glasses, Smartphone,
+    Clapperboard, Users, Megaphone, Glasses, Smartphone, Keyboard, Copy,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import StremioIcon from '@stremio/stremio-icons/react';
@@ -67,6 +67,8 @@ const LUCIDE_MAP: Record<string, LucideIcon> = {
     'megaphone': Megaphone,
     'glasses': Glasses,
     'remote': Smartphone,
+    'keyboard': Keyboard,
+    'copy': Copy,
 };
 
 const FILLED_ICONS = new Set(['heart', 'thumbs-up']);

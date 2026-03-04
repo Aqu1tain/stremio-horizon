@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'stremio/components';
 import { useServices } from 'stremio/services';
 import { usePlatform, useToast } from 'stremio/common';
-import { Section, Option, Link } from '../components';
+import { Category, Section, Option, Link } from '../components';
 import User from './User';
 import useDataExport from './useDataExport';
 import styles from './General.less';
@@ -87,53 +87,51 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
         <Section>
             {
                 profile?.auth?.user &&
-                    <Link
-                        label={t('SETTINGS_DATA_EXPORT')}
-                        onClick={onExportData}
-                    />
+                    <Category icon={'person'} label={'ACCOUNT'}>
+                        <Link
+                            label={t('SETTINGS_DATA_EXPORT')}
+                            onClick={onExportData}
+                        />
+                        <Link
+                            label={t('SETTINGS_SUBSCRIBE_CALENDAR')}
+                            onClick={onCalendarSubscribe}
+                        />
+                        <Link
+                            label={t('SETTINGS_ACC_DELETE')}
+                            href={'https://stremio.zendesk.com/hc/en-us/articles/360021428911-How-to-delete-my-account'}
+                        />
+                        {
+                            profile?.auth?.user?.email &&
+                                <Link
+                                    label={t('SETTINGS_CHANGE_PASSWORD')}
+                                    href={`https://www.strem.io/reset-password/${profile.auth.user.email}`}
+                                />
+                        }
+                        <Option className={styles['trakt-container']} icon={'trakt'} label={t('SETTINGS_TRAKT')}>
+                            <Button className={'button'} title={isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')} disabled={profile.auth === null} tabIndex={-1} onClick={onToggleTrakt}>
+                                {isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')}
+                            </Button>
+                        </Option>
+                    </Category>
             }
-            {
-                profile?.auth?.user &&
-                    <Link
-                        label={t('SETTINGS_SUBSCRIBE_CALENDAR')}
-                        onClick={onCalendarSubscribe}
-                    />
-            }
-            <Link
-                label={t('SETTINGS_SUPPORT')}
-                href={'https://stremio.zendesk.com/hc/en-us'}
-            />
-            <Link
-                label={t('SETTINGS_SOURCE_CODE')}
-                href={`https://github.com/stremio/stremio-web/tree/${process.env.COMMIT_HASH}`}
-            />
-            <Link
-                label={t('TERMS_OF_SERVICE')}
-                href={'https://www.stremio.com/tos'}
-            />
-            <Link
-                label={t('PRIVACY_POLICY')}
-                href={'https://www.stremio.com/privacy'}
-            />
-            {
-                profile?.auth?.user &&
-                    <Link
-                        label={t('SETTINGS_ACC_DELETE')}
-                        href={'https://stremio.zendesk.com/hc/en-us/articles/360021428911-How-to-delete-my-account'}
-                    />
-            }
-            {
-                profile?.auth?.user?.email &&
-                    <Link
-                        label={t('SETTINGS_CHANGE_PASSWORD')}
-                        href={`https://www.strem.io/reset-password/${profile.auth.user.email}`}
-                    />
-            }
-            <Option className={styles['trakt-container']} icon={'trakt'} label={t('SETTINGS_TRAKT')}>
-                <Button className={'button'} title={isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')} disabled={profile.auth === null} tabIndex={-1} onClick={onToggleTrakt}>
-                    {isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')}
-                </Button>
-            </Option>
+            <Category icon={'info'} label={'SETTINGS_ABOUT'}>
+                <Link
+                    label={t('SETTINGS_SUPPORT')}
+                    href={'https://stremio.zendesk.com/hc/en-us'}
+                />
+                <Link
+                    label={t('SETTINGS_SOURCE_CODE')}
+                    href={`https://github.com/stremio/stremio-web/tree/${process.env.COMMIT_HASH}`}
+                />
+                <Link
+                    label={t('TERMS_OF_SERVICE')}
+                    href={'https://www.stremio.com/tos'}
+                />
+                <Link
+                    label={t('PRIVACY_POLICY')}
+                    href={'https://www.stremio.com/privacy'}
+                />
+            </Category>
         </Section>
     </>;
 });

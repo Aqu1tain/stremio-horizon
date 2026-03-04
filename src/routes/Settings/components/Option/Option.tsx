@@ -22,7 +22,7 @@ const Option = ({ className, icon, label, children }: Props) => {
                             name={icon}
                         />
                 }
-                <div className={styles['label']}>
+                <div className={styles['label']} title={t(label)}>
                     {t(label)}
                 </div>
             </div>

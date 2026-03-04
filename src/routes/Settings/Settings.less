@@ -1,5 +1,3 @@
-// Copyright (C) 2017-2024 Smart code 203358507
-
 @import (reference) '~stremio/common/screen-sizes.less';
 
 .settings-container {
@@ -16,7 +14,9 @@
         .sections-container {
             flex: 1;
             align-self: stretch;
-            padding: 0 calc(2 * var(--content-padding));
+            max-width: 50rem;
+            margin: 0 auto;
+            padding: 0 2rem;
             overflow-y: auto;
         }
     }
