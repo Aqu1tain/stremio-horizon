@@ -1,15 +1,51 @@
 :import('~stremio/routes/Settings/components/Option/Option.less') {
-    option-content: content;
+    option-content-ref: content;
 }
 
 .info {
-    .option-content {
+    .option-content-ref {
         color: var(--primary-foreground-color);
         overflow: hidden;
 
         .label {
             text-overflow: ellipsis;
             white-space: nowrap;
+            opacity: 0.6;
+        }
+    }
+
+    .option-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .label {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            opacity: 0.6;
+        }
+    }
+
+    .copy-button {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.15s;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .copy-icon {
+            width: 1rem;
+            height: 1rem;
+            color: var(--primary-foreground-color);
             opacity: 0.6;
         }
     }
