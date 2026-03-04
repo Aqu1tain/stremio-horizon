@@ -1,5 +1,11 @@
+// Copyright (C) 2017-2024 Smart code 203358507
+
+@import (reference) '~stremio/common/screen-sizes.less';
+
 @placeholder-opacity: 0.1;
-@logo-size: 4rem;
+@padding: 1.5rem;
+@small-padding: 1rem;
+@logo-size: 8rem;
 
 .placeholder-pill(@width: 100%, @height: 1.3rem) {
     background-color: var(--primary-foreground-color);
@@ -19,46 +25,119 @@
 
 .addon-container {
     display: flex;
-    flex-direction: column;
-    min-height: 16rem;
-    padding: 1.5rem;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: @padding;
     border-radius: var(--border-radius);
-    border: thin solid rgba(255, 255, 255, 0.06);
     background-color: var(--overlay-color);
+    cursor: inherit;
 
-    .logo-container {
-        flex: none;
-        margin: 0 auto 1rem;
-        .placeholder-logo(@logo-size);
-    }
-
-    .info-container {
-        flex: 1;
+    .content {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.4rem;
-        margin-bottom: 1rem;
+        flex: 1;
 
-        .placeholder-pill:nth-child(1) {
-            .placeholder-pill(60%, 1.3rem);
+        .logo-container {
+            flex: none;
+            .placeholder-logo(@logo-size);
         }
 
-        .placeholder-pill:nth-child(2) {
-            .placeholder-pill(40%, 0.9rem);
-        }
+        .info-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: @small-padding;
+            flex: 1;
 
-        .placeholder-pill:nth-child(3) {
-            .placeholder-pill(80%, 0.9rem);
+            .placeholder-pill:nth-child(1) {
+                .placeholder-pill(40%);
+            }
+
+            .placeholder-pill:nth-child(2) {
+                .placeholder-pill(60%);
+            }
+
+            .placeholder-pill:nth-child(3) {
+                .placeholder-pill(80%);
+            }
+
+            .placeholder-pill:nth-child(4) {
+                display: none;
+            }
         }
     }
 
     .buttons-container {
         flex: none;
+        display: flex;
+        flex-direction: column;
+        gap: @small-padding;
+        width: 30%;
+        max-width: 18rem;
 
-        .placeholder-pill {
-            .placeholder-pill(100%, 2.5rem);
-            border-radius: 2.5rem;
+        .action-buttons-container {
+            display: flex;
+            flex-direction: row;
+            gap: @small-padding;
+
+            .placeholder-pill:nth-child(1), .placeholder-pill:nth-child(2) {
+                .placeholder-pill(50%, 3.5rem);
+            }
+        }
+
+        .placeholder-pill:last-child {
+            .placeholder-pill(100%, 3.5rem);
+        }
+    }
+}
+
+@media screen and (max-width: @minimum) {
+    .addon-container {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 1rem;
+
+        .content {
+            flex-direction: row;
+            width: 100%;
+
+            .logo-container {
+                margin: 0 auto;
+            }
+
+            .info-container {
+                padding: 1rem;
+                width: 100%;
+
+                .placeholder-pill:nth-child(1) {
+                    .placeholder-pill(60%);
+                }
+
+                .placeholder-pill:nth-child(2) {
+                    .placeholder-pill(40%);
+                }
+
+                .placeholder-pill:nth-child(3) {
+                    .placeholder-pill(80%, 0.8rem);
+                }
+
+                .placeholder-pill:nth-child(4) {
+                    display: block;
+                    .placeholder-pill(20%, 0.8rem);
+                }
+            }
+        }
+
+        .buttons-container {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+            gap: 0.5rem;
+            max-width: none;
+
+            .action-buttons-container {
+                display: none;
+            }
         }
     }
 }
