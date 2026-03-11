@@ -102,6 +102,16 @@ export const EXTERNAL_PLAYERS: ExternalPlayer[] = [
         platforms: ['visionos'],
     },
     {
+        label: 'Infuse',
+        value: 'infuse',
+        platforms: ['ios', 'visionos', 'macos'],
+    },
+    {
+        label: 'Vidhub',
+        value: 'vidhub',
+        platforms: ['ios'],
+    },
+    {
         label: 'M3U Playlist',
         value: 'm3u',
         platforms: ['ios', 'visionos', 'android', 'windows', 'linux', 'macos'],

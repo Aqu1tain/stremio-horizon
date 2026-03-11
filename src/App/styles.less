@@ -23,8 +23,8 @@
 // HTML sizes
 @html-width: ~"calc(max(var(--small-viewport-width), var(--dynamic-viewport-width)))";
 @html-height: ~"calc(max(var(--small-viewport-height), var(--dynamic-viewport-height)))";
-@html-standalone-width: ~"calc(max(100%, var(--small-viewport-width)))";
-@html-standalone-height: ~"calc(max(100%, var(--small-viewport-height)))";
+@html-standalone-width: ~"calc(max(100%, var(--large-viewport-width)))";
+@html-standalone-height: ~"calc(max(100%, var(--large-viewport-height)))";
 
 // Safe area insets
 @safe-area-inset-top: env(safe-area-inset-top, 0rem);
@@ -157,6 +157,7 @@ html {
     overscroll-behavior: none;
     user-select: none;
     touch-action: manipulation;
+    background-color: var(--primary-background-color);
     -webkit-tap-highlight-color: transparent;
 
     @media (display-mode: standalone) {
