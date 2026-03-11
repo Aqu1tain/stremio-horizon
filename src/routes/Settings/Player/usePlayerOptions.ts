@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CONSTANTS, languageNames, useLanguageSorting, usePlatform } from 'stremio/common';
 import { useServices } from 'stremio/services';
-import { CONSTANTS, languageNames, usePlatform, useLanguageSorting } from 'stremio/common';
 
 const LANGUAGES_NAMES: Record<string, string> = languageNames;
 
@@ -232,12 +232,12 @@ const usePlayerOptions = (profile: Profile) => {
     const nextVideoPopupDurationSelect = useMemo(() => ({
         options: CONSTANTS.NEXT_VIDEO_POPUP_DURATIONS.map((duration) => ({
             value: `${duration}`,
-            label: duration === 0 ? 'Disabled' : `${duration / 1000} ${t('SECONDS')}`
+            label: duration === 0 ? t('SETTINGS_DISABLED') : `${duration / 1000} ${t('SECONDS')}`
         })),
         value: `${profile.settings.nextVideoNotificationDuration}`,
         title: () => {
             return profile.settings.nextVideoNotificationDuration === 0 ?
-                'Disabled'
+                t('SETTINGS_DISABLED')
                 :
                 `${profile.settings.nextVideoNotificationDuration / 1000} ${t('SECONDS')}`;
         },

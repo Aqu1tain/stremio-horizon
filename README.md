@@ -1,6 +1,6 @@
 # Stremio Horizon
 
-[![Based on](https://img.shields.io/badge/based%20on-stremio--web%20v5.0.0--beta.30-blue)](https://github.com/Stremio/stremio-web/tree/v5.0.0-beta.30)
+[![Based on](https://img.shields.io/badge/based%20on-stremio--web%20v5.0.0--beta.31-blue)](https://github.com/Stremio/stremio-web/tree/v5.0.0-beta.31)
 
 An alternative web UI for [Stremio](https://www.stremio.com), focused on modern design and usability.
 
@@ -40,6 +40,10 @@ Based on [Stremio Web 5](https://github.com/Stremio/stremio-web), but going in a
 ### Icons
 - Migrated to [Lucide](https://lucide.dev) icons with automatic fallback to stremio-icons for brand/custom icons
 
+### Settings
+- Redesigned layout with categorized sections and glass-morphism cards
+- Copy-to-clipboard button for build hash
+
 ### Visual polish
 - Overlay borders replacing outer-glow shadows
 - Consistent spacing and typography across pages
@@ -67,7 +71,7 @@ Based on [Stremio Web 5](https://github.com/Stremio/stremio-web), but going in a
 
 ### Prerequisites
 
-* Node.js 12 or higher
+* Node.js 20 or higher
 * [pnpm](https://pnpm.io/installation) 10 or higher
 
 ### Install dependencies
