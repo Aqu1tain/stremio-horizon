@@ -1,7 +1,7 @@
 {
     "name": "stremio",
     "displayName": "Stremio",
-    "version": "0.1.2-rc.1",
+    "version": "0.1.2",
     "author": "Smart Code OOD",
     "private": true,
     "license": "gpl-2.0",
