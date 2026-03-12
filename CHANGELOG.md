@@ -7,9 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-03-12
+
+### Added
+
+- Version labels in Settings for Horizon, Core, App, Server and Build
+
 ### Changed
 
 - Merge upstream stremio-web v5.0.0-beta.31
+
+### Fixed
+
+- Production build crash on Addons page caused by Terser ecma:5 downleveling
+- CJS/ESM default export interop for useToast
 
 ## [0.1.2] - 2026-03-11
 
@@ -18,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Redesigned settings page with categories and glass-morphism cards
 - Copy-to-clipboard button for build hash in settings
 - Tauri auto-update support in UpdaterBanner
-- stremio-horizon and stremio-horizon-app version labels in settings
 
 ### Changed
 
@@ -27,7 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 ### Fixed
 
 - Play button broken with upcoming/unreleased episodes
-- CJS/ESM default export interop
 
 ## [0.1.1] - 2026-02-09
 
@@ -42,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Aqu1tain/stremio-horizon/releases/tag/v0.1.1
