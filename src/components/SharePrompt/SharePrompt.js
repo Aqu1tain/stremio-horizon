@@ -9,7 +9,7 @@ const { useRouteFocused } = require('stremio-router');
 const { useServices } = require('stremio/services');
 const { Button } = require('stremio/components');
 const { default: TextInput } = require('stremio/components/TextInput');
-const useToast = require('stremio/common/Toast/useToast');
+const { default: useToast } = require('stremio/common/Toast/useToast');
 const styles = require('./styles');
 
 const SharePrompt = ({ className, url }) => {
