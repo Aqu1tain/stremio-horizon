@@ -195,7 +195,7 @@ module.exports = (env, argv) => ({
                 test: /\.js$/,
                 extractComments: false,
                 terserOptions: {
-                    ecma: 5,
+                    ecma: 2020,
                     mangle: true,
                     warnings: false,
                     output: {
