@@ -11,6 +11,7 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const packageJson = require('./package.json');
+const coreWebPackageJson = require('@stremio/stremio-core-web/package.json');
 
 const COMMIT_HASH = execSync('git rev-parse HEAD').toString().trim();
 
@@ -215,6 +216,7 @@ module.exports = (env, argv) => ({
             SERVICE_WORKER_DISABLED: false,
             DEBUG: argv.mode !== 'production',
             VERSION: packageJson.version,
+            CORE_VERSION: coreWebPackageJson.version,
             COMMIT_HASH
         }),
         new webpack.ProvidePlugin({
