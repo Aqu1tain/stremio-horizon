@@ -14,12 +14,12 @@ const User = ({ profile }: Props) => {
 
     const avatar = useMemo(() => (
         !profile.auth ?
-            `url('${require('/assets/images/anonymous.png')}')`
+            `url('${require('/assets/images/anonymous.webp')}')`
             :
             profile.auth.user.avatar ?
                 `url('${profile.auth.user.avatar}')`
                 :
-                `url('${require('/assets/images/default_avatar.png')}')`
+                `url('${require('/assets/images/default_avatar.webp')}')`
     ), [profile.auth]);
 
     const onLogout = useCallback(() => {
