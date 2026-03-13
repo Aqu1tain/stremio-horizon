@@ -159,6 +159,7 @@ const App = () => {
             }
         };
         const onWindowFocus = () => {
+            if (!services.core.transport) return;
             services.core.transport.dispatch({
                 action: 'Ctx',
                 args: {
