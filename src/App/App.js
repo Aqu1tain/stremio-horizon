@@ -195,7 +195,7 @@ const App = () => {
                 .catch(console.error);
         }
         return () => {
-            if (services.core.active) {
+            if (services.core.active && services.core.transport) {
                 window.removeEventListener('focus', onWindowFocus);
                 services.core.transport.off('CoreEvent', onCoreEvent);
             }
