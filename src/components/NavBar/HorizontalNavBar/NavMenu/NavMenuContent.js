@@ -12,6 +12,7 @@ const { default: useProfile } = require('stremio/common/useProfile');
 const { default: usePWA } = require('stremio/common/usePWA');
 const useTorrent = require('stremio/common/useTorrent');
 const { withCoreSuspender } = require('stremio/common/CoreSuspender');
+const { default: getAvatarUrl } = require('stremio/common/getAvatarUrl');
 const { default: useStreamingServer } = require('stremio/common/useStreamingServer');
 const styles = require('./styles');
 
@@ -50,15 +51,7 @@ const NavMenuContent = ({ onClick }) => {
             <div className={styles['user-info-container']}>
                 <div
                     className={styles['avatar-container']}
-                    style={{
-                        backgroundImage: profile.auth === null ?
-                            `url('${require('/assets/images/anonymous.png')}')`
-                            :
-                            profile.auth.user.avatar ?
-                                `url('${profile.auth.user.avatar}')`
-                                :
-                                `url('${require('/assets/images/default_avatar.png')}')`
-                    }}
+                    style={{ backgroundImage: getAvatarUrl(profile.auth) }}
                 />
                 <div className={styles['user-info-details']}>
                     <div className={styles['email-container']}>

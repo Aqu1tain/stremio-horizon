@@ -6,6 +6,7 @@ const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
 const { ShortcutsProvider, useShortcuts, onShortcut } = require('./Shortcuts');
 const { default: comparatorWithPriorities } = require('./comparatorWithPriorities');
+const { default: getAvatarUrl } = require('./getAvatarUrl');
 const CONSTANTS = require('./CONSTANTS');
 const { withCoreSuspender, useCoreSuspender } = require('./CoreSuspender');
 const getVisibleChildrenRange = require('./getVisibleChildrenRange');
@@ -44,6 +45,7 @@ module.exports = {
     TooltipProvider,
     Tooltip,
     comparatorWithPriorities,
+    getAvatarUrl,
     CONSTANTS,
     withCoreSuspender,
     useCoreSuspender,

@@ -44,6 +44,7 @@ module.exports = (env, argv) => ({
     output: {
         path: path.join(__dirname, 'build'),
         filename: `${COMMIT_HASH}/scripts/[name].js`,
+        chunkFilename: `${COMMIT_HASH}/scripts/[name].[contenthash:8].js`,
         clean: true,
     },
     module: {
@@ -159,7 +160,7 @@ module.exports = (env, argv) => ({
                 }
             },
             {
-                test: /\.(png|jpe?g|svg)$/,
+                test: /\.(png|jpe?g|svg|webp)$/,
                 exclude: /node_modules/,
                 type: 'asset/resource',
                 generator: {
