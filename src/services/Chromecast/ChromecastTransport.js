@@ -122,6 +122,10 @@ function ChromecastTransport() {
     };
     this.removeAllListeners = function() {
         events.removeAllListeners();
+        if (!castAPIAvailable) return;
+        const ctx = cast.framework.CastContext.getInstance();
+        ctx.removeEventListener(cast.framework.CastContextEventType.CAST_STATE_CHANGED, onCastStateChanged);
+        ctx.removeEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, onSesstionStateChanged);
     };
     this.getCastState = function() {
         return cast.framework.CastContext.getInstance().getCastState();
