@@ -84,7 +84,9 @@ const Router = ({ className, onPathNotMatch, onRouteChange, ...props }) => {
                     .map(({ key, component, urlParams, queryParams }, index, views) => (
                         <RouteFocusedProvider key={key} value={index === views.length - 1}>
                             <Route>
-                                {React.createElement(component, { urlParams, queryParams })}
+                                <React.Suspense fallback={null}>
+                                    {React.createElement(component, { urlParams, queryParams })}
+                                </React.Suspense>
                             </Route>
                         </RouteFocusedProvider>
                     ))
