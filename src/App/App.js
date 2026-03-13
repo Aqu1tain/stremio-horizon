@@ -153,7 +153,7 @@ const App = () => {
             }
         };
         const onWindowFocus = () => {
-            if (!services.core.transport) return;
+            if (!services.core.active || !services.core.transport) return;
             services.core.transport.dispatch({
                 action: 'Ctx',
                 args: {
@@ -180,7 +180,8 @@ const App = () => {
                 }
             });
         };
-        if (services.core.active && services.core.transport) {
+        const coreReady = services.core.active && services.core.transport;
+        if (coreReady) {
             onWindowFocus();
             window.addEventListener('focus', onWindowFocus);
             services.core.transport.on('CoreEvent', onCoreEvent);
@@ -190,7 +191,7 @@ const App = () => {
                 .catch(console.error);
         }
         return () => {
-            if (services.core.active && services.core.transport) {
+            if (coreReady) {
                 window.removeEventListener('focus', onWindowFocus);
                 services.core.transport.off('CoreEvent', onCoreEvent);
             }
