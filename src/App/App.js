@@ -185,7 +185,7 @@ const App = () => {
                 }
             });
         };
-        if (services.core.active) {
+        if (services.core.active && services.core.transport) {
             onWindowFocus();
             window.addEventListener('focus', onWindowFocus);
             services.core.transport.on('CoreEvent', onCoreEvent);
