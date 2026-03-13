@@ -64,13 +64,7 @@ const App = () => {
         };
     }, []);
     React.useEffect(() => {
-        const onCoreStateChanged = () => {
-            setInitialized(
-                (services.core.active || services.core.error instanceof Error) &&
-                (services.shell.active || services.shell.error instanceof Error)
-            );
-        };
-        const onShellStateChanged = () => {
+        const onServiceStateChanged = () => {
             setInitialized(
                 (services.core.active || services.core.error instanceof Error) &&
                 (services.shell.active || services.shell.error instanceof Error)
@@ -87,8 +81,8 @@ const App = () => {
                 });
             }
         };
-        services.core.on('stateChanged', onCoreStateChanged);
-        services.shell.on('stateChanged', onShellStateChanged);
+        services.core.on('stateChanged', onServiceStateChanged);
+        services.shell.on('stateChanged', onServiceStateChanged);
         services.chromecast.on('stateChanged', onChromecastStateChange);
         services.core.start();
         services.shell.start();
@@ -102,8 +96,8 @@ const App = () => {
             services.chromecast.stop();
             services.keyboardShortcuts.stop();
             services.dragAndDrop.stop();
-            services.core.off('stateChanged', onCoreStateChanged);
-            services.shell.off('stateChanged', onShellStateChanged);
+            services.core.off('stateChanged', onServiceStateChanged);
+            services.shell.off('stateChanged', onServiceStateChanged);
             services.chromecast.off('stateChanged', onChromecastStateChange);
         };
     }, []);
