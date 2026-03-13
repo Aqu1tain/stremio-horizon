@@ -193,7 +193,7 @@ const App = () => {
         return () => {
             if (coreReady) {
                 window.removeEventListener('focus', onWindowFocus);
-                services.core.transport.off('CoreEvent', onCoreEvent);
+                services.core.transport?.off('CoreEvent', onCoreEvent);
             }
         };
     }, [initialized, shell.windowClosed]);
