@@ -100,12 +100,20 @@
         "codes": ["ko-KR", "kor"]
     },
     {
+        "name": "Lietuvių",
+        "codes": ["lt-LT", "ltu"]
+    },
+    {
         "name": "македонски јазик",
         "codes": ["mk-MK", "mkd"]
     },
     {
         "name": "ဗမာစာ",
         "codes": ["my-BM", "mya"]
+    },
+    {
+        "name": "नेपाली",
+        "codes": ["ne-NP", "nep"]
     },
     {
         "name": "Norsk bokmål",

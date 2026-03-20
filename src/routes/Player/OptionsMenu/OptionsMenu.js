@@ -46,7 +46,7 @@ const OptionsMenu = ({ className, stream, playbackDevices, extraSubtitlesTracks,
                     console.error(e);
                     toast.show({
                         type: 'error',
-                        title: t('Error'),
+                        title: t('ERROR'),
                         message: `${t('PLAYER_COPY_STREAM_ERROR')}: ${streamingUrl || downloadUrl}`,
                         timeout: 3000
                     });
