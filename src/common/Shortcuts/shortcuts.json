@@ -103,6 +103,11 @@
                 "name": "statisticsMenu",
                 "label": "SETTINGS_SHORTCUT_MENU_STATISTICS",
                 "combos": [["D"]]
+            },
+            {
+                "name": "playNext",
+                "label": "SETTINGS_SHORTCUT_PLAY_NEXT",
+                "combos": [["Shift", "N"]]
             }
         ]
     }

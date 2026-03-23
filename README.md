@@ -1,6 +1,6 @@
 # Stremio Horizon
 
-[![Based on](https://img.shields.io/badge/based%20on-stremio--web%20v5.0.0--beta.31-blue)](https://github.com/Stremio/stremio-web/tree/v5.0.0-beta.31)
+[![Based on](https://img.shields.io/badge/based%20on-stremio--web%20v5.0.0--beta.32-blue)](https://github.com/Stremio/stremio-web/tree/v5.0.0-beta.32)
 
 An alternative web UI for [Stremio](https://www.stremio.com), focused on modern design and usability.
 

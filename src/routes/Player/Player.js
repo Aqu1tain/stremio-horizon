@@ -97,6 +97,11 @@ const Player = ({ urlParams, queryParams }) => {
 
     const isNavigating = React.useRef(false);
 
+    const pressTimer = React.useRef(null);
+    const longPress = React.useRef(false);
+
+    const HOLD_DELAY = 200;
+
     const onImplementationChanged = React.useCallback(() => {
         video.setSubtitlesSize(settings.subtitlesSize);
         video.setSubtitlesOffset(settings.subtitlesOffset);
@@ -297,14 +302,14 @@ const Player = ({ urlParams, queryParams }) => {
     }, [player.nextVideo, handleNextVideoNavigation, profile.settings]);
 
     const onVideoClick = React.useCallback(() => {
-        if (video.state.paused !== null) {
+        if (video.state.paused !== null && !longPress.current) {
             if (video.state.paused) {
                 onPlayRequestedDebounced();
             } else {
                 onPauseRequestedDebounced();
             }
         }
-    }, [video.state.paused]);
+    }, [video.state.paused, longPress.current]);
 
     const onVideoDoubleClick = React.useCallback(() => {
         onPlayRequestedDebounced.cancel();
@@ -626,11 +631,11 @@ const Player = ({ urlParams, queryParams }) => {
             if (video.state.paused) {
                 onPlayRequested();
                 setSeeking(false);
-            } else {
+            } else if (!pressTimer.current) {
                 onPauseRequested();
             }
         }
-    }, [menusOpen, nextVideoPopupOpen, video.state.paused, onPlayRequested, onPauseRequested]);
+    }, [menusOpen, nextVideoPopupOpen, video.state.paused, pressTimer.current, onPlayRequested, onPauseRequested]);
 
     onShortcut('seekForward', (combo) => {
         if (!menusOpen && !nextVideoPopupOpen && video.state.time !== null) {
@@ -721,17 +726,46 @@ const Player = ({ urlParams, queryParams }) => {
         }
     }, [player.selected, streamingServer.statistics, toggleStatisticsMenu]);
 
+    onShortcut('playNext', () => {
+        closeMenus();
+        if (window.playerNextVideo !== null) {
+            nextVideo();
+            const deepLinks = window.playerNextVideo.deepLinks;
+            handleNextVideoNavigation(deepLinks, false, false);
+        }
+    }, []);
+
     onShortcut('exit', () => {
         closeMenus();
         !settings.escExitFullscreen && window.history.back();
     }, [settings.escExitFullscreen]);
 
     React.useLayoutEffect(() => {
-        const onKeyUp = (event) => {
-            if (event.code === 'ArrowRight' || event.code === 'ArrowLeft') {
+        const onKeyDown = (e) => {
+            if (e.code !== 'Space' || e.repeat) return;
+
+            longPress.current = false;
+
+            pressTimer.current = setTimeout(() => {
+                longPress.current = true;
+                onPlaybackSpeedChanged(2);
+            }, HOLD_DELAY);
+        };
+
+        const onKeyUp = (e) => {
+            if (e.code !== 'Space' && e.code !== 'ArrowRight' && e.code !== 'ArrowLeft') return;
+
+            if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
                 setSeeking(false);
+                return;
+            }
+            if (e.code === 'Space') {
+                clearTimeout(pressTimer.current);
+                pressTimer.current = null;
+                onPlaybackSpeedChanged(1);
             }
         };
+
         const onWheel = ({ deltaY }) => {
             if (menusOpen || video.state.volume === null) return;
 
@@ -743,13 +777,41 @@ const Player = ({ urlParams, queryParams }) => {
                 }
             }
         };
+
+        const onMouseDownHold = (e) => {
+            if (e.button !== 0) return; // left mouse button only
+
+            longPress.current = false;
+
+            pressTimer.current = setTimeout(() => {
+                longPress.current = true;
+                onPlaybackSpeedChanged(2);
+            }, HOLD_DELAY);
+        };
+
+        const onMouseUp = (e) => {
+            if (e.button !== 0) return;
+
+            clearTimeout(pressTimer.current);
+
+            if (longPress.current) {
+                onPlaybackSpeedChanged(1);
+            }
+        };
+
         if (routeFocused) {
             window.addEventListener('keyup', onKeyUp);
+            window.addEventListener('keydown', onKeyDown);
             window.addEventListener('wheel', onWheel);
+            window.addEventListener('mousedown', onMouseDownHold);
+            window.addEventListener('mouseup', onMouseUp);
         }
         return () => {
             window.removeEventListener('keyup', onKeyUp);
+            window.removeEventListener('keydown', onKeyDown);
             window.removeEventListener('wheel', onWheel);
+            window.removeEventListener('mousedown', onMouseDownHold);
+            window.removeEventListener('mouseup', onMouseUp);
         };
     }, [routeFocused, menusOpen, video.state.volume]);
 
