@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Changed
+
+- Merge upstream stremio-web v5.0.0-beta.32
+- Code splitting with lazy route imports
+- Avatar images converted from PNG to WebP
+
+### Fixed
+
+- Chromecast CastContext listeners not removed on cleanup
+- Focus handler crash when transport is null
+- Lithuanian ISO 639-2 code (ltu -> lit)
+
 ## [0.1.3] - 2026-03-12
 
 ### Added
