@@ -103,6 +103,10 @@ docker run -p 8080:8080 stremio-horizon
 
 Looking for the desktop version? See [Stremio Horizon App](https://github.com/Aqu1tain/stremio-horizon-app).
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Aqu1tain/stremio-horizon&type=Date)](https://star-history.com/#Aqu1tain/stremio-horizon&Date)
+
 ## Credits
 
 Based on [stremio-web](https://github.com/Stremio/stremio-web) by [Smart Code](https://www.stremio.com). Original code is copyright 2017-2023 Smart Code and available under the GPLv2 license. See the [LICENSE](/LICENSE.md) file for details.
