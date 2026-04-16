@@ -636,16 +636,6 @@ const Player = ({ urlParams, queryParams }) => {
         navigator.mediaSession.setActionHandler('nexttrack', nexVideoCallback);
     }, [player.nextVideo, onPlayRequested, onPauseRequested, onNextVideoRequested]);
 
-    onShortcut('playPause', () => {
-        if (video.state.paused !== null) {
-            if (video.state.paused) {
-                onPlayRequested();
-                setSeeking(false);
-            } else if (!pressTimer.current) {
-                onPauseRequested();
-            }
-        }
-    }, [video.state.paused, pressTimer.current, onPlayRequested, onPauseRequested], !menusOpen);
 
     onShortcut('seekForward', (combo) => {
         if (video.state.time !== null) {
@@ -791,7 +781,17 @@ const Player = ({ urlParams, queryParams }) => {
             if (e.code === 'Space') {
                 clearTimeout(pressTimer.current);
                 pressTimer.current = null;
-                onPlaybackSpeedChanged(playbackSpeed.current);
+                if (longPress.current) {
+                    onPlaybackSpeedChanged(playbackSpeed.current);
+                } else if (!menusOpen && video.state.paused !== null) {
+                    if (video.state.paused) {
+                        onPlayRequested();
+                        setSeeking(false);
+                    } else {
+                        onPauseRequested();
+                    }
+                }
+                longPress.current = false;
             }
         };
 
@@ -844,7 +844,7 @@ const Player = ({ urlParams, queryParams }) => {
             window.removeEventListener('mousedown', onMouseDownHold);
             window.removeEventListener('mouseup', onMouseUp);
         };
-    }, [routeFocused, menusOpen, video.state.volume]);
+    }, [routeFocused, menusOpen, video.state.volume, video.state.paused]);
 
     React.useEffect(() => {
         video.events.on('error', onError);
