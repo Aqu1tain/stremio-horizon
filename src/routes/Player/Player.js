@@ -829,12 +829,23 @@ const Player = ({ urlParams, queryParams }) => {
             }
         };
 
+        const onBlur = () => {
+            clearTimeout(pressTimer.current);
+            pressTimer.current = null;
+            if (longPress.current) {
+                onPlaybackSpeedChanged(playbackSpeed.current);
+                longPress.current = false;
+            }
+            setSeeking(false);
+        };
+
         if (routeFocused) {
             window.addEventListener('keyup', onKeyUp);
             window.addEventListener('keydown', onKeyDown);
             window.addEventListener('wheel', onWheel);
             window.addEventListener('mousedown', onMouseDownHold);
             window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('blur', onBlur);
         }
         return () => {
             window.removeEventListener('keyup', onKeyUp);
@@ -842,6 +853,7 @@ const Player = ({ urlParams, queryParams }) => {
             window.removeEventListener('wheel', onWheel);
             window.removeEventListener('mousedown', onMouseDownHold);
             window.removeEventListener('mouseup', onMouseUp);
+            window.removeEventListener('blur', onBlur);
         };
     }, [routeFocused, menusOpen, video.state.volume, video.state.paused]);
 
