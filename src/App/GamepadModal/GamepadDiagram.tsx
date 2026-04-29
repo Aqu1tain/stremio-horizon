@@ -30,8 +30,8 @@ const GamepadDiagram = () => {
         gamepad?.on('buttonY', 'gamepad-diagram', flash('triangle'));
         gamepad?.on('buttonLT', 'gamepad-diagram', flash('l1'));
         gamepad?.on('buttonRT', 'gamepad-diagram', flash('r1'));
-        gamepad?.on('analog', 'gamepad-diagram', (dir: string) => flash('stick-' + dir)());
-        gamepad?.on('analogRight', 'gamepad-diagram', (dir: string) => flash('rstick-' + dir)());
+        gamepad?.on('analog', 'gamepad-diagram', (dir) => dir && flash('stick-' + dir)());
+        gamepad?.on('analogRight', 'gamepad-diagram', (dir) => dir && flash('rstick-' + dir)());
 
         return () => {
             clearTimeout(timeout);
