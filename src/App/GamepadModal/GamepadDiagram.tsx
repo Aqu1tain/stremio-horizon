@@ -92,7 +92,8 @@ const GamepadDiagram = () => {
             </g>
             <path
                 className={styles['anim-body']}
-                d={`M${CX - 178},${105 + BY}
+                d={
+                    `M${CX - 178},${105 + BY}
                     Q${CX - 165},${80 + BY} ${CX - 95},${74 + BY}
                     L${CX + 95},${74 + BY}
                     Q${CX + 165},${80 + BY} ${CX + 178},${105 + BY}
@@ -109,7 +110,8 @@ const GamepadDiagram = () => {
                     Q${CX - 238},${390 + BY} ${CX - 255},${350 + BY}
                     Q${CX - 272},${298 + BY} ${CX - 252},${232 + BY}
                     Q${CX - 232},${172 + BY} ${CX - 195},${135 + BY}
-                    Z`}
+                    Z`
+                }
                 fill={'url(#bodyGrad)'}
                 stroke={'#3d3660'}
                 strokeWidth={'2.5'}
