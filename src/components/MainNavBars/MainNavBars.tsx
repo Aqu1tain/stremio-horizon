@@ -26,8 +26,9 @@ const MainNavBars = memo(({ className, route, query, children }: Props) => {
     const navRef = React.useRef(null);
     const contentRef = React.useRef(null);
 
-    useContentGamepadNavigation(contentRef, route ?? 'board');
-    useVerticalNavGamepadNavigation(navRef, route ?? 'board');
+    const navRoute = route === 'continue_watching' ? 'library' : (route ?? '');
+    useContentGamepadNavigation(contentRef, navRoute);
+    useVerticalNavGamepadNavigation(navRef, navRoute);
 
     return (
         <div className={classnames(className, styles['main-nav-bars-container'])}>
