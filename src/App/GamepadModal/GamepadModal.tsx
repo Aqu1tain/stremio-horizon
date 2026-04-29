@@ -68,7 +68,7 @@ const GamepadModal = ({ onClose }: Props) => {
     }, [gamepad]);
 
     return createPortal((
-        <div className={styles['gamepad-modal']}>
+        <div className={styles['gamepad-modal']} data-gamepad-modal>
             <div className={styles['backdrop']} onClick={onClose} />
 
             <div className={styles['container']}>
