@@ -110,9 +110,11 @@ const Player = ({ urlParams, queryParams }) => {
     const playbackSpeed = React.useRef(video.state.playbackSpeed || 1);
     const pressTimer = React.useRef(null);
     const longPress = React.useRef(false);
+    const pendingKeyUpTimer = React.useRef(null);
     const controlBarRef = React.useRef(null);
 
     const HOLD_DELAY = 200;
+    const KEYUP_DEBOUNCE_MS = 30;
 
     const onImplementationChanged = React.useCallback(() => {
         video.setSubtitlesSize(settings.subtitlesSize);
@@ -846,11 +848,21 @@ const Player = ({ urlParams, queryParams }) => {
             clearTimeout(pressTimer.current);
             pressTimer.current = null;
             longPress.current = false;
+            clearTimeout(pendingKeyUpTimer.current);
+            pendingKeyUpTimer.current = null;
         }
 
         const onKeyDown = (e) => {
             if (e.code !== 'Space' || e.repeat) return;
             if (menusOpen) return;
+
+            // WKWebView fires keyup/keydown pairs for held keys instead of repeat=true.
+            // A keydown while a keyup is pending means the key is still held — cancel the keyup.
+            if (pendingKeyUpTimer.current !== null) {
+                clearTimeout(pendingKeyUpTimer.current);
+                pendingKeyUpTimer.current = null;
+                return;
+            }
 
             longPress.current = false;
 
@@ -868,19 +880,23 @@ const Player = ({ urlParams, queryParams }) => {
                 return;
             }
             if (e.code === 'Space') {
-                clearTimeout(pressTimer.current);
-                pressTimer.current = null;
-                if (longPress.current) {
-                    onPlaybackSpeedChanged(playbackSpeed.current);
-                } else if (!menusOpen && video.state.paused !== null) {
-                    if (video.state.paused) {
-                        onPlayRequested();
-                        setSeeking(false);
-                    } else {
-                        onPauseRequested();
+                clearTimeout(pendingKeyUpTimer.current);
+                pendingKeyUpTimer.current = setTimeout(() => {
+                    pendingKeyUpTimer.current = null;
+                    clearTimeout(pressTimer.current);
+                    pressTimer.current = null;
+                    if (longPress.current) {
+                        onPlaybackSpeedChanged(playbackSpeed.current);
+                    } else if (!menusOpen && video.state.paused !== null) {
+                        if (video.state.paused) {
+                            onPlayRequested();
+                            setSeeking(false);
+                        } else {
+                            onPauseRequested();
+                        }
                     }
-                }
-                longPress.current = false;
+                    longPress.current = false;
+                }, KEYUP_DEBOUNCE_MS);
             }
         };
 
@@ -922,6 +938,8 @@ const Player = ({ urlParams, queryParams }) => {
         const onBlur = () => {
             clearTimeout(pressTimer.current);
             pressTimer.current = null;
+            clearTimeout(pendingKeyUpTimer.current);
+            pendingKeyUpTimer.current = null;
             if (longPress.current) {
                 onPlaybackSpeedChanged(playbackSpeed.current);
                 longPress.current = false;
