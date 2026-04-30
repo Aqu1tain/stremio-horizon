@@ -192,6 +192,8 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         return meta?.description ?? null;
     }, [video, resumeVideo, meta]);
 
+    useContentGamepadNavigation(contentRef, urlParams.path);
+
     if (metaPath === null) {
         return (
             <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
@@ -235,7 +237,6 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         );
     }
 
-    useContentGamepadNavigation(contentRef, urlParams.path);
     return (
         <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
             <div className={styles['metadetails-scroll-container']}>
