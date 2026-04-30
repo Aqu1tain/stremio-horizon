@@ -31,6 +31,10 @@
 
         .action-buttons-container {
             justify-content: space-between;
+
+            .action-button:not(:last-child), .group-container:not(:last-child) {
+                margin-right: 0;
+            }
         }
     }
 
@@ -174,11 +178,20 @@
                 }
             }
         }
-    }
+    
+        .group-container {
+            margin-bottom: 1rem;
 
-    .ratings {
-        margin-bottom: 1rem;
-        margin-right: 1rem;
+            &:global(.wide) {
+                width: auto;
+                padding: 0 2rem;
+                border-radius: 4rem;
+            }
+
+            &:not(:last-child) {
+                margin-right: 1rem;
+            }
+        }
     }
 }
 
@@ -199,10 +212,13 @@
         .action-buttons-container {
             padding-top: 1rem;
             gap: 0.5rem;
-        }
 
-        .ratings {
-            margin-right: 0;
+            .action-button, .group-container {
+                padding: 0 1.5rem !important;
+                margin-right: 0rem !important;
+                height: 3rem;
+                border-radius: 2rem;
+            }
         }
     }
 }
@@ -231,6 +247,10 @@
 
             &::-webkit-scrollbar {
                 display: none;
+            }
+
+            .action-button {
+                padding: 0 1rem !important;
             }
         }
     }

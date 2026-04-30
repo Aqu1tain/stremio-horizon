@@ -9,18 +9,22 @@ const { useServices } = require('stremio/services');
 const Option = require('./Option');
 const styles = require('./styles');
 
-const OptionsMenu = ({ className, stream, playbackDevices, extraSubtitlesTracks, selectedExtraSubtitlesTrackId }) => {
+const OptionsMenu = React.memo(React.forwardRef(({ className, stream, playbackDevices, extraSubtitlesTracks, selectedExtraSubtitlesTrackId }, ref) => {
     const { t } = useTranslation();
     const { core } = useServices();
     const platform = usePlatform();
     const toast = useToast();
-    const [streamingUrl, downloadUrl] = React.useMemo(() => {
+    const [streamingUrl, downloadUrl, magnetUrl] = React.useMemo(() => {
         return stream !== null ?
             stream.deepLinks &&
             stream.deepLinks.externalPlayer &&
-            [stream.deepLinks.externalPlayer.streaming, stream.deepLinks.externalPlayer.download]
+            [
+                stream.deepLinks.externalPlayer.streaming,
+                stream.deepLinks.externalPlayer.download,
+                stream.deepLinks.externalPlayer.magnet,
+            ]
             :
-            [null, null];
+            [null, null, null];
     }, [stream]);
     const externalDevices = React.useMemo(() => {
         return playbackDevices.filter(({ type }) => type === 'external');
@@ -53,11 +57,33 @@ const OptionsMenu = ({ className, stream, playbackDevices, extraSubtitlesTracks,
                 });
         }
     }, [streamingUrl, downloadUrl]);
-    const onDownloadVideoButtonClick = React.useCallback(() => {
-        if (downloadUrl || streamingUrl ) {
-            platform.openExternal(downloadUrl || streamingUrl);
+    const onCopyMagnetButtonClick = React.useCallback(() => {
+        if (magnetUrl) {
+            navigator.clipboard.writeText(magnetUrl)
+                .then(() => {
+                    toast.show({
+                        type: 'success',
+                        title: 'Copied',
+                        message: t('PLAYER_COPY_MAGNET_LINK_SUCCESS'),
+                        timeout: 3000
+                    });
+                })
+                .catch((e) => {
+                    console.error(e);
+                    toast.show({
+                        type: 'error',
+                        title: t('Error'),
+                        message: `${t('PLAYER_COPY_MAGNET_LINK_ERROR')}: ${magnetUrl}`,
+                        timeout: 3000
+                    });
+                });
         }
-    }, [streamingUrl, downloadUrl]);
+    }, [magnetUrl]);
+    const onDownloadVideoButtonClick = React.useCallback(() => {
+        if (downloadUrl) {
+            platform.openExternal(downloadUrl);
+        }
+    }, [downloadUrl]);
 
     const onDownloadSubtitlesClick = React.useCallback(() => {
         subtitlesTrackUrl && platform.openExternal(subtitlesTrackUrl);
@@ -82,7 +108,7 @@ const OptionsMenu = ({ className, stream, playbackDevices, extraSubtitlesTracks,
     }, []);
 
     return (
-        <div className={classnames(className, styles['options-menu-container'])} onMouseDown={onMouseDown}>
+        <div ref={ref} className={classnames(className, styles['options-menu-container'])} onMouseDown={onMouseDown}>
             {
                 streamingUrl || downloadUrl ?
                     <Option
@@ -95,7 +121,18 @@ const OptionsMenu = ({ className, stream, playbackDevices, extraSubtitlesTracks,
                     null
             }
             {
-                streamingUrl || downloadUrl ?
+                magnetUrl ?
+                    <Option
+                        icon={'magnet-link'}
+                        label={t('CTX_COPY_MAGNET_LINK')}
+                        disabled={stream === null}
+                        onClick={onCopyMagnetButtonClick}
+                    />
+                    :
+                    null
+            }
+            {
+                downloadUrl ?
                     <Option
                         icon={'download'}
                         label={t('CTX_DOWNLOAD_VIDEO')}
@@ -130,7 +167,7 @@ const OptionsMenu = ({ className, stream, playbackDevices, extraSubtitlesTracks,
             }
         </div>
     );
-};
+}));
 
 OptionsMenu.propTypes = {
     className: PropTypes.string,

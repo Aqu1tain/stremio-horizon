@@ -12,7 +12,7 @@ const styles = require('./styles');
 const { useBinaryState, usePlatform } = require('stremio/common');
 const { t } = require('i18next');
 
-const ControlBar = ({
+const ControlBar = React.forwardRef(({
     className,
     paused,
     time,
@@ -39,10 +39,13 @@ const ControlBar = ({
     onToggleSpeedMenu,
     onToggleSideDrawer,
     onToggleOptionsMenu,
+    videoScale,
+    videoScaleLabel,
+    onVideoScaleChanged,
     onToggleStatisticsMenu,
     onTouchEnd,
     ...props
-}) => {
+}, ref) => {
     const { chromecast } = useServices();
     const platform = usePlatform();
     const [chromecastServiceActive, setChromecastServiceActive] = React.useState(() => chromecast.active);
@@ -105,7 +108,7 @@ const ControlBar = ({
         };
     }, []);
     return (
-        <div {...props} onTouchStart={props.onMouseOver} onTouchMove={props.onMouseMove} onTouchEnd={onTouchEnd} className={classnames(className, styles['control-bar-container'])}>
+        <div ref={ref} {...props} onTouchStart={props.onMouseOver} onTouchMove={props.onMouseMove} onTouchEnd={onTouchEnd} className={classnames(className, styles['control-bar-container'])}>
             <SeekBar
                 className={styles['seek-bar']}
                 time={time}
@@ -176,6 +179,9 @@ const ControlBar = ({
                             :
                             null
                     }
+                    <Button className={classnames(styles['control-bar-button'], { 'disabled': videoScale === null })} title={videoScaleLabel} tabIndex={-1} onClick={onVideoScaleChanged}>
+                        <Icon className={styles['icon']} name={'scale'} />
+                    </Button>
                     <Button className={classnames(styles['control-bar-button'], { 'disabled': !stream })} tabIndex={-1} onMouseDown={onOptionsButtonMouseDown} onClick={onToggleOptionsMenu}>
                         <Icon className={styles['icon']} name={'more-horizontal'} />
                     </Button>
@@ -183,7 +189,7 @@ const ControlBar = ({
             </div>
         </div>
     );
-};
+});
 
 ControlBar.propTypes = {
     className: PropTypes.string,
@@ -194,6 +200,9 @@ ControlBar.propTypes = {
     volume: PropTypes.number,
     muted: PropTypes.bool,
     playbackSpeed: PropTypes.number,
+    videoScale: PropTypes.string,
+    videoScaleLabel: PropTypes.string,
+    onVideoScaleChanged: PropTypes.func,
     subtitlesTracks: PropTypes.array,
     audioTracks: PropTypes.array,
     metaItem: PropTypes.object,

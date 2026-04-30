@@ -8,10 +8,10 @@ const { Image } = require('stremio/components');
 const NavTabButton = require('./NavTabButton');
 const styles = require('./styles');
 
-const VerticalNavBar = React.memo(({ className, selected, tabs }) => {
+const VerticalNavBar = React.memo(React.forwardRef(({ className, selected, tabs }, ref) => {
     const { t } = useTranslation();
     return (
-        <nav className={classnames(className, styles['vertical-nav-bar-container'])}>
+        <nav ref={ref} className={classnames(className, styles['vertical-nav-bar-container'])}>
             <Image
                 className={styles['logo']}
                 src={require('/assets/images/stremio_symbol.png')}
@@ -36,7 +36,7 @@ const VerticalNavBar = React.memo(({ className, selected, tabs }) => {
             }
         </nav>
     );
-});
+}));
 
 VerticalNavBar.displayName = 'VerticalNavBar';
 

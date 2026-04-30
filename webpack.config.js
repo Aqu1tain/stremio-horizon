@@ -152,7 +152,7 @@ module.exports = (env, argv) => ({
                 ]
             },
             {
-                test: /\.ttf$/,
+                test: /\.(ttf|woff2)$/,
                 exclude: /node_modules/,
                 type: 'asset/resource',
                 generator: {

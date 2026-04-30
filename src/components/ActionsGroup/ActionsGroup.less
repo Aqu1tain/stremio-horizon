@@ -8,7 +8,7 @@
 @width-mobile: 3rem;
 
 
-.ratings-container {
+.group-container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -27,16 +27,25 @@
         width: 3rem;
         padding: 0 0.75rem;
         cursor: pointer;
+        border-radius: 2rem;
+        outline: none;
 
         .icon {
             width: 1.5rem;
             height: 1.5rem;
             color: var(--primary-foreground-color);
             opacity: 0.7;
+        }
 
-            &:hover {
+        &:hover, &:focus {
+            .icon {
                 opacity: 1;
             }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--primary-foreground-color);
+            outline-offset: -2px;
         }
 
         &.disabled {
@@ -46,7 +55,7 @@
 }
 
 @media @phone-landscape {
-    .ratings-container {
+    .group-container {
         height: @height-mobile;
 
         .icon-container {

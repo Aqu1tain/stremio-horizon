@@ -18,14 +18,14 @@ importers:
         specifier: 5.2.0
         version: 5.2.0
       '@stremio/stremio-core-web':
-        specifier: 0.54.1
-        version: 0.54.1
+        specifier: 0.56.4
+        version: 0.56.4
       '@stremio/stremio-icons':
-        specifier: 5.8.0
-        version: 5.8.0
+        specifier: 5.10.0
+        version: 5.10.0
       '@stremio/stremio-video':
-        specifier: 0.0.70
-        version: 0.0.70
+        specifier: 0.0.77
+        version: 0.0.77
       a-color-picker:
         specifier: 1.2.1
         version: 1.2.1
@@ -55,7 +55,7 @@ importers:
         version: 24.2.3(typescript@5.9.2)
       langs:
         specifier: github:Stremio/nodejs-langs
-        version: https://codeload.github.com/Stremio/nodejs-langs/tar.gz/24daad4e78c324fcc88d6673df3cd75348b2efdf
+        version: https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1
       lodash.debounce:
         specifier: 4.0.8
         version: 4.0.8
@@ -363,8 +363,8 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  '@babel/parser@7.29.0':
-    resolution: {integrity: sha512-IyDgFV5GeDUVX4YdF/3CPULtVGSXXMLh1xVIgdCgxApktqnQV0r7/8Nqthg+8YLGaAtdyIlo2qIdZrbCv4+7ww==}
+  '@babel/parser@7.29.2':
+    resolution: {integrity: sha512-4GgRzy/+fsBa72/RZVJmGKPmZu9Byn8o4MoLpmNe1m8ZfYnz5emHLQz3U4gLud6Zwl0RZIcgiLD7Uq7ySFuDLA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -1193,14 +1193,14 @@ packages:
   '@stremio/stremio-colors@5.2.0':
     resolution: {integrity: sha512-dYlPgu9W/H7c9s1zmW5tiDnRenaUa4Hg1QCyOg1lhOcgSfM/bVTi5nnqX+IfvGTTUNA0zgzh8hI3o3miwnZxTg==}
 
-  '@stremio/stremio-core-web@0.54.1':
-    resolution: {integrity: sha512-ztHG/Yz58XdVbd4Gf6gQUtN8pspoj9hXi0lRznXcTkTKRSHArUr1JdVE68CyuIFfUDsHqToEsUArSKsd2cwOwg==}
+  '@stremio/stremio-core-web@0.56.4':
+    resolution: {integrity: sha512-tFAMYgKrJ1bkvHRMpxDykM/844sDjgRPFk6FLhjQiwh01OHIyEgDqGo/NgwFM+CuMR4mW676SDvwNHkK0Xqg3w==}
 
-  '@stremio/stremio-icons@5.8.0':
-    resolution: {integrity: sha512-IVUvQbIWfA4YEHCTed7v/sdQJCJ+OOCf84LTWpkE2W6GLQ+15WHcMEJrVkE1X3ekYJnGg3GjT0KLO6tKSU0P4w==}
+  '@stremio/stremio-icons@5.10.0':
+    resolution: {integrity: sha512-Zw/vGC3D2yeQfk8xv/tfMJTDvbCPOI91tBg4XpR2+EgbZSX8Xvm7Vz457PIhFPhTAwdOPHp0VX0M3gzjbt0zOg==}
 
-  '@stremio/stremio-video@0.0.70':
-    resolution: {integrity: sha512-a0flQYAUdrZNMm7mmts2vpZOqN1nus7Hs9Mjl4mrN5rtduD0ojUyhD5J4lPcCpZ7WB0YdEUOGLXR19qHpgoKmg==}
+  '@stremio/stremio-video@0.0.77':
+    resolution: {integrity: sha512-bnKBS5a9R3+M0zx95YpDUiPs1gXcKCsybgdxfZmpWuQaN0RE9bTBAUlIfBSrcEjVhufMOvg+cfXScT+0fBzTTw==}
 
   '@stylistic/eslint-plugin-jsx@4.4.1':
     resolution: {integrity: sha512-83SInq4u7z71vWwGG+6ViOtlOmZ6tSrDkMPhrvdBBTGMLA0gs22WSdhQ4vZP3oJ5Xg4ythvqeUiFSedvVxzhyA==}
@@ -3124,8 +3124,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  langs@https://codeload.github.com/Stremio/nodejs-langs/tar.gz/24daad4e78c324fcc88d6673df3cd75348b2efdf:
-    resolution: {tarball: https://codeload.github.com/Stremio/nodejs-langs/tar.gz/24daad4e78c324fcc88d6673df3cd75348b2efdf}
+  langs@https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1:
+    resolution: {tarball: https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1}
     version: 2.0.0
 
   launch-editor@2.11.1:
@@ -4827,7 +4827,7 @@ snapshots:
 
   '@babel/generator@7.29.1':
     dependencies:
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.2
       '@babel/types': 7.29.0
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
@@ -4988,7 +4988,7 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.4
 
-  '@babel/parser@7.29.0':
+  '@babel/parser@7.29.2':
     dependencies:
       '@babel/types': 7.29.0
 
@@ -5621,7 +5621,7 @@ snapshots:
   '@babel/template@7.28.6':
     dependencies:
       '@babel/code-frame': 7.29.0
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.2
       '@babel/types': 7.29.0
 
   '@babel/traverse@7.28.4':
@@ -5641,7 +5641,7 @@ snapshots:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.1
       '@babel/helper-globals': 7.28.0
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.2
       '@babel/template': 7.28.6
       '@babel/types': 7.29.0
       debug: 4.4.3
@@ -6049,13 +6049,13 @@ snapshots:
 
   '@stremio/stremio-colors@5.2.0': {}
 
-  '@stremio/stremio-core-web@0.54.1':
+  '@stremio/stremio-core-web@0.56.4':
     dependencies:
       '@babel/runtime': 7.24.1
 
-  '@stremio/stremio-icons@5.8.0': {}
+  '@stremio/stremio-icons@5.10.0': {}
 
-  '@stremio/stremio-video@0.0.70':
+  '@stremio/stremio-video@0.0.77':
     dependencies:
       buffer: 6.0.3
       color: 4.2.3
@@ -8474,7 +8474,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  langs@https://codeload.github.com/Stremio/nodejs-langs/tar.gz/24daad4e78c324fcc88d6673df3cd75348b2efdf: {}
+  langs@https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1: {}
 
   launch-editor@2.11.1:
     dependencies:

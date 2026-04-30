@@ -7,12 +7,13 @@ const { default: Icon } = require('stremio/components/Icon');
 const { Button, Image } = require('stremio/components');
 const { default: useFullscreen } = require('stremio/common/useFullscreen');
 const { default: usePWA } = require('stremio/common/usePWA');
+const { useHorizontalNavGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const SearchBar = require('./SearchBar');
 const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
 
-const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, tabs, selected, navbarHidden, navbarScrolled, ...props }) => {
+const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, hdrInfo, tabs, selected, navbarHidden, navbarScrolled, ...props }) => {
     const backButtonOnClick = React.useCallback(() => {
         window.history.back();
     }, []);
@@ -27,6 +28,7 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
     const showSearchIcon = searchBar && route !== 'addons';
     const showFullscreen = !isIOSPWA && fullscreenButton;
     const hasTabs = Array.isArray(tabs) && tabs.length > 0;
+    useHorizontalNavGamepadNavigation(route || className, backButton);
 
     return (
         <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'], {
@@ -61,6 +63,11 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                 <h2 className={styles['title']}>{title}</h2>
             }
             <div className={styles['buttons-container']}>
+                {hdrInfo && (hdrInfo.gamma === 'pq' || hdrInfo.gamma === 'hlg') &&
+                    <div className={styles['hdr-indicator']} title={hdrInfo.gamma === 'pq' ? 'HDR10' : 'HLG'}>
+                        <Icon className={styles['icon']} name={'hdr'} />
+                    </div>
+                }
                 {showSearchIcon && <SearchBar query={query} active={false} />}
                 {showFullscreen &&
                     <Button className={styles['button-container']} title={fullscreen ? t('EXIT_FULLSCREEN') : t('ENTER_FULLSCREEN')} tabIndex={-1} onClick={fullscreen ? exitFullscreen : requestFullscreen}>
@@ -84,6 +91,9 @@ HorizontalNavBar.propTypes = {
     searchBar: PropTypes.bool,
     fullscreenButton: PropTypes.bool,
     navMenu: PropTypes.bool,
+    hdrInfo: PropTypes.shape({
+        gamma: PropTypes.string,
+    }),
     tabs: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string,
         label: PropTypes.string,

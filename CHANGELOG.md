@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Changed
 
-- Merge upstream stremio-web v5.0.0-beta.32
+- Merge upstream stremio-web v5.0.0-beta.36
 - Code splitting with lazy route imports
 - Avatar images converted from PNG to WebP
 
