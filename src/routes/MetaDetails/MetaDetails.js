@@ -148,17 +148,6 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         });
     }, [metaDetails.libraryItem]);
 
-    const toggleWatched = React.useCallback(() => {
-        if (!isReady) return;
-        core.transport.dispatch({
-            action: 'MetaDetails',
-            args: {
-                action: 'MarkAsWatched',
-                args: !meta.watched
-            }
-        });
-    }, [metaDetails]);
-
     const seasonOnSelect = React.useCallback((event) => {
         setSeason(event.value);
     }, [setSeason]);
