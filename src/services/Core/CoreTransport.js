@@ -3,10 +3,49 @@
 const EventEmitter = require('eventemitter3');
 const Bridge = require('@stremio/stremio-core-web/bridge');
 
+const BRIDGE_TIMEOUT_MS = 30000;
+const HEARTBEAT_INTERVAL_MS = 30000;
+
+function withTimeout(promise, timeoutMs, label) {
+    let timer;
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs);
+        }),
+    ]).finally(() => clearTimeout(timer));
+}
+
 function CoreTransport(args) {
     const events = new EventEmitter();
     const worker = new Worker(`${process.env.COMMIT_HASH}/scripts/worker.js`);
     const bridge = new Bridge(window, worker);
+    let dead = false;
+    let heartbeatTimer = null;
+
+    const declareDead = (reason) => {
+        if (dead) return;
+        dead = true;
+        if (heartbeatTimer !== null) {
+            clearInterval(heartbeatTimer);
+            heartbeatTimer = null;
+        }
+        console.error('CoreTransport: worker considered dead —', reason);
+        events.emit('workerDead', reason);
+    };
+
+    const call = (path, payload, label) => {
+        if (dead) return Promise.reject(new Error('core worker is unavailable'));
+        return withTimeout(bridge.call(path, payload), BRIDGE_TIMEOUT_MS, label).catch((err) => {
+            if (err && typeof err.message === 'string' && err.message.includes('timed out')) {
+                declareDead(err.message);
+            }
+            throw err;
+        });
+    };
+
+    worker.addEventListener('error', (e) => declareDead(e.message || 'worker error event'));
+    worker.addEventListener('messageerror', () => declareDead('worker messageerror event'));
 
     window.onCoreEvent = ({ name, args }) => {
         try {
@@ -16,7 +55,7 @@ function CoreTransport(args) {
         }
     };
 
-    bridge.call(['init'], [args])
+    call(['init'], [args], 'init')
         .then(() => {
             try {
                 events.emit('init');
@@ -28,6 +67,10 @@ function CoreTransport(args) {
             events.emit('error', error);
         });
 
+    heartbeatTimer = setInterval(() => {
+        call(['getState'], ['ctx'], 'heartbeat').catch(() => { /* declareDead already handled */ });
+    }, HEARTBEAT_INTERVAL_MS);
+
     this.on = function(name, listener) {
         events.on(name, listener);
     };
@@ -38,22 +81,22 @@ function CoreTransport(args) {
         events.removeAllListeners();
     };
     this.getState = async function(field) {
-        return bridge.call(['getState'], [field]);
+        return call(['getState'], [field], `getState(${field})`);
     };
     this.getDebugState = async function() {
-        return bridge.call(['getDebugState'], []);
+        return call(['getDebugState'], [], 'getDebugState');
     };
     this.dispatch = async function(action, field) {
-        return bridge.call(['dispatch'], [action, field, location.hash]);
+        return call(['dispatch'], [action, field, location.hash], 'dispatch');
     };
     this.analytics = async function(event) {
-        return bridge.call(['analytics'], [event, location.hash]);
+        return call(['analytics'], [event, location.hash], 'analytics');
     };
     this.decodeStream = async function(stream) {
-        return bridge.call(['decodeStream'], [stream]);
+        return call(['decodeStream'], [stream], 'decodeStream');
     };
     this.encodeStream = async function(stream) {
-        return bridge.call(['encodeStream'], [stream]);
+        return call(['encodeStream'], [stream], 'encodeStream');
     };
 }
 
