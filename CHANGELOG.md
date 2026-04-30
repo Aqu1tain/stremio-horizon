@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 ### Changed
 
 - Merge upstream stremio-web v5.0.0-beta.36
+- Bump stremio-translations fork to v1.52.0 (gamepad guide, magnet copy, playback speed strings)
 - Code splitting with lazy route imports
 - Avatar images converted from PNG to WebP
 
