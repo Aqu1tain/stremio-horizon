@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Fixed
 
+- Detect dead core WASM worker via call timeout + heartbeat and surface a recovery toast instead of hanging forever
 - Chromecast CastContext listeners not removed on cleanup
 - Focus handler crash when transport is null
 - Lithuanian ISO 639-2 code (ltu -> lit)

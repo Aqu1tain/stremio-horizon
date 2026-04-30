@@ -68,10 +68,20 @@ const ServicesToaster = () => {
                 timeout: 4000
             });
         };
+        const onWorkerDead = (reason) => {
+            toast.show({
+                type: 'error',
+                title: 'Stremio core stopped responding',
+                message: `Reload the app to recover. (${reason})`,
+                timeout: 0,
+            });
+        };
         core.transport.on('CoreEvent', onCoreEvent);
+        core.transport.on('workerDead', onWorkerDead);
         dragAndDrop.on('error', onDragAndDropError);
         return () => {
             core.transport.off('CoreEvent', onCoreEvent);
+            core.transport.off('workerDead', onWorkerDead);
             dragAndDrop.off('error', onDragAndDropError);
         };
     }, []);
