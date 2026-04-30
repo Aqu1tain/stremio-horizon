@@ -9,17 +9,22 @@ type ToastOptions = {
 
 type ToastFilter = (item: ToastOptions) => boolean;
 
+type ToastId = ReturnType<typeof setTimeout> | null;
+
 type ToastContextValue = {
-    show: (options: ToastOptions) => void;
+    show: (options: ToastOptions) => ToastId;
+    remove: (id: ToastId) => void;
     clear: () => void;
     addFilter?: (filter: ToastFilter) => void;
     removeFilter?: (filter: ToastFilter) => void;
 };
 
 const noop = () => void 0;
+const noopShow = () => null;
 
 const ToastContext = createContext<ToastContextValue>({
-    show: noop,
+    show: noopShow,
+    remove: noop,
     clear: noop,
 });
 

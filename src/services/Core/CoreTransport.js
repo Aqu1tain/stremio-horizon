@@ -52,6 +52,9 @@ function CoreTransport(args) {
     this.decodeStream = async function(stream) {
         return bridge.call(['decodeStream'], [stream]);
     };
+    this.encodeStream = async function(stream) {
+        return bridge.call(['encodeStream'], [stream]);
+    };
 }
 
 module.exports = CoreTransport;

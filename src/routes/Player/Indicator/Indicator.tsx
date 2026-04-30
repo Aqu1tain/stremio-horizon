@@ -61,7 +61,7 @@ const Indicator = ({ className, videoState, disabled }: Props) => {
     }, [videoState]);
 
     return (
-        <Transition when={shown && !disabled} name={'fade'}>
+        <Transition when={shown && !disabled} name={'fade'} duration={300}>
             <div className={classNames(className, styles['indicator-container'])}>
                 <div className={styles['indicator']}>
                     <div>{label} {value}</div>

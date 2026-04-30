@@ -17,6 +17,7 @@ interface CoreTransport {
     getState: (model: string) => Promise<object>,
     dispatch: (action: Action, model?: string) => Promise<void>,
     decodeStream: (stream: string) => Promise<Stream>,
+    encodeStream: (stream: object) => Promise<string>,
     analytics: (event: AnalyticsEvent) => Promise<void>,
     on: (name: string, listener: () => void) => void,
     off: (name: string, listener: () => void) => void,

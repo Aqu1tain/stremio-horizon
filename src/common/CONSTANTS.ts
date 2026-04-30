@@ -6,6 +6,8 @@ type ExternalPlayer = {
 
 export const CHROMECAST_RECEIVER_APP_ID = '1634F54B';
 export const DEFAULT_STREAMING_SERVER_URL = 'http://127.0.0.1:11470/';
+export const DEFAULT_SUBTITLES_LANGUAGE = 'eng';
+export const LOCAL_SUBTITLES_LANGUAGE = 'local';
 export const SUBTITLES_SIZES = [75, 100, 125, 150, 175, 200, 250];
 export const SUBTITLES_FONTS = ['PlusJakartaSans', 'Arial', 'Halvetica', 'Times New Roman', 'Verdana', 'Courier', 'Lucida Console', 'sans-serif', 'serif', 'monospace'];
 export const SEEK_TIME_DURATIONS = [3000, 5000, 10000, 15000, 20000, 30000];

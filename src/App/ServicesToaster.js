@@ -44,7 +44,7 @@ const ServicesToaster = () => {
                 }
                 case 'MagnetParsed': {
                     toast.show({
-                        type: 'success',
+                        type: 'info',
                         title: 'Magnet link parsed',
                         timeout: 4000
                     });

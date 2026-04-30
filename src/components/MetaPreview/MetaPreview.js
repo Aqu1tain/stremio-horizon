@@ -7,6 +7,7 @@ const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('stremio/components/Icon');
 const { default: Button } = require('stremio/components/Button');
 const { default: Image } = require('stremio/components/Image');
+const { default: ActionsGroup } = require('stremio/components/ActionsGroup');
 const ModalDialog = require('stremio/components/ModalDialog');
 const SharePrompt = require('stremio/components/SharePrompt');
 const CONSTANTS = require('stremio/common/CONSTANTS');
@@ -18,7 +19,7 @@ const MetaPreviewPlaceholder = require('./MetaPreviewPlaceholder');
 const styles = require('./styles');
 const { Ratings } = require('./Ratings');
 
-const MetaPreview = React.forwardRef(({ className, compact, name, logo, background, runtime, releaseInfo, released, description, deepLinks, links, trailerStreams, inLibrary, toggleInLibrary, ratingInfo }, ref) => {
+const MetaPreview = React.forwardRef(({ className, compact, name, logo, background, runtime, releaseInfo, released, description, deepLinks, links, trailerStreams, inLibrary, toggleInLibrary, watched, toggleWatched, ratingInfo }, ref) => {
     const { t } = useTranslation();
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
     const linksGroups = useLinksGroups(links);
@@ -47,6 +48,18 @@ const MetaPreview = React.forwardRef(({ className, compact, name, logo, backgrou
     const renderLogoFallback = React.useCallback(() => (
         <div className={styles['logo-placeholder']}>{name}</div>
     ), [name]);
+    const metaItemActions = React.useMemo(() => [
+        {
+            icon: inLibrary ? 'remove-from-library' : 'add-to-library',
+            label: inLibrary ? t('REMOVE_FROM_LIB') : t('ADD_TO_LIB'),
+            onClick: typeof toggleInLibrary === 'function' ? toggleInLibrary : null,
+        },
+        {
+            icon: watched ? 'eye-off' : 'eye',
+            label: watched ? t('CTX_MARK_UNWATCHED') : t('CTX_MARK_WATCHED'),
+            onClick: typeof toggleWatched === 'function' ? toggleWatched : undefined,
+        },
+    ], [inLibrary, watched, toggleInLibrary, toggleWatched]);
     return (
         <div className={classnames(className, styles['meta-preview-container'], { [styles['compact']]: compact })} ref={ref}>
             {
@@ -145,19 +158,6 @@ const MetaPreview = React.forwardRef(({ className, compact, name, logo, backgrou
             </div>
             <div className={styles['action-buttons-container']}>
                 {
-                    typeof toggleInLibrary === 'function' ?
-                        <ActionButton
-                            className={styles['action-button']}
-                            icon={inLibrary ? 'remove-from-library' : 'add-to-library'}
-                            label={inLibrary ? t('REMOVE_FROM_LIB') : t('ADD_TO_LIB')}
-                            tooltip={compact}
-                            tabIndex={compact ? -1 : 0}
-                            onClick={toggleInLibrary}
-                        />
-                        :
-                        null
-                }
-                {
                     typeof trailerHref === 'string' ?
                         <ActionButton
                             className={styles['action-button']}
@@ -169,6 +169,11 @@ const MetaPreview = React.forwardRef(({ className, compact, name, logo, backgrou
                         />
                         :
                         null
+                }
+                {
+                    typeof toggleInLibrary === 'function' && typeof toggleWatched === 'function'
+                        ? <ActionsGroup items={metaItemActions} className={styles['group-container']} />
+                        : null
                 }
                 {
                     typeof showHref === 'string' && compact ?
@@ -186,7 +191,7 @@ const MetaPreview = React.forwardRef(({ className, compact, name, logo, backgrou
                     !compact && ratingInfo !== null ?
                         <Ratings
                             ratingInfo={ratingInfo}
-                            className={styles['ratings']}
+                            className={styles['group-container']}
                         />
                         :
                         null
@@ -247,6 +252,8 @@ MetaPreview.propTypes = {
     trailerStreams: PropTypes.array,
     inLibrary: PropTypes.bool,
     toggleInLibrary: PropTypes.func,
+    watched: PropTypes.bool,
+    toggleWatched: PropTypes.func,
     ratingInfo: PropTypes.object,
 };
 

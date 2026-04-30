@@ -1,5 +1,6 @@
 import React, { memo, RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import Transition from '../Transition';
 import styles from './ContextMenu.less';
 
 const PADDING = 8;
@@ -47,7 +48,6 @@ const ContextMenu = ({ children, on, autoClose }: Props) => {
     }, [position, containerSize]);
 
     const close = () => {
-        setPosition([0, 0]);
         setActive(false);
     };
 
@@ -78,23 +78,25 @@ const ContextMenu = ({ children, on, autoClose }: Props) => {
         };
     }, [on]);
 
-    return active && createPortal((
-        <div
-            className={styles['context-menu-container']}
-            onMouseDown={close}
-            onTouchStart={close}
-        >
+    return createPortal((
+        <Transition when={active} name={'fade'}>
             <div
-                ref={ref}
-                className={styles['context-menu']}
-                style={style}
-                onMouseDown={stopPropagation}
-                onTouchStart={stopPropagation}
-                onClick={onClick}
+                className={styles['context-menu-container']}
+                onMouseDown={close}
+                onTouchStart={close}
             >
-                {children}
+                <div
+                    ref={ref}
+                    className={styles['context-menu']}
+                    style={style}
+                    onMouseDown={stopPropagation}
+                    onTouchStart={stopPropagation}
+                    onClick={onClick}
+                >
+                    {children}
+                </div>
             </div>
-        </div>
+        </Transition>
     ), document.body);
 };
 

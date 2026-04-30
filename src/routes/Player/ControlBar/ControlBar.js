@@ -12,7 +12,7 @@ const styles = require('./styles');
 const { useBinaryState, usePlatform } = require('stremio/common');
 const { t } = require('i18next');
 
-const ControlBar = ({
+const ControlBar = React.forwardRef(({
     className,
     paused,
     time,
@@ -42,7 +42,7 @@ const ControlBar = ({
     onToggleStatisticsMenu,
     onTouchEnd,
     ...props
-}) => {
+}, ref) => {
     const { chromecast } = useServices();
     const platform = usePlatform();
     const [chromecastServiceActive, setChromecastServiceActive] = React.useState(() => chromecast.active);
@@ -105,7 +105,7 @@ const ControlBar = ({
         };
     }, []);
     return (
-        <div {...props} onTouchStart={props.onMouseOver} onTouchMove={props.onMouseMove} onTouchEnd={onTouchEnd} className={classnames(className, styles['control-bar-container'])}>
+        <div ref={ref} {...props} onTouchStart={props.onMouseOver} onTouchMove={props.onMouseMove} onTouchEnd={onTouchEnd} className={classnames(className, styles['control-bar-container'])}>
             <SeekBar
                 className={styles['seek-bar']}
                 time={time}
@@ -183,7 +183,7 @@ const ControlBar = ({
             </div>
         </div>
     );
-};
+});
 
 ControlBar.propTypes = {
     className: PropTypes.string,

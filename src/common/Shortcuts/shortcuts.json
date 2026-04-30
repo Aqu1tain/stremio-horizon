@@ -75,6 +75,16 @@
                 "combos": [["G"], ["H"]]
             },
             {
+                "name": "speedDown",
+                "label": "SETTINGS_SHORTCUT_DECREASE_PLAYBACK_SPEED",
+                "combos": [["["]]
+            },
+            {
+                "name": "speedUp",
+                "label": "SETTINGS_SHORTCUT_INCREASE_PLAYBACK_SPEED",
+                "combos": [["]"]]
+            },
+            {
                 "name": "toggleSubtitles",
                 "label": "SETTINGS_SHORTCUT_TOGGLE_SUBTITLES",
                 "combos": [["C"]]

@@ -125,7 +125,9 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                                 <Icon className={styles['icon']} name={'chevron-back'} />
                             </Button>
                             <div className={styles['episode-title']}>
-                                {`S${video?.season}E${video?.episode} ${(video?.title)}`}
+                                {typeof video.season === 'number' && typeof video.episode === 'number'
+                                    ? `S${video.season}E${video.episode}${video.title ? ` ${video.title}` : ''}`
+                                    : (video.title ?? '')}
                             </div>
                         </React.Fragment>
                         :
@@ -243,6 +245,17 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                                             null
                                     }
                                 </div>
+                                {
+                                    countLoadingAddons > 0 ?
+                                        <div className={styles['addons-loading-container']}>
+                                            <div className={styles['addons-loading']}>
+                                                {countLoadingAddons} {t('MOBILE_ADDONS_LOADING')}
+                                            </div>
+                                            <span className={styles['addons-loading-bar']}></span>
+                                        </div>
+                                        :
+                                        null
+                                }
                             </React.Fragment>
             }
         </div>
