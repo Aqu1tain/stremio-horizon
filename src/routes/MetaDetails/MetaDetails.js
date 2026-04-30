@@ -10,6 +10,7 @@ const ModalDialog = require('stremio/components/ModalDialog');
 const SharePrompt = require('stremio/components/SharePrompt');
 const { DelayedRenderer, HorizontalNavBar } = require('stremio/components');
 const { useServices } = require('stremio/services');
+const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const { withCoreSuspender } = require('stremio/common');
 const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const CONSTANTS = require('stremio/common/CONSTANTS');
@@ -26,6 +27,7 @@ const useMetaExtensionTabs = require('./useMetaExtensionTabs');
 const styles = require('./styles');
 
 const MetaDetails = ({ urlParams, queryParams }) => {
+    const contentRef = React.useRef(null);
     const { t } = useTranslation();
     const { core } = useServices();
     const metaDetails = useMetaDetails(urlParams);
@@ -244,6 +246,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         );
     }
 
+    useContentGamepadNavigation(contentRef, urlParams.path);
     return (
         <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
             <div className={styles['metadetails-scroll-container']}>
@@ -346,7 +349,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
                     selected={activeTab}
                     onSelect={setActiveTab}
                 />
-                <div className={styles['tab-content']}>
+                <div ref={contentRef} className={styles['tab-content']}>
                     {activeTab === 'streams' && streamPath !== null &&
                         <StreamsList
                             className={styles['streams-list']}
@@ -411,6 +414,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
 
 MetaDetails.propTypes = {
     urlParams: PropTypes.shape({
+        path: PropTypes.string,
         type: PropTypes.string,
         id: PropTypes.string,
         videoId: PropTypes.string

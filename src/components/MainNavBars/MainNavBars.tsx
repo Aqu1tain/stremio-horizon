@@ -4,6 +4,7 @@ import React, { memo, useRef } from 'react';
 import classnames from 'classnames';
 import { VerticalNavBar, HorizontalNavBar } from 'stremio/components/NavBar';
 import useNavbarScroll from 'stremio/common/useNavbarScroll';
+import { useContentGamepadNavigation, useVerticalNavGamepadNavigation } from 'stremio/services/GamepadNavigation';
 const SearchBar = require('stremio/components/NavBar/HorizontalNavBar/SearchBar');
 import styles from './MainNavBars.less';
 
@@ -27,9 +28,14 @@ type Props = {
 };
 
 const MainNavBars = memo(({ className, route, query, overlay, children }: Props) => {
+    const navRef = useRef(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const autoHide = route === 'board' || route === 'metadetails';
     const { visible, scrolled } = useNavbarScroll(contentRef, autoHide);
+
+    const navRoute = route === 'continue_watching' ? 'library' : (route ?? '');
+    useContentGamepadNavigation(contentRef, navRoute);
+    useVerticalNavGamepadNavigation(navRef, navRoute);
 
     return (
         <div className={classnames(className, styles['main-nav-bars-container'], { [styles['overlay']]: overlay })}>
@@ -51,6 +57,7 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 </div>
             }
             <VerticalNavBar
+                ref={navRef}
                 className={styles['vertical-nav-bar']}
                 selected={route}
                 tabs={TABS}

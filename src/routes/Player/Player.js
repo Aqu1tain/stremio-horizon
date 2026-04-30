@@ -7,7 +7,8 @@ const debounce = require('lodash.debounce');
 const langs = require('langs');
 const { useTranslation } = require('react-i18next');
 const { useRouteFocused } = require('stremio-router');
-const { useServices } = require('stremio/services');
+const { useServices, useGamepad } = require('stremio/services');
+const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const { onFileDrop, useSettings, useProfile, useFullscreen, useBinaryState, useToast, useStreamingServer, withCoreSuspender, CONSTANTS, useShell, usePlatform, onShortcut } = require('stremio/common');
 const { HorizontalNavBar, Transition, ContextMenu } = require('stremio/components');
 const BufferingLoader = require('./BufferingLoader');
@@ -34,10 +35,13 @@ const { default: useMediaSession } = require('./useMediaSession');
 const findTrackByLang = (tracks, lang) => tracks.find((track) => track.lang === lang || langs.where('1', track.lang)?.[2] === lang);
 const findTrackById = (tracks, id) => tracks.find((track) => track.id === id);
 
+const GAMEPAD_HANDLER_ID = 'player';
+
 const Player = ({ urlParams, queryParams }) => {
     const { t } = useTranslation();
     const services = useServices();
     const shell = useShell();
+    const gamepad = useGamepad();
     const forceTranscoding = React.useMemo(() => {
         return queryParams.has('forceTranscoding');
     }, [queryParams]);
@@ -58,6 +62,7 @@ const Player = ({ urlParams, queryParams }) => {
     });
     const playbackDevices = React.useMemo(() => streamingServer.playbackDevices !== null && streamingServer.playbackDevices.type === 'Ready' ? streamingServer.playbackDevices.content : [], [streamingServer]);
 
+    const playerRef = React.useRef(null);
     const bufferingRef = React.useRef();
     const errorRef = React.useRef();
 
@@ -380,6 +385,79 @@ const Player = ({ urlParams, queryParams }) => {
     onFileDrop(CONSTANTS.SUPPORTED_LOCAL_SUBTITLES, async (filename, buffer) => {
         video.addLocalSubtitles(filename, buffer);
     });
+
+    const onPlayPause = React.useCallback(() => {
+        if (!menusOpen && !nextVideoPopupOpen && video.state.paused !== null) {
+            if (video.state.paused) {
+                onPlayRequested();
+                setSeeking(false);
+            } else {
+                onPauseRequested();
+            }
+        }
+    }, [menusOpen, nextVideoPopupOpen, video.state.paused]);
+
+    const onSeekPrev = React.useCallback((event) => {
+        if (!menusOpen && !nextVideoPopupOpen && video.state.time !== null) {
+            const seekDuration = event?.shiftKey ? settings.seekShortTimeDuration : settings.seekTimeDuration;
+            const seekTime = video.state.time - seekDuration;
+            setSeeking(true);
+            onSeekRequested(Math.max(seekTime, 0));
+        }
+    }, [menusOpen, nextVideoPopupOpen, video.state.time]);
+
+    const onSeekNext = React.useCallback((event) => {
+        if (!menusOpen && !nextVideoPopupOpen && video.state.time !== null) {
+            const seekDuration = event?.shiftKey ? settings.seekShortTimeDuration : settings.seekTimeDuration;
+            setSeeking(true);
+            onSeekRequested(video.state.time + seekDuration);
+        }
+    }, [menusOpen, nextVideoPopupOpen, video.state.time]);
+
+    const onVolumeUp = React.useCallback(() => {
+        if (!menusOpen && !nextVideoPopupOpen && video.state.volume !== null) {
+            onVolumeChangeRequested(Math.min(video.state.volume + 5, 200));
+        }
+    }, [menusOpen, nextVideoPopupOpen, video.state.volume]);
+
+    const onVolumeDown = React.useCallback(() => {
+        if (!menusOpen && !nextVideoPopupOpen && video.state.volume !== null) {
+            onVolumeChangeRequested(Math.max(video.state.volume - 5, 0));
+        }
+    }, [menusOpen, nextVideoPopupOpen, video.state.volume]);
+
+    const onGamepadSeekAndVol = React.useCallback((axis) => {
+        switch(axis) {
+            case 'left': {
+                onSeekPrev();
+                break;
+            }
+            case 'right': {
+                onSeekNext();
+                break;
+            }
+            case 'up': {
+                onVolumeUp();
+                break;
+            }
+            case 'down': {
+                onVolumeDown();
+                break;
+            }
+        }
+    }, [onSeekPrev, onSeekNext, onVolumeUp, onVolumeDown]);
+
+    useContentGamepadNavigation(playerRef, GAMEPAD_HANDLER_ID);
+
+    React.useEffect(() => {
+        gamepad?.on('buttonX', GAMEPAD_HANDLER_ID, onPlayPause);
+        gamepad?.on('analogRight', GAMEPAD_HANDLER_ID, onGamepadSeekAndVol);
+
+        return () => {
+            gamepad?.off('buttonX', GAMEPAD_HANDLER_ID);
+            gamepad?.off('analogRight', GAMEPAD_HANDLER_ID);
+        };
+    }, [onPlayPause, onGamepadSeekAndVol]);
 
     React.useEffect(() => {
         setError(null);
@@ -896,7 +974,7 @@ const Player = ({ urlParams, queryParams }) => {
     }, []);
 
     return (
-        <div className={classnames(styles['player-container'], { [styles['overlayHidden']]: overlayHidden })}
+        <div ref={playerRef} className={classnames(styles['player-container'], { [styles['overlayHidden']]: overlayHidden })}
             onMouseDown={onContainerMouseDown}
             onMouseMove={onContainerMouseMove}
             onMouseOver={onContainerMouseMove}
