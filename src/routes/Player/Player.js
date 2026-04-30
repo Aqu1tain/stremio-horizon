@@ -853,7 +853,10 @@ const Player = ({ urlParams, queryParams }) => {
         }
 
         const onKeyDown = (e) => {
-            if (e.code !== 'Space' || e.repeat) return;
+            if (e.code !== 'Space') return;
+            // Prevent the focused button from being activated by space (held space → repeated clicks).
+            e.preventDefault();
+            if (e.repeat) return;
             if (menusOpen) return;
 
             // WKWebView fires keyup/keydown pairs for held keys instead of repeat=true.
@@ -880,6 +883,7 @@ const Player = ({ urlParams, queryParams }) => {
                 return;
             }
             if (e.code === 'Space') {
+                e.preventDefault();
                 clearTimeout(pendingKeyUpTimer.current);
                 pendingKeyUpTimer.current = setTimeout(() => {
                     pendingKeyUpTimer.current = null;
