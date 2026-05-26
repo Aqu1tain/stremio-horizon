@@ -1,11 +1,12 @@
 import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'stremio/components';
+import { Button, Toggle } from 'stremio/components';
 import { useServices } from 'stremio/services';
 import { usePlatform, useToast } from 'stremio/common';
 import { Category, Section, Option, Link } from '../components';
 import User from './User';
 import useDataExport from './useDataExport';
+import { invokeTauri, isTauri } from 'stremio/common/tauri';
 import styles from './General.less';
 
 type Props = {
@@ -20,6 +21,7 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
     const [dataExport, loadDataExport] = useDataExport();
 
     const [traktAuthStarted, setTraktAuthStarted] = useState(false);
+    const [autoUpdateEnabled, setAutoUpdateEnabled] = useState<boolean | null>(null);
 
     const isTraktAuthenticated = useMemo(() => {
         const trakt = profile?.auth?.user?.trakt;
@@ -60,6 +62,35 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
             });
         }
     }, [isTraktAuthenticated, profile.auth]);
+
+    const onToggleAutoUpdate = useCallback(() => {
+        if (autoUpdateEnabled === null) {
+            return;
+        }
+
+        const enabled = !autoUpdateEnabled;
+        setAutoUpdateEnabled(enabled);
+        invokeTauri('set_auto_update_enabled', { enabled })
+            .catch(() => {
+                setAutoUpdateEnabled(!enabled);
+                toast.show({
+                    type: 'error',
+                    title: t('ERROR'),
+                    message: t('Failed to save automatic update setting'),
+                    timeout: 3000
+                });
+            });
+    }, [autoUpdateEnabled, t, toast]);
+
+    useEffect(() => {
+        if (!isTauri()) {
+            return;
+        }
+
+        invokeTauri<boolean>('get_auto_update_enabled')
+            .then((enabled: boolean) => setAutoUpdateEnabled(enabled))
+            .catch(() => setAutoUpdateEnabled(null));
+    }, []);
 
     useEffect(() => {
         if (dataExport.exportUrl) {
@@ -111,6 +142,19 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
                             <Button className={'button'} title={isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')} disabled={profile.auth === null} tabIndex={-1} onClick={onToggleTrakt}>
                                 {isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')}
                             </Button>
+                        </Option>
+                    </Category>
+            }
+            {
+                isTauri() &&
+                    <Category icon={'download'} label={'Updates'}>
+                        <Option label={'Automatic update checks'}>
+                            <Toggle
+                                tabIndex={-1}
+                                checked={autoUpdateEnabled === true}
+                                disabled={autoUpdateEnabled === null}
+                                onClick={onToggleAutoUpdate}
+                            />
                         </Option>
                     </Category>
             }

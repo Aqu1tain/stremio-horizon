@@ -2,58 +2,87 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'stremio/components/Icon';
 import { useTranslation } from 'react-i18next';
 import { useServices } from 'stremio/services';
-import { useBinaryState, useShell } from 'stremio/common';
+import { useBinaryState, useShell, useToast } from 'stremio/common';
 import { Button, Transition } from 'stremio/components';
+import { invokeTauri, isTauri, listenTauri } from 'stremio/common/tauri';
 import styles from './UpdaterBanner.less';
 
 type Props = {
     className: string,
 };
 
-const isTauri = !!(globalThis as any).__TAURI_INTERNALS__;
+type UpdateInfo = {
+    version?: string,
+    body?: string,
+};
 
-const invoke = (cmd: string, args?: Record<string, unknown>) =>
-    (window as any).__TAURI_INTERNALS__.invoke(cmd, args || {});
+type UpdateProgress = {
+    downloaded?: number,
+    total?: number,
+};
 
 const UpdaterBanner = ({ className }: Props) => {
     const { t } = useTranslation();
     const { shell } = useServices();
     const shellTransport = useShell();
+    const toast = useToast();
     const [visible, show, hide] = useBinaryState(false);
     const [installing, setInstalling] = useState(false);
     const [version, setVersion] = useState('');
     const [progress, setProgress] = useState<number | null>(null);
 
     const onInstallClick = useCallback(() => {
-        if (isTauri) {
+        if (isTauri()) {
             setInstalling(true);
-            invoke('install_update').catch(() => setInstalling(false));
+            setProgress(null);
+            invokeTauri('install_update').catch((error: unknown) => {
+                setInstalling(false);
+                const message = error instanceof Error ? error.message : 'Failed to install update';
+                toast.show({
+                    type: 'error',
+                    title: t('ERROR'),
+                    message,
+                    timeout: 5000
+                });
+            });
         } else {
             shellTransport.send('autoupdater-notif-clicked');
         }
-    }, [shellTransport]);
+    }, [shellTransport, t, toast]);
 
     useEffect(() => {
-        if (isTauri) {
-            const onUpdateAvailable = (e: CustomEvent) => {
-                const detail = typeof e.detail === 'string' ? JSON.parse(e.detail) : e.detail;
-                setVersion(detail.version || '');
+        if (isTauri()) {
+            const onUpdateAvailable = (update: UpdateInfo) => {
+                setVersion(update.version || '');
+                setProgress(null);
+                setInstalling(false);
                 show();
             };
 
-            const onUpdateProgress = (e: CustomEvent) => {
-                const detail = typeof e.detail === 'string' ? JSON.parse(e.detail) : e.detail;
-                if (detail.total > 0) {
-                    setProgress(Math.round((detail.downloaded / detail.total) * 100));
+            const onUpdateProgress = (progress: UpdateProgress) => {
+                if (typeof progress.downloaded === 'number' && typeof progress.total === 'number' && progress.total > 0) {
+                    setProgress(Math.round((progress.downloaded / progress.total) * 100));
                 }
             };
 
-            window.addEventListener('stremio-update-available', onUpdateAvailable as EventListener);
-            window.addEventListener('stremio-update-progress', onUpdateProgress as EventListener);
+            const updateAvailableListener = listenTauri<UpdateInfo>('stremio-update-available', (event) => {
+                onUpdateAvailable(event.payload);
+            });
+            const updateProgressListener = listenTauri<UpdateProgress>('stremio-update-progress', (event) => {
+                onUpdateProgress(event.payload);
+            });
+
+            invokeTauri<UpdateInfo | null>('get_pending_update')
+                .then((update: UpdateInfo | null) => {
+                    if (update) {
+                        onUpdateAvailable(update);
+                    }
+                })
+                .catch(() => undefined);
 
             return () => {
-                window.removeEventListener('stremio-update-available', onUpdateAvailable as EventListener);
-                window.removeEventListener('stremio-update-progress', onUpdateProgress as EventListener);
+                updateAvailableListener.then((unlisten) => unlisten()).catch(() => undefined);
+                updateProgressListener.then((unlisten) => unlisten()).catch(() => undefined);
             };
         }
 
