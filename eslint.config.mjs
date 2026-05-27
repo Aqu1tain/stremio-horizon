@@ -54,6 +54,14 @@ export default [
                     'error'
                 ]
             }],
+            'no-restricted-imports': ['error', {
+                paths: [
+                    {
+                        name: '@tauri-apps/api/event',
+                        message: 'Use listenTauri from stremio/lib/tauri-events instead.'
+                    }
+                ]
+            }],
         }
     },
     {

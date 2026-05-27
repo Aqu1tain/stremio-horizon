@@ -6,7 +6,7 @@ import { usePlatform, useToast } from 'stremio/common';
 import { Category, Section, Option, Link } from '../components';
 import User from './User';
 import useDataExport from './useDataExport';
-import { invokeTauri, isTauri } from 'stremio/common/tauri';
+import { invokeTauri, isTauri } from 'stremio/lib/tauri-events';
 import styles from './General.less';
 
 type Props = {

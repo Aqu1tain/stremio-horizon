@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useServices } from 'stremio/services';
 import { useBinaryState, useShell, useToast } from 'stremio/common';
 import { Button, Transition } from 'stremio/components';
-import { invokeTauri, isTauri, listenTauri } from 'stremio/common/tauri';
+import { invokeTauri, isTauri, listenTauri } from 'stremio/lib/tauri-events';
 import styles from './UpdaterBanner.less';
 
 type Props = {
