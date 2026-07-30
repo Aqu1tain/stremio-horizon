@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'stremio/components/Icon';
 import { useTranslation } from 'react-i18next';
-import { useServices } from 'stremio/services';
-import { useBinaryState, useShell, useToast } from 'stremio/common';
+import { useBinaryState, usePlatform, useToast } from 'stremio/common';
 import { Button, Transition } from 'stremio/components';
 import { invokeTauri, isTauri, listenTauri } from 'stremio/lib/tauri-events';
 import styles from './UpdaterBanner.less';
@@ -23,8 +22,7 @@ type UpdateProgress = {
 
 const UpdaterBanner = ({ className }: Props) => {
     const { t } = useTranslation();
-    const { shell } = useServices();
-    const shellTransport = useShell();
+    const { shell } = usePlatform();
     const toast = useToast();
     const [visible, show, hide] = useBinaryState(false);
     const [installing, setInstalling] = useState(false);
@@ -46,9 +44,9 @@ const UpdaterBanner = ({ className }: Props) => {
                 });
             });
         } else {
-            shellTransport.send('autoupdater-notif-clicked');
+            shell.send('autoupdater-notif-clicked');
         }
-    }, [shellTransport, t, toast]);
+    }, [shell, t, toast]);
 
     useEffect(() => {
         if (isTauri()) {
@@ -86,8 +84,8 @@ const UpdaterBanner = ({ className }: Props) => {
             };
         }
 
-        shell.transport?.on('autoupdater-show-notif', show);
-        return () => { shell.transport?.off('autoupdater-show-notif', show); };
+        shell.on('autoupdater-show-notif', show);
+        return () => { shell.off('autoupdater-show-notif', show); };
     }, []);
 
     return (

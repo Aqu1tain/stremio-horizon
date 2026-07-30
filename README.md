@@ -71,8 +71,8 @@ Based on [Stremio Web 5](https://github.com/Stremio/stremio-web), but going in a
 
 ### Prerequisites
 
-* Node.js 20 or higher
-* [pnpm](https://pnpm.io/installation) 10 or higher
+* Node.js 22 or higher
+* [pnpm](https://pnpm.io/installation) 11 or higher
 
 ### Install dependencies
 

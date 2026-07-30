@@ -6,6 +6,7 @@ const { PlatformProvider, usePlatform } = require('./Platform');
 const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
 const { ShortcutsProvider, useShortcuts, onShortcut } = require('./Shortcuts');
+const { DiscordProvider, useDiscord, EMPTY_DISCORD_TIMESTAMPS, getPlaybackDiscordActivity } = require('./Discord');
 const { default: getAvatarUrl } = require('./getAvatarUrl');
 const CONSTANTS = require('./CONSTANTS');
 const { withCoreSuspender, useCoreSuspender } = require('./CoreSuspender');
@@ -22,8 +23,8 @@ const useModelState = require('./useModelState');
 const { default: useNotifications } = require('./useNotifications');
 const { default: useOnScrollToBottom } = require('./useOnScrollToBottom');
 const { default: useProfile } = require('./useProfile');
+const { default: useRouteFocused } = require('./useRouteFocused');
 const { default: useSettings } = require('./useSettings');
-const { default: useShell } = require('./useShell');
 const { default: useStreamingServer } = require('./useStreamingServer');
 const { default: useTimeout } = require('./useTimeout');
 const { default: usePlayUrl } = require('./usePlayUrl');
@@ -46,6 +47,10 @@ module.exports = {
     useToast,
     TooltipProvider,
     Tooltip,
+    DiscordProvider,
+    useDiscord,
+    EMPTY_DISCORD_TIMESTAMPS,
+    getPlaybackDiscordActivity,
     getAvatarUrl,
     CONSTANTS,
     withCoreSuspender,
@@ -64,8 +69,8 @@ module.exports = {
     useNotifications,
     useOnScrollToBottom,
     useProfile,
+    useRouteFocused,
     useSettings,
-    useShell,
     useStreamingServer,
     useTimeout,
     usePlayUrl,

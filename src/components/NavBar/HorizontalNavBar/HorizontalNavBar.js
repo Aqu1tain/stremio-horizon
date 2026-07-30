@@ -1,6 +1,8 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
+const { useNavigate } = require('react-router');
+const { Link } = require('react-router-dom');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
@@ -13,10 +15,15 @@ const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
 
-const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, hdrInfo, tabs, selected, navbarHidden, navbarScrolled, ...props }) => {
+const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, originPath, hdrInfo, tabs, selected, navbarHidden, navbarScrolled, ...props }) => {
+    const navigate = useNavigate();
     const backButtonOnClick = React.useCallback(() => {
-        window.history.back();
-    }, []);
+        if (originPath) {
+            navigate(originPath, { replace: true });
+        } else {
+            navigate(-1);
+        }
+    }, [originPath, navigate]);
     const [fullscreen, requestFullscreen, exitFullscreen, , supported] = useFullscreen();
     const [isIOSPWA] = usePWA();
     const renderNavMenuLabel = React.useCallback(({ ref, className, onClick, children, }) => (
@@ -43,14 +50,14 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                         alt={' '}
                     />
                     {tabs.map((tab) => (
-                        <Button
+                        <Link
                             key={tab.id}
                             className={classnames(styles['nav-tab'], { [styles['nav-tab-active']]: tab.id === selected })}
-                            href={tab.href}
+                            to={tab.href}
                             tabIndex={-1}
                         >
                             {t(tab.label)}
-                        </Button>
+                        </Link>
                     ))}
                 </div>
             }
@@ -91,6 +98,7 @@ HorizontalNavBar.propTypes = {
     searchBar: PropTypes.bool,
     fullscreenButton: PropTypes.bool,
     navMenu: PropTypes.bool,
+    originPath: PropTypes.string,
     hdrInfo: PropTypes.shape({
         gamma: PropTypes.string,
     }),

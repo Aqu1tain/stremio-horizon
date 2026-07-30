@@ -13,12 +13,13 @@ if (browser?.platform?.type === 'desktop') {
 
 const React = require('react');
 const ReactDOM = require('react-dom/client');
+const { HashRouter } = require('react-router-dom');
 const i18n = require('i18next');
 const { initReactI18next } = require('react-i18next');
 const stremioTranslations = require('stremio-translations');
 const App = require('./App');
 const { CoreProvider } = require('./core');
-const { FileDropProvider } = require('./common');
+const { FileDropProvider, PlatformProvider } = require('./common');
 
 const translations = Object.fromEntries(Object.entries(stremioTranslations()).map(([key, value]) => [key, {
     translation: value
@@ -42,11 +43,17 @@ const appInfo = {
 
 const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(
-    <CoreProvider appInfo={appInfo}>
-        <FileDropProvider>
-            <App />
-        </FileDropProvider>
-    </CoreProvider>
+    <React.StrictMode>
+        <PlatformProvider>
+            <CoreProvider appInfo={appInfo}>
+                <FileDropProvider>
+                    <HashRouter>
+                        <App />
+                    </HashRouter>
+                </FileDropProvider>
+            </CoreProvider>
+        </PlatformProvider>
+    </React.StrictMode>
 );
 
 if (process.env.NODE_ENV === 'production' && process.env.SERVICE_WORKER_DISABLED !== 'true' && process.env.SERVICE_WORKER_DISABLED !== true && 'serviceWorker' in navigator) {

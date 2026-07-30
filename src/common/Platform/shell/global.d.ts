@@ -3,7 +3,6 @@ type QtTransportMessage = {
 };
 
 interface QtTransport {
-    send: (message: string) => void,
     onmessage: (message: QtTransportMessage) => void,
 }
 
@@ -30,9 +29,9 @@ interface TauriInternals {
 }
 
 declare global {
-    var qt: Qt | undefined;
+    var qt: Qt;
     var chrome: Chrome | undefined;
     var __TAURI_INTERNALS__: TauriInternals | undefined;
 }
 
-export { };
+export {};

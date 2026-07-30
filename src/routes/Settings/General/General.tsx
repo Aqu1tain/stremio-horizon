@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useCore } from 'stremio/core';
 import { Button, Toggle } from 'stremio/components';
-import { usePlatform, useToast } from 'stremio/common';
+import { usePlatform, useToast, useDiscord } from 'stremio/common';
 import { Category, Section, Option, Link } from '../components';
 import User from './User';
 import useDataExport from './useDataExport';
@@ -18,6 +18,7 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
     const core = useCore();
     const platform = usePlatform();
     const toast = useToast();
+    const discord = useDiscord();
     const [dataExport, loadDataExport] = useDataExport();
 
     const [traktAuthStarted, setTraktAuthStarted] = useState(false);
@@ -62,6 +63,22 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
             });
         }
     }, [isTraktAuthenticated, profile.auth]);
+
+    const discordToggle = useMemo(() => ({
+        checked: profile.settings.discordRpcEnabled === true,
+        onClick: () => {
+            core.transport.dispatch({
+                action: 'Ctx',
+                args: {
+                    action: 'UpdateSettings',
+                    args: {
+                        ...profile.settings,
+                        discordRpcEnabled: !profile.settings.discordRpcEnabled
+                    }
+                }
+            });
+        }
+    }), [profile.settings]);
 
     const onToggleAutoUpdate = useCallback(() => {
         if (autoUpdateEnabled === null) {
@@ -154,6 +171,17 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
                                 checked={autoUpdateEnabled === true}
                                 disabled={autoUpdateEnabled === null}
                                 onClick={onToggleAutoUpdate}
+                            />
+                        </Option>
+                    </Category>
+            }
+            {
+                discord.available &&
+                    <Category icon={'discord'} label={'Discord'}>
+                        <Option className={styles['discord-container']} label={'Rich Presence'}>
+                            <Toggle
+                                tabIndex={-1}
+                                {...discordToggle}
                             />
                         </Option>
                     </Category>

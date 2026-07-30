@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withCoreSuspender } from '../CoreSuspender';
 import onShortcut from '../Shortcuts/onShortcut';
 import useSettings from '../useSettings';
-import useShell, { type WindowVisibility } from '../useShell';
 import FullscreenContext, { type FullscreenContextValue } from './FullscreenContext';
+import { usePlatform } from '../Platform';
 
 type Props = {
     children: React.ReactNode,
@@ -15,7 +15,7 @@ const hasWebkitFullscreen = typeof HTMLVideoElement !== 'undefined' &&
     typeof HTMLVideoElement.prototype.webkitEnterFullscreen === 'function';
 
 const FullscreenProvider = ({ children }: Props) => {
-    const shell = useShell();
+    const { shell } = usePlatform();
     const [settings] = useSettings();
     const escExitFullscreen = settings.escExitFullscreen;
 

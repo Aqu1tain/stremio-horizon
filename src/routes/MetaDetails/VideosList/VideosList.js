@@ -11,10 +11,11 @@ const SeasonsBar = require('./SeasonsBar');
 const { default: EpisodePicker } = require('../EpisodePicker');
 const styles = require('./styles');
 
+let savedScrollTop = 0;
+
 const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, selectedVideoId, toggleNotifications }) => {
     const core = useCore();
     const profile = useProfile();
-
     const showNotificationsToggle = React.useMemo(() => {
         return metaItem?.content?.content?.inLibrary && metaItem?.content?.content?.videos?.length;
     }, [metaItem]);
@@ -70,6 +71,33 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
     const seasonWatched = React.useMemo(() => {
         return videosForSeason.every((video) => video.watched);
     }, [videosForSeason]);
+
+    const videosContainerRef = React.useRef(null);
+    const isMountedRef = React.useRef(false);
+
+    const saveScrollPosition = React.useCallback(() => {
+        savedScrollTop = videosContainerRef.current?.scrollTop ?? 0;
+    }, []);
+
+    // Restore scroll on mount (before paint), consume immediately
+    React.useLayoutEffect(() => {
+        if (savedScrollTop > 0 && videosContainerRef.current) {
+            videosContainerRef.current.scrollTop = savedScrollTop;
+            savedScrollTop = 0;
+        }
+    }, []);
+
+    // Scroll to top when the season changes (skip on initial mount to respect restored scroll position)
+    React.useEffect(() => {
+        if (!isMountedRef.current) {
+            isMountedRef.current = true;
+            return;
+        }
+        const hasSelectedVideo = videosForSeason.some((v) => v.id === selectedVideoId);
+        if (!hasSelectedVideo && videosContainerRef.current) {
+            videosContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [selectedSeason]);
 
     const [search, setSearch] = React.useState('');
     const searchInputOnChange = React.useCallback((event) => {
@@ -154,7 +182,7 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                                 value={search}
                                 onChange={searchInputOnChange}
                             />
-                            <div className={styles['videos-container']}>
+                            <div ref={videosContainerRef} className={styles['videos-container']}>
                                 {
                                     videosForSeason
                                         .filter((video) => {
@@ -180,6 +208,7 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                                                 scheduled={video.scheduled}
                                                 seasonWatched={seasonWatched}
                                                 selected={video.id === selectedVideoId}
+                                                onSelect={saveScrollPosition}
                                                 onMarkVideoAsWatched={onMarkVideoAsWatched}
                                                 onMarkSeasonAsWatched={onMarkSeasonAsWatched}
                                             />

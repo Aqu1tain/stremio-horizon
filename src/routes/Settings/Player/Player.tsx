@@ -1,16 +1,15 @@
 import React, { forwardRef } from 'react';
 import { ColorInput, MultiselectMenu, Toggle } from 'stremio/components';
-import { useServices } from 'stremio/services';
+import { usePlatform } from 'stremio/common';
 import { Category, Option, Section } from '../components';
 import usePlayerOptions from './usePlayerOptions';
-import { usePlatform } from 'stremio/common';
 
 type Props = {
     profile: Profile,
 };
 
 const Player = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
-    const { shell } = useServices();
+    const { shell } = usePlatform();
     const platform = usePlatform();
 
     const {
@@ -29,6 +28,7 @@ const Player = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
         bingeWatchingToggle,
         playInBackgroundToggle,
         hardwareDecodingToggle,
+        gpuVideoProcessingToggle,
         videoModeSelect,
         pauseOnMinimizeToggle,
     } = usePlayerOptions(profile);
@@ -129,6 +129,15 @@ const Player = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
                             <Toggle
                                 tabIndex={-1}
                                 {...hardwareDecodingToggle}
+                            />
+                        </Option>
+                }
+                {
+                    shell.active && shell.capabilities.gpuVideoProcessing &&
+                        <Option label={'SETTINGS_GPU_VIDEO_PROCESSING'}>
+                            <Toggle
+                                tabIndex={-1}
+                                {...gpuVideoProcessingToggle}
                             />
                         </Option>
                 }

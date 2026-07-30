@@ -3,13 +3,11 @@
 const Chromecast = require('./Chromecast');
 const { ServicesProvider, useServices } = require('./ServicesContext');
 const { GamepadProvider, useGamepad } = require('./GamepadContext');
-const Shell = require('./Shell');
 
 module.exports = {
     Chromecast,
     ServicesProvider,
     useServices,
-    Shell,
     GamepadProvider,
     useGamepad,
 };
