@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCore } from 'stremio/core';
 import { Button, Toggle } from 'stremio/components';
-import { useServices } from 'stremio/services';
 import { usePlatform, useToast } from 'stremio/common';
 import { Category, Section, Option, Link } from '../components';
 import User from './User';
@@ -15,7 +15,7 @@ type Props = {
 
 const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const platform = usePlatform();
     const toast = useToast();
     const [dataExport, loadDataExport] = useDataExport();

@@ -10,8 +10,9 @@ type Stream = {
     description: string,
     infoHash?: string,
     fileIdx?: string,
+    url?: string,
     externalUrl?: string,
-    deepLinks: {
+    deepLinks?: {
         player: string,
         externalPlayer: ExternalPlayerLinks,
     },

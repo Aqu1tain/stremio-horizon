@@ -3,24 +3,26 @@
 require('spatial-navigation-polyfill');
 const React = require('react');
 const { useTranslation } = require('react-i18next');
+const { useCore } = require('stremio/core');
 const { Router } = require('stremio-router');
-const { Core, Shell, Chromecast, DragAndDrop, KeyboardShortcuts, ServicesProvider, GamepadProvider } = require('stremio/services');
+const { Shell, Chromecast, ServicesProvider, GamepadProvider } = require('stremio/services');
 const { NotFound } = require('stremio/routes');
-const { FileDropProvider, PlatformProvider, ToastProvider, TooltipProvider, ShortcutsProvider, CONSTANTS, withCoreSuspender, useShell, useBinaryState } = require('stremio/common');
+const { FullscreenProvider, PlatformProvider, ToastProvider, TooltipProvider, ShortcutsProvider, CONSTANTS, useShell, useBinaryState, useProfile, withCoreSuspender, onFileDrop } = require('stremio/common');
 const ServicesToaster = require('./ServicesToaster');
 const DeepLinkHandler = require('./DeepLinkHandler');
 const SearchParamsHandler = require('./SearchParamsHandler');
 const { default: UpdaterBanner } = require('./UpdaterBanner');
 const { default: ShortcutsModal } = require('./ShortcutsModal');
 const { default: GamepadModal } = require('./GamepadModal');
-const ErrorDialog = require('./ErrorDialog');
 const withProtectedRoutes = require('./withProtectedRoutes');
 const routerViewsConfig = require('./routerViewsConfig');
 const styles = require('./styles');
 
-const RouterWithProtectedRoutes = withCoreSuspender(withProtectedRoutes(Router));
+const RouterWithProtectedRoutes = withProtectedRoutes(Router);
 
 const App = () => {
+    const core = useCore();
+    const profile = useProfile();
     const { i18n } = useTranslation();
     const shell = useShell();
     const [gamepadSupportEnabled, setGamepadSupportEnabled] = React.useState(false);
@@ -28,23 +30,15 @@ const App = () => {
         return NotFound;
     }, []);
     const services = React.useMemo(() => {
-        const core = new Core({
-            appVersion: process.env.VERSION,
-            shellVersion: null
-        });
         return {
-            core,
             shell: new Shell(),
             chromecast: new Chromecast(),
-            keyboardShortcuts: new KeyboardShortcuts(),
-            dragAndDrop: new DragAndDrop({ core })
         };
     }, []);
-    const [initialized, setInitialized] = React.useState(false);
     const [shortcutModalOpen,, closeShortcutsModal, toggleShortcutModal] = useBinaryState(false);
     const [gamepadModalOpen,, closeGamepadModal, toggleGamepadModal] = useBinaryState(false);
 
-    const onShortcut = React.useCallback((name) => {
+    const onShortcut = React.useCallback((name, combo, key) => {
         switch (name) {
             case 'shortcuts':
                 toggleShortcutModal();
@@ -52,18 +46,38 @@ const App = () => {
             case 'gamepadGuide':
                 toggleGamepadModal();
                 break;
+            case 'navigateSearch':
+                window.location = '#/search';
+                break;
+            case 'navigateTabs': {
+                const routes = ['', 'discover', 'library', 'calendar', 'addons', 'settings'];
+                const index = key - 1;
+                if (index in routes) window.location = `#/${routes[index]}`;
+                break;
+            }
+            case 'navigateHistory':
+                combo === 0 ? window.history.back() : window.history.forward();
+                break;
         }
     }, [toggleShortcutModal, toggleGamepadModal]);
+
+    onFileDrop(['application/x-bittorrent'], (file, buffer) => {
+        core.transport.dispatch({
+            action: 'StreamingServer',
+            args: {
+                action: 'CreateTorrent',
+                args: Array.from(new Uint8Array(buffer))
+            }
+        });
+    });
 
     React.useEffect(() => {
         let prevPath = window.location.hash.slice(1);
         const onLocationHashChange = () => {
-            if (services.core.active) {
-                services.core.transport.analytics({
-                    event: 'LocationPathChanged',
-                    args: { prevPath }
-                });
-            }
+            core.transport.analytics({
+                event: 'LocationPathChanged',
+                args: { prevPath }
+            });
             prevPath = window.location.hash.slice(1);
         };
         window.addEventListener('hashchange', onLocationHashChange);
@@ -71,13 +85,8 @@ const App = () => {
             window.removeEventListener('hashchange', onLocationHashChange);
         };
     }, []);
+
     React.useEffect(() => {
-        const onServiceStateChanged = () => {
-            setInitialized(
-                (services.core.active || services.core.error instanceof Error) &&
-                (services.shell.active || services.shell.error instanceof Error)
-            );
-        };
         const onChromecastStateChange = () => {
             if (services.chromecast.active) {
                 services.chromecast.transport.setOptions({
@@ -89,23 +98,13 @@ const App = () => {
                 });
             }
         };
-        services.core.on('stateChanged', onServiceStateChanged);
-        services.shell.on('stateChanged', onServiceStateChanged);
         services.chromecast.on('stateChanged', onChromecastStateChange);
-        services.core.start();
         services.shell.start();
         services.chromecast.start();
-        services.keyboardShortcuts.start();
-        services.dragAndDrop.start();
         window.services = services;
         return () => {
-            services.core.stop();
             services.shell.stop();
             services.chromecast.stop();
-            services.keyboardShortcuts.stop();
-            services.dragAndDrop.stop();
-            services.core.off('stateChanged', onServiceStateChanged);
-            services.shell.off('stateChanged', onServiceStateChanged);
             services.chromecast.off('stateChanged', onChromecastStateChange);
         };
     }, []);
@@ -136,124 +135,87 @@ const App = () => {
     }, []);
 
     React.useEffect(() => {
-        const onCoreEvent = ({ event, args }) => {
-            switch (event) {
-                case 'SettingsUpdated': {
-                    if (args && args.settings && typeof args.settings.interfaceLanguage === 'string') {
-                        i18n.changeLanguage(args.settings.interfaceLanguage);
-                    }
+        if (typeof profile.settings?.interfaceLanguage === 'string') {
+            i18n.changeLanguage(profile.settings.interfaceLanguage);
+        }
 
-                    if (args?.settings?.gamepadSupport !== undefined) {
-                        setGamepadSupportEnabled(args.settings.gamepadSupport);
-                    }
+        if (typeof profile.settings?.gamepadSupport === 'boolean') {
+            setGamepadSupportEnabled(profile.settings.gamepadSupport);
+        }
 
-                    if (args?.settings?.quitOnClose && shell.windowClosed) {
-                        shell.send('quit');
-                    }
+        if (profile.settings?.quitOnClose && shell.windowClosed) {
+            shell.send('quit');
+        }
+    }, [profile.settings, shell.windowClosed]);
 
-                    break;
-                }
-            }
-        };
-        const onCtxState = (state) => {
-            if (state && state.profile && state.profile.settings && typeof state.profile.settings.interfaceLanguage === 'string') {
-                i18n.changeLanguage(state.profile.settings.interfaceLanguage);
-            }
-
-            if (typeof state.profile.settings.gamepadSupport === 'boolean') {
-                setGamepadSupportEnabled(state.profile.settings.gamepadSupport);
-            }
-
-            if (state?.profile?.settings?.quitOnClose && shell.windowClosed) {
-                shell.send('quit');
-            }
-        };
+    React.useEffect(() => {
         const onWindowFocus = () => {
-            if (!services.core.active || !services.core.transport) return;
-            services.core.transport.dispatch({
+            core.transport.dispatch({
                 action: 'Ctx',
                 args: {
                     action: 'PullAddonsFromAPI'
                 }
             });
-            services.core.transport.dispatch({
+            core.transport.dispatch({
                 action: 'Ctx',
                 args: {
                     action: 'PullUserFromAPI',
                     args: {}
                 }
             });
-            services.core.transport.dispatch({
+            core.transport.dispatch({
                 action: 'Ctx',
                 args: {
                     action: 'SyncLibraryWithAPI'
                 }
             });
-            services.core.transport.dispatch({
+            core.transport.dispatch({
                 action: 'Ctx',
                 args: {
                     action: 'PullNotifications'
                 }
             });
         };
-        const coreReady = services.core.active && services.core.transport;
-        if (coreReady) {
-            onWindowFocus();
-            window.addEventListener('focus', onWindowFocus);
-            services.core.transport.on('CoreEvent', onCoreEvent);
-            services.core.transport
-                .getState('ctx')
-                .then(onCtxState)
-                .catch(console.error);
-        }
+
+        onWindowFocus();
+        window.addEventListener('focus', onWindowFocus);
+
         return () => {
-            if (coreReady) {
-                window.removeEventListener('focus', onWindowFocus);
-                services.core.transport?.off('CoreEvent', onCoreEvent);
-            }
+            window.removeEventListener('focus', onWindowFocus);
         };
-    }, [initialized, shell.windowClosed]);
+    }, []);
+
     return (
-        <React.StrictMode>
-            <ServicesProvider services={services}>
-                {
-                    initialized ?
-                        services.core.error instanceof Error ?
-                            <ErrorDialog className={styles['error-container']} />
-                            :
-                            <PlatformProvider>
-                                <ToastProvider className={styles['toasts-container']}>
-                                    <TooltipProvider className={styles['tooltip-container']}>
-                                        <FileDropProvider className={styles['file-drop-container']}>
-                                            <GamepadProvider enabled={gamepadSupportEnabled} onGuide={toggleGamepadModal}>
-                                                <ShortcutsProvider onShortcut={onShortcut}>
-                                                    {
-                                                        shortcutModalOpen && <ShortcutsModal onClose={closeShortcutsModal}/>
-                                                    }
-                                                    {
-                                                        gamepadModalOpen && <GamepadModal onClose={closeGamepadModal}/>
-                                                    }
-                                                    <ServicesToaster />
-                                                    <DeepLinkHandler />
-                                                    <SearchParamsHandler />
-                                                    <UpdaterBanner className={styles['updater-banner-container']} />
-                                                    <RouterWithProtectedRoutes
-                                                        className={styles['router']}
-                                                        viewsConfig={routerViewsConfig}
-                                                        onPathNotMatch={onPathNotMatch}
-                                                    />
-                                                </ShortcutsProvider>
-                                            </GamepadProvider>
-                                        </FileDropProvider>
-                                    </TooltipProvider>
-                                </ToastProvider>
-                            </PlatformProvider>
-                        :
-                        <div className={styles['loader-container']} />
-                }
-            </ServicesProvider>
-        </React.StrictMode>
+        <ServicesProvider services={services}>
+            <PlatformProvider>
+                <ToastProvider className={styles['toasts-container']}>
+                    <TooltipProvider className={styles['tooltip-container']}>
+                        <GamepadProvider enabled={gamepadSupportEnabled} onGuide={toggleGamepadModal}>
+                            <ShortcutsProvider onShortcut={onShortcut}>
+                                <FullscreenProvider>
+                                    {
+                                        shortcutModalOpen && <ShortcutsModal onClose={closeShortcutsModal}/>
+                                    }
+                                    {
+                                        gamepadModalOpen && <GamepadModal onClose={closeGamepadModal}/>
+                                    }
+                                    <ServicesToaster />
+                                    <DeepLinkHandler />
+                                    <SearchParamsHandler />
+                                    <UpdaterBanner className={styles['updater-banner-container']} />
+                                    <RouterWithProtectedRoutes
+                                        className={styles['router']}
+                                        viewsConfig={routerViewsConfig}
+                                        onPathNotMatch={onPathNotMatch}
+                                    />
+                                </FullscreenProvider>
+                            </ShortcutsProvider>
+                        </GamepadProvider>
+                    </TooltipProvider>
+                </ToastProvider>
+            </PlatformProvider>
+        </ServicesProvider>
     );
 };
 
-module.exports = App;
+module.exports = withCoreSuspender(App);

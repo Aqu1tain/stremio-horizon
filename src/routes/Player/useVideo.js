@@ -40,6 +40,7 @@ const useVideo = () => {
         extraSubtitlesTextColor: null,
         extraSubtitlesBackgroundColor: null,
         extraSubtitlesOutlineColor: null,
+        fullscreen: null,
     });
 
     const dispatch = (action, options) => {
@@ -147,6 +148,10 @@ const useVideo = () => {
         setProp('videoScale', scale);
     };
 
+    const setFullscreen = (state) => {
+        setProp('fullscreen', state);
+    };
+
     const setSubtitlesTextColor = (color) => {
         setProp('subtitlesTextColor', color);
         setProp('extraSubtitlesTextColor', color);
@@ -244,6 +249,7 @@ const useVideo = () => {
         setSubtitlesOutlineColor,
         setExtraSubtitlesTrack,
         setVideoScale,
+        setFullscreen,
     };
 };
 

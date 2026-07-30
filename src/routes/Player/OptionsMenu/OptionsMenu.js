@@ -4,14 +4,14 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
+const { useCore } = require('stremio/core');
 const { usePlatform, useToast } = require('stremio/common');
-const { useServices } = require('stremio/services');
 const Option = require('./Option');
 const styles = require('./styles');
 
 const OptionsMenu = React.memo(React.forwardRef(({ className, stream, playbackDevices, extraSubtitlesTracks, selectedExtraSubtitlesTrackId }, ref) => {
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const platform = usePlatform();
     const toast = useToast();
     const [streamingUrl, downloadUrl, magnetUrl] = React.useMemo(() => {

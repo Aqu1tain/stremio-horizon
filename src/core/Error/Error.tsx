@@ -1,25 +1,27 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
-const React = require('react');
-const { useTranslation } = require('react-i18next');
-const PropTypes = require('prop-types');
-const classnames = require('classnames');
-const { Image, Button } = require('stremio/components');
-const styles = require('./styles');
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import Image from 'stremio/components/Image';
+import Button from 'stremio/components/Button';
+import styles from './styles.less';
 
-const ErrorDialog = ({ className }) => {
+const Error = () => {
     const { t } = useTranslation();
 
     const [dataCleared, setDataCleared] = React.useState(false);
+
     const reload = React.useCallback(() => {
         window.location.reload();
     }, []);
+
     const clearData = React.useCallback(() => {
         window.localStorage.clear();
         setDataCleared(true);
     }, []);
+
     return (
-        <div className={classnames(className, styles['error-container'])}>
+        <div className={styles['error-container']}>
             <Image
                 className={styles['error-image']}
                 src={require('/assets/images/empty.png')}
@@ -44,10 +46,5 @@ const ErrorDialog = ({ className }) => {
     );
 };
 
-ErrorDialog.displayName = 'ErrorDialog';
+export default Error;
 
-ErrorDialog.propTypes = {
-    className: PropTypes.string
-};
-
-module.exports = ErrorDialog;

@@ -5,7 +5,7 @@ const { useTranslation } = require('react-i18next');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { CONSTANTS, useBinaryState, useOnScrollToBottom, withCoreSuspender } = require('stremio/common');
 const { AddonDetailsModal, Button, DelayedRenderer, Image, MainNavBars, MetaItem, MetaPreview, ModalDialog, MultiselectMenu } = require('stremio/components');
 const useDiscover = require('./useDiscover');
@@ -16,7 +16,7 @@ const SCROLL_TO_BOTTOM_THRESHOLD = 400;
 
 const Discover = ({ urlParams, queryParams }) => {
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const [discover, loadNextPage] = useDiscover(urlParams, queryParams);
     const [selectInputs, hasNextPage] = useSelectableInputs(discover);
     const [inputsModalOpen, openInputsModal, closeInputsModal] = useBinaryState(false);

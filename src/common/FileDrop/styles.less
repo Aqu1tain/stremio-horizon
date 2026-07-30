@@ -1,0 +1,15 @@
+.file-drop-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 1rem;
+    border: 0.5rem dashed transparent;
+    pointer-events: none;
+    transition: border-color 0.25s ease-out;
+
+    &:global(.active) {
+        border-color: var(--primary-accent-color);
+    }
+}

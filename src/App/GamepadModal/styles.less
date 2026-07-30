@@ -34,7 +34,7 @@
         border-radius: var(--border-radius);
         background-color: var(--modal-background-color);
         box-shadow: var(--outer-glow);
-        overflow-y: auto;
+        overflow: hidden;
 
         .header {
             flex: none;
@@ -89,6 +89,8 @@
             gap: 3rem;
             padding: 0 3rem;
             padding-bottom: 3rem;
+            flex: 1;
+            min-height: 0;
             overflow-y: auto;
         }
     }
@@ -109,6 +111,7 @@
     }
 
     .diagram {
+        flex: none;
         width: 100%;
         max-width: 48rem;
         height: auto;
@@ -140,11 +143,13 @@
     }
 
     .sections {
+        flex: none;
         display: flex;
         flex-direction: row;
         gap: 5rem;
         width: 100%;
         max-width: 56rem;
+        overflow: visible;
     }
 
     .section {
@@ -152,6 +157,7 @@
         display: flex;
         flex-direction: column;
         gap: 1.2rem;
+        overflow: visible;
     }
 
     .section-title {

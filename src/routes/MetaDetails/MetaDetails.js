@@ -9,7 +9,7 @@ const { default: MainNavBars } = require('stremio/components/MainNavBars');
 const ModalDialog = require('stremio/components/ModalDialog');
 const SharePrompt = require('stremio/components/SharePrompt');
 const { DelayedRenderer, HorizontalNavBar } = require('stremio/components');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const { withCoreSuspender } = require('stremio/common');
 const { default: useBinaryState } = require('stremio/common/useBinaryState');
@@ -29,7 +29,7 @@ const styles = require('./styles');
 const MetaDetails = ({ urlParams, queryParams }) => {
     const contentRef = React.useRef(null);
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const metaDetails = useMetaDetails(urlParams);
     const [season, setSeason] = useSeason(urlParams, queryParams);
     const [, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);

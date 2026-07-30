@@ -6,7 +6,7 @@ const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('stremio/components/Icon');
 const { useRouteFocused } = require('stremio-router');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { Button } = require('stremio/components');
 const { default: TextInput } = require('stremio/components/TextInput');
 const { default: useToast } = require('stremio/common/Toast/useToast');
@@ -14,7 +14,7 @@ const styles = require('./styles');
 
 const SharePrompt = ({ className, url }) => {
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const toast = useToast();
     const inputRef = React.useRef(null);
     const routeFocused = useRouteFocused();

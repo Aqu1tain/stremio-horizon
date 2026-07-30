@@ -28,6 +28,10 @@ export type WindowState = {
     state: number;
 };
 
+export type MediaStatus = {
+    paused: boolean;
+};
+
 const createId = () => Math.floor(Math.random() * 9999) + 1;
 
 const useShell = () => {

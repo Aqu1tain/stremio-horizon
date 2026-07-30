@@ -1,14 +1,13 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
-const { useServices } = require('stremio/services');
 const PropTypes = require('prop-types');
+const { useCore } = require('stremio/core');
 const MetaItem = require('stremio/components/MetaItem');
 const { t } = require('i18next');
 
 const LibItem = ({ _id, removable, notifications, watched, ...props }) => {
-
-    const { core } = useServices();
+    const core = useCore();
 
     const newVideos = React.useMemo(() => {
         const count = notifications.items?.[_id]?.length ?? 0;

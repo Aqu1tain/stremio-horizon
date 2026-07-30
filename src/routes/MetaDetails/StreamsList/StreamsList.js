@@ -6,7 +6,7 @@ const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('stremio/components/Icon');
 const { Button, Image, MultiselectMenu } = require('stremio/components');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { default: parseStreamBadges } = require('stremio/common/parseStreamBadges');
 const Stream = require('./Stream');
 const styles = require('./styles');
@@ -17,7 +17,7 @@ const ALL_ADDONS_KEY = 'ALL';
 
 const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const platform = usePlatform();
     const profile = useProfile();
     const streamsContainerRef = React.useRef(null);

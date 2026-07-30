@@ -1,6 +1,7 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
-const { FileDropProvider, onFileDrop } = require('./FileDrop');
+const { FileDropProvider, useFileDrop, onFileDrop } = require('./FileDrop');
+const { FullscreenProvider, useFullscreen } = require('./Fullscreen');
 const { PlatformProvider, usePlatform } = require('./Platform');
 const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
@@ -15,7 +16,6 @@ const languages = require('./languages');
 const { default: routesRegexp } = require('./routesRegexp');
 const { default: useAnimationFrame } = require('./useAnimationFrame');
 const { default: useBinaryState } = require('./useBinaryState');
-const { default: useFullscreen } = require('./useFullscreen');
 const { default: useInterval } = require('./useInterval');
 const { default: useLiveRef } = require('./useLiveRef');
 const useModelState = require('./useModelState');
@@ -34,7 +34,9 @@ const { default: useLanguageSorting } = require('./useLanguageSorting');
 
 module.exports = {
     FileDropProvider,
+    useFileDrop,
     onFileDrop,
+    FullscreenProvider,
     PlatformProvider,
     usePlatform,
     ShortcutsProvider,

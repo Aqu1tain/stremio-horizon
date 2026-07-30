@@ -6,7 +6,7 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
 const { Modal, useRouteFocused } = require('stremio-router');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { useBinaryState } = require('stremio/common');
 const { Button, Image, Checkbox } = require('stremio/components');
 const CredentialsTextInput = require('./CredentialsTextInput');
@@ -20,7 +20,7 @@ const SIGNUP_FORM = 'signup';
 const LOGIN_FORM = 'login';
 
 const Intro = ({ queryParams }) => {
-    const { core } = useServices();
+    const core = useCore();
     const { t } = useTranslation();
     const routeFocused = useRouteFocused();
     const [startFacebookLogin, stopFacebookLogin] = useFacebookLogin();
@@ -268,27 +268,24 @@ const Intro = ({ queryParams }) => {
         }
     }, [state.form, routeFocused]);
     React.useEffect(() => {
-        const onCoreEvent = ({ event, args }) => {
-            switch (event) {
-                case 'UserAuthenticated': {
-                    closeLoaderModal();
-                    if (routeFocused) {
-                        window.location = '#/';
-                    }
-                    break;
-                }
-                case 'Error': {
-                    if (args.source.event === 'UserAuthenticated') {
-                        closeLoaderModal();
-                    }
-
-                    break;
+        const onCoreEvent = (name) => {
+            if (name === 'UserAuthenticated') {
+                closeLoaderModal();
+                if (routeFocused) {
+                    window.location = '#/';
                 }
             }
         };
-        core.transport.on('CoreEvent', onCoreEvent);
+        const onCoreError = (source) => {
+            if (source.event === 'UserAuthenticated') {
+                closeLoaderModal();
+            }
+        };
+        core.on('event', onCoreEvent);
+        core.on('error', onCoreError);
         return () => {
-            core.transport.off('CoreEvent', onCoreEvent);
+            core.off('event', onCoreEvent);
+            core.off('error', onCoreError);
         };
     }, [routeFocused]);
     return (
