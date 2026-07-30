@@ -22,18 +22,18 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
     const platform = usePlatform();
     const { t } = useTranslation();
 
-    const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
+    const [menuOpen, openMenu, closeMenu, toggleMenu] = useBinaryState(false);
 
     const popupLabelOnMouseUp = React.useCallback((event) => {
         if (!event.nativeEvent.togglePopupPrevented) {
             if (event.nativeEvent.ctrlKey || event.nativeEvent.button === 2) {
                 event.preventDefault();
-                toggleMenu();
+                openMenu();
             }
         }
-    }, []);
+    }, [openMenu]);
     const popupLabelOnContextMenu = React.useCallback((event) => {
-        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey) {
+        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
             event.preventDefault();
         }
     }, [toggleMenu]);
@@ -47,6 +47,9 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
     }, []);
     const popupMenuOnContextMenu = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
+        if (!event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
+            event.preventDefault();
+        }
     }, []);
     const popupMenuOnClick = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
@@ -67,21 +70,33 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         onMarkSeasonAsWatched(season, seasonWatched);
     }, [season, seasonWatched, onMarkSeasonAsWatched]);
     const notPlayable = upcoming || !(released instanceof Date) || isNaN(released.getTime());
-    const videoButtonOnClick = React.useCallback(() => {
-        if (notPlayable) return;
-
+    const selectVideo = React.useCallback(() => {
         if (typeof onSelect === 'function') {
             onSelect();
         }
+    }, [onSelect]);
+    const videoButtonOnClick = React.useCallback(() => {
+        if (notPlayable) return;
 
-        if (deepLinks) {
-            if (typeof deepLinks.player === 'string') {
-                navigate(toPath(deepLinks.player));
-            } else if (typeof deepLinks.metaDetailsStreams === 'string') {
-                navigate(toPath(deepLinks.metaDetailsStreams), { replace: !platform.isMobile });
-            }
+        selectVideo();
+
+        if (deepLinks && typeof deepLinks.metaDetailsStreams === 'string') {
+            navigate(toPath(deepLinks.metaDetailsStreams), { replace: !platform.isMobile });
         }
-    }, [notPlayable, deepLinks, onSelect]);
+    }, [notPlayable, deepLinks, navigate, platform.isMobile, selectVideo]);
+    const playButtonOnClick = React.useCallback((event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (notPlayable) return;
+
+        selectVideo();
+        if (deepLinks && typeof deepLinks.player === 'string') {
+            navigate(toPath(deepLinks.player));
+        }
+    }, [notPlayable, deepLinks, navigate, selectVideo]);
+    const playButtonOnKeyDown = React.useCallback((event) => {
+        event.stopPropagation();
+    }, []);
     const renderLabel = React.useMemo(() => function renderLabel({ className, id, title, thumbnail, episode, released, upcoming, watched, progress, scheduled, children, ref, ...props }) {
         const blurThumbnail = profile.settings.hideSpoilers && season && episode && !watched;
 
@@ -166,10 +181,23 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                         </div>
                     </div>
                 </div>
+                {
+                    deepLinks && typeof deepLinks.player === 'string' ?
+                        <Button
+                            className={styles['play-button-container']}
+                            title={t('CTX_WATCH')}
+                            onClick={playButtonOnClick}
+                            onKeyDown={playButtonOnKeyDown}
+                        >
+                            <Icon className={styles['play-icon']} name={'play'} />
+                        </Button>
+                        :
+                        null
+                }
                 {children}
             </Button>
         );
-    }, [selected]);
+    }, [deepLinks, playButtonOnClick, playButtonOnKeyDown, selected]);
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (
             <div className={styles['context-menu-content']} onPointerDown={popupMenuOnPointerDown} onContextMenu={popupMenuOnContextMenu} onClick={popupMenuOnClick} onKeyDown={popupMenuOnKeyDown}>

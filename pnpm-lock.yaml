@@ -24,8 +24,8 @@ importers:
         specifier: 5.10.0
         version: 5.10.0
       '@stremio/stremio-video':
-        specifier: 0.0.81
-        version: 0.0.81
+        specifier: 0.0.89
+        version: 0.0.89
       a-color-picker:
         specifier: 1.2.1
         version: 1.2.1
@@ -1551,8 +1551,8 @@ packages:
   '@stremio/stremio-icons@5.10.0':
     resolution: {integrity: sha512-Zw/vGC3D2yeQfk8xv/tfMJTDvbCPOI91tBg4XpR2+EgbZSX8Xvm7Vz457PIhFPhTAwdOPHp0VX0M3gzjbt0zOg==}
 
-  '@stremio/stremio-video@0.0.81':
-    resolution: {integrity: sha512-ZH4DbD0wQrr+7YnJDMjFOVdaWij2jQ+ak8O+8gk6Bk2rcwSJJECmLQM0cySWSz0AqB9pn5GZdefLIPseTJ3EVw==}
+  '@stremio/stremio-video@0.0.89':
+    resolution: {integrity: sha512-qhBVZ2L034P0smnHHfNOhiAHgZKP5Op8rI0UmaoeVae9scMS87KXOVaXRlPxvDZibnPwadwjsm9UKR+/eWPIMw==}
 
   '@stylistic/eslint-plugin-jsx@4.4.1':
     resolution: {integrity: sha512-83SInq4u7z71vWwGG+6ViOtlOmZ6tSrDkMPhrvdBBTGMLA0gs22WSdhQ4vZP3oJ5Xg4ythvqeUiFSedvVxzhyA==}
@@ -3627,7 +3627,7 @@ packages:
     engines: {node: '>=6'}
 
   langs@https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1:
-    resolution: {gitHosted: true, integrity: sha512-fWcYqaDF8BSwZUJq2snbXOsUPyOFz5tTdXcRGVX0nfHg7D/dpB1Xxmou6bRcfmF0pCHQv3dp6kb+MfH39n4IRg==, tarball: https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/Stremio/nodejs-langs/tar.gz/e5a3af7d2dd556592cbfe7cf879c1064ed0081a1}
     version: 2.0.0
 
   launch-editor@2.13.2:
@@ -4731,7 +4731,7 @@ packages:
     deprecated: The work that was done in this beta branch won't be included in future versions
 
   spatial-navigation-polyfill@https://codeload.github.com/Stremio/spatial-navigation/tar.gz/64871b1422466f5f45d24ebc8bbd315b2ebab6a6:
-    resolution: {gitHosted: true, integrity: sha512-AQdN6X+KAF3J7agPKdu5oSmvICFTZBtA3DKNMM+TvX+H3eFL2hMQgUJ3I+vtUpfvy2MSUxv/dgAsu/dy45QG+Q==, tarball: https://codeload.github.com/Stremio/spatial-navigation/tar.gz/64871b1422466f5f45d24ebc8bbd315b2ebab6a6}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/Stremio/spatial-navigation/tar.gz/64871b1422466f5f45d24ebc8bbd315b2ebab6a6}
     version: 1.2.0
 
   spdy-transport@3.0.0:
@@ -4761,7 +4761,7 @@ packages:
     engines: {node: '>= 0.4'}
 
   stremio-translations@https://codeload.github.com/Aqu1tain/stremio-translations/tar.gz/ccbee9222f961d547aae51be1fb840b915c494c4:
-    resolution: {gitHosted: true, integrity: sha512-tNDtCNIOKR3AcVhV1O6hXjOD5dkgwVYb9AI5sBs3nzhTH/JEbp+nGtoIdNJ9F6XvUO3jHofQHuVPDzzXMh5/mg==, tarball: https://codeload.github.com/Aqu1tain/stremio-translations/tar.gz/ccbee9222f961d547aae51be1fb840b915c494c4}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/Aqu1tain/stremio-translations/tar.gz/ccbee9222f961d547aae51be1fb840b915c494c4}
     version: 1.52.0
 
   string-length@4.0.2:
@@ -5128,7 +5128,7 @@ packages:
     engines: {node: '>=0.10.0'}
 
   vtt.js@https://codeload.github.com/jaruba/vtt.js/tar.gz/84d33d157848407d790d78423dacc41a096294f0:
-    resolution: {gitHosted: true, integrity: sha512-lh+14Ud2Ou18YjKKxj4KFuBLa5e1iiboz6GeknlsIf8Ljt6+tsayf1vQBn+nms3SDxQLnvpBmBqaRDY4BMmDqQ==, tarball: https://codeload.github.com/jaruba/vtt.js/tar.gz/84d33d157848407d790d78423dacc41a096294f0}
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/jaruba/vtt.js/tar.gz/84d33d157848407d790d78423dacc41a096294f0}
     version: 0.13.0
 
   w3c-xmlserializer@4.0.0:
@@ -6988,7 +6988,7 @@ snapshots:
 
   '@stremio/stremio-icons@5.10.0': {}
 
-  '@stremio/stremio-video@0.0.81':
+  '@stremio/stremio-video@0.0.89':
     dependencies:
       buffer: 6.0.3
       color: 4.2.3

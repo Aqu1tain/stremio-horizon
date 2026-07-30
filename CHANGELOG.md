@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Added
+
+- Discord Rich Presence toggle in Settings (upstream)
+- Play button on episode rows, jumping straight to the player (upstream)
+- Cast device menu in the player, backed by the streaming server (upstream)
+
+### Changed
+
+- Merge upstream stremio-web v5.0.0-beta.37, v5.0.0-beta.38 and v5.0.0-beta.39
+- Routing migrated to react-router with a HashRouter; the bespoke `stremio-router` is now a thin
+  wrapper over it
+- Core moved from a service to a `CoreProvider` context (`useCore()` replaces `useServices().core`);
+  the dead-worker timeout and heartbeat now live in `src/core/createTransport.ts`
+- Shell moved into `PlatformProvider` (`usePlatform().shell` replaces `useShell()`), keeping
+  Horizon's Tauri guard so the Tauri build does not mistake WebView2 for a Stremio shell
+- Player subtitle handling extracted upstream into `useSubtitles`, replacing Horizon's inline copy
+- Node.js 22 and pnpm 11 are now required
+
+### Fixed
+
+- Gamepad guide modal scrolling now uses upstream's flex layout instead of Horizon's overflow patch
+
 ## [0.1.4] - 2026-05-26
 
 ### Changed

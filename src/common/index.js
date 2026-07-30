@@ -5,7 +5,7 @@ const { FullscreenProvider, useFullscreen } = require('./Fullscreen');
 const { PlatformProvider, usePlatform } = require('./Platform');
 const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
-const { ShortcutsProvider, useShortcuts, onShortcut } = require('./Shortcuts');
+const { ShortcutsProvider, useShortcuts, onShortcut, getKeyboardShortcutKey, getKeyboardShortcutKeys } = require('./Shortcuts');
 const { DiscordProvider, useDiscord, EMPTY_DISCORD_TIMESTAMPS, getPlaybackDiscordActivity } = require('./Discord');
 const { default: getAvatarUrl } = require('./getAvatarUrl');
 const CONSTANTS = require('./CONSTANTS');
@@ -43,6 +43,8 @@ module.exports = {
     ShortcutsProvider,
     useShortcuts,
     onShortcut,
+    getKeyboardShortcutKey,
+    getKeyboardShortcutKeys,
     ToastProvider,
     useToast,
     TooltipProvider,

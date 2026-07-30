@@ -20,7 +20,7 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
     const core = useCore();
     const routeFocused = useRouteFocused();
 
-    const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
+    const [menuOpen, openMenu, closeMenu, toggleMenu] = useBinaryState(false);
     const [expanded, setExpanded] = React.useState(false);
     const toggleExpanded = React.useCallback((event) => {
         if (!event.nativeEvent.buttonClickPrevented) {
@@ -32,12 +32,12 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
         if (!event.nativeEvent.togglePopupPrevented) {
             if (event.nativeEvent.ctrlKey || event.nativeEvent.button === 2) {
                 event.preventDefault();
-                toggleMenu();
+                openMenu();
             }
         }
-    }, []);
+    }, [openMenu]);
     const popupLabelOnContextMenu = React.useCallback((event) => {
-        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey) {
+        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
             event.preventDefault();
         }
     }, [toggleMenu]);
@@ -56,6 +56,9 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
     }, []);
     const popupMenuOnContextMenu = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
+        if (!event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
+            event.preventDefault();
+        }
     }, []);
     const popupMenuOnClick = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;

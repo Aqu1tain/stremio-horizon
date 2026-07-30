@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'stremio/components/Icon';
 import { useTranslation } from 'react-i18next';
+import { useMatch } from 'react-router';
 import { useBinaryState, usePlatform, useToast } from 'stremio/common';
 import { Button, Transition } from 'stremio/components';
 import { invokeTauri, isTauri, listenTauri } from 'stremio/lib/tauri-events';
@@ -28,6 +29,7 @@ const UpdaterBanner = ({ className }: Props) => {
     const [installing, setInstalling] = useState(false);
     const [version, setVersion] = useState('');
     const [progress, setProgress] = useState<number | null>(null);
+    const isPlayer = useMatch('/player/*');
 
     const onInstallClick = useCallback(() => {
         if (isTauri()) {
@@ -90,7 +92,7 @@ const UpdaterBanner = ({ className }: Props) => {
 
     return (
         <div className={className}>
-            <Transition when={visible} name={'slide-up'}>
+            <Transition when={visible && !isPlayer} name={'slide-up'}>
                 <div className={styles['updater-banner']}>
                     <div className={styles['icon-container']}>
                         <Icon className={styles['icon']} name={'download'} />
