@@ -44,6 +44,9 @@ const ControlBar = React.forwardRef(({
     videoScale,
     videoScaleLabel,
     onVideoScaleChanged,
+    pictureInPictureSupported,
+    pictureInPictureActive,
+    onTogglePictureInPicture,
     onToggleStatisticsMenu,
     onTouchEnd,
     ...props
@@ -198,6 +201,14 @@ const ControlBar = React.forwardRef(({
                     <Button className={classnames(styles['control-bar-button'], { 'disabled': videoScale === null })} title={videoScaleLabel} tabIndex={-1} onClick={onVideoScaleChanged}>
                         <Icon className={styles['icon']} name={'scale'} />
                     </Button>
+                    {
+                        pictureInPictureSupported ?
+                            <Button className={styles['control-bar-button']} title={pictureInPictureActive ? 'Exit picture in picture' : 'Picture in picture'} tabIndex={-1} onClick={onTogglePictureInPicture}>
+                                <Icon className={styles['icon']} name={'picture-in-picture'} />
+                            </Button>
+                            :
+                            null
+                    }
                     <Button className={classnames(styles['control-bar-button'], { 'disabled': !stream })} tabIndex={-1} onMouseDown={onOptionsButtonMouseDown} onClick={onToggleOptionsMenu}>
                         <Icon className={styles['icon']} name={'more-horizontal'} />
                     </Button>
@@ -219,6 +230,9 @@ ControlBar.propTypes = {
     videoScale: PropTypes.string,
     videoScaleLabel: PropTypes.string,
     onVideoScaleChanged: PropTypes.func,
+    pictureInPictureSupported: PropTypes.bool,
+    pictureInPictureActive: PropTypes.bool,
+    onTogglePictureInPicture: PropTypes.func,
     subtitlesTracks: PropTypes.array,
     audioTracks: PropTypes.array,
     metaItem: PropTypes.object,

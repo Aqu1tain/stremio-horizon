@@ -10,6 +10,7 @@ import {
     Heart, ThumbsUp, CircleAlert,
     Captions, AudioLines, ListVideo, SlidersHorizontal,
     Clapperboard, Users, Megaphone, Glasses, Smartphone, Keyboard, Copy,
+    PictureInPicture2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import StremioIcon from '@stremio/stremio-icons/react';
@@ -69,6 +70,7 @@ const LUCIDE_MAP: Record<string, LucideIcon> = {
     'remote': Smartphone,
     'keyboard': Keyboard,
     'copy': Copy,
+    'picture-in-picture': PictureInPicture2,
 };
 
 const FILLED_ICONS = new Set(['heart', 'thumbs-up']);

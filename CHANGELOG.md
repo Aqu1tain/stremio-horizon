@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Added
 
+- Picture-in-Picture button in the player control bar, shown only when the active video
+  implementation is an HTML video element
 - Discord Rich Presence toggle in Settings (upstream)
 - Play button on episode rows, jumping straight to the player (upstream)
 - Cast device menu in the player, backed by the streaming server (upstream)

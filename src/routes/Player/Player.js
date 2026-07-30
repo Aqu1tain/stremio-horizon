@@ -31,6 +31,7 @@ const CastPicker = require('stremio/components/CastPicker');
 const usePlayer = require('./usePlayer');
 const { default: usePlayOnDevice } = require('./usePlayOnDevice');
 const { default: useKeyboardSeek } = require('./useKeyboardSeek');
+const { default: usePictureInPicture } = require('./usePictureInPicture');
 const useStatistics = require('./useStatistics');
 const useVideo = require('./useVideo');
 const { default: useSubtitles } = require('./useSubtitles');
@@ -92,10 +93,17 @@ const Player = () => {
     const setImmersedDebounced = React.useCallback(debounce(setImmersed, 3000), []);
     const [fullscreen, , , toggleFullscreen, , setVideoElement] = useFullscreen();
 
+    const [videoElement, setLocalVideoElement] = React.useState(null);
+    const pictureInPicture = usePictureInPicture(videoElement);
+
     React.useEffect(() => {
         const el = video.containerRef.current?.querySelector('video');
         setVideoElement(el || null);
-        return () => setVideoElement(null);
+        setLocalVideoElement(el || null);
+        return () => {
+            setVideoElement(null);
+            setLocalVideoElement(null);
+        };
     }, [video.state.manifest]);
 
     const [optionsMenuOpen, , closeOptionsMenu, toggleOptionsMenu] = useBinaryState(false);
@@ -1082,6 +1090,9 @@ const Player = () => {
                 videoScale={video.state.videoScale}
                 videoScaleLabel={VIDEO_SCALE_LABELS[video.state.videoScale || 'contain']}
                 onVideoScaleChanged={onVideoScaleChanged}
+                pictureInPictureSupported={pictureInPicture.supported}
+                pictureInPictureActive={pictureInPicture.active}
+                onTogglePictureInPicture={pictureInPicture.toggle}
                 onToggleStatisticsMenu={toggleStatisticsMenu}
                 onToggleSideDrawer={toggleSideDrawer}
                 onMouseMove={onBarMouseMove}
