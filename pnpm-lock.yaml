@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@stremio/stremio-video': cbafb50d62f84c1d7ad919e5bd75c3942db93098c461c3803daad84e8b2c9aa2
+
 importers:
 
   .:
@@ -25,7 +28,7 @@ importers:
         version: 5.10.0
       '@stremio/stremio-video':
         specifier: 0.0.89
-        version: 0.0.89
+        version: 0.0.89(patch_hash=cbafb50d62f84c1d7ad919e5bd75c3942db93098c461c3803daad84e8b2c9aa2)
       a-color-picker:
         specifier: 1.2.1
         version: 1.2.1
@@ -6988,7 +6991,7 @@ snapshots:
 
   '@stremio/stremio-icons@5.10.0': {}
 
-  '@stremio/stremio-video@0.0.89':
+  '@stremio/stremio-video@0.0.89(patch_hash=cbafb50d62f84c1d7ad919e5bd75c3942db93098c461c3803daad84e8b2c9aa2)':
     dependencies:
       buffer: 6.0.3
       color: 4.2.3
@@ -7024,7 +7027,7 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.29.0
+      '@babel/code-frame': 7.29.7
       '@babel/runtime': 7.29.2
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
@@ -7056,24 +7059,24 @@ snapshots:
 
   '@types/babel__core@7.20.5':
     dependencies:
-      '@babel/parser': 7.29.3
-      '@babel/types': 7.29.0
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
       '@types/babel__generator': 7.27.0
       '@types/babel__template': 7.4.4
       '@types/babel__traverse': 7.28.0
 
   '@types/babel__generator@7.27.0':
     dependencies:
-      '@babel/types': 7.29.0
+      '@babel/types': 7.29.7
 
   '@types/babel__template@7.4.4':
     dependencies:
-      '@babel/parser': 7.29.3
-      '@babel/types': 7.29.0
+      '@babel/parser': 7.29.7
+      '@babel/types': 7.29.7
 
   '@types/babel__traverse@7.28.0':
     dependencies:
-      '@babel/types': 7.29.0
+      '@babel/types': 7.29.7
 
   '@types/body-parser@1.19.6':
     dependencies:

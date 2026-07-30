@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Fixed
 
+- Silent audio after hls.js exhausts its retries, via a patch to `@stremio/stremio-video` that adds
+  the missing `Hls.Events.ERROR` recovery listener (Stremio/stremio-video#142). Horizon's Tauri shell
+  exposes no `shellTransport`, so all of its playback goes through `HTMLVideo` + hls.js and is exposed
+  to this in a way the Qt shell is not
 - Gamepad guide modal scrolling now uses upstream's flex layout instead of Horizon's overflow patch
 
 ## [0.1.4] - 2026-05-26
