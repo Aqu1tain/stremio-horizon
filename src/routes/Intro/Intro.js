@@ -9,7 +9,7 @@ const Modal = require('stremio/router/Modal');
 const { useCore } = require('stremio/core');
 const { useBinaryState } = require('stremio/common');
 const { default: useRouteFocused } = require('stremio/common/useRouteFocused');
-const { Button, Image, Checkbox } = require('stremio/components');
+const { Image, Checkbox } = require('stremio/components');
 const CredentialsTextInput = require('./CredentialsTextInput');
 const PasswordResetModal = require('./PasswordResetModal');
 const useFacebookLogin = require('./useFacebookLogin');
@@ -44,7 +44,7 @@ const Intro = () => {
                     if (state.form !== action.form) {
                         return {
                             form: action.form,
-                            email: '',
+                            email: state.email,
                             password: '',
                             confirmPassword: '',
                             termsAccepted: false,
@@ -108,10 +108,6 @@ const Intro = () => {
                 dispatch({ type: 'error', error: error.message });
             });
     }, []);
-    const cancelLoginWithFacebook = React.useCallback(() => {
-        stopFacebookLogin();
-        closeLoaderModal();
-    }, []);
     const loginWithApple = React.useCallback(() => {
         openLoaderModal();
         startAppleLogin()
@@ -134,10 +130,6 @@ const Intro = () => {
                 closeLoaderModal();
                 dispatch({ type: 'error', error: error.message });
             });
-    }, []);
-    const cancelLoginWithApple = React.useCallback(() => {
-        stopAppleLogin();
-        closeLoaderModal();
     }, []);
     const loginWithEmail = React.useCallback(() => {
         if (typeof state.email !== 'string' || state.email.length === 0 || !emailRef.current.validity.valid) {
@@ -215,7 +207,8 @@ const Intro = () => {
             value: event.currentTarget.value
         });
     }, []);
-    const emailOnSubmit = React.useCallback(() => {
+    const emailOnSubmit = React.useCallback((event) => {
+        event.preventDefault();
         passwordRef.current.focus();
     }, []);
     const passwordOnChange = React.useCallback((event) => {
@@ -225,13 +218,12 @@ const Intro = () => {
             value: event.currentTarget.value
         });
     }, []);
-    const passwordOnSubmit = React.useCallback(() => {
+    const passwordOnSubmit = React.useCallback((event) => {
         if (state.form === SIGNUP_FORM) {
+            event.preventDefault();
             confirmPasswordRef.current.focus();
-        } else {
-            loginWithEmail();
         }
-    }, [state.form, loginWithEmail]);
+    }, [state.form]);
     const confirmPasswordOnChange = React.useCallback((event) => {
         dispatch({
             type: 'change-credentials',
@@ -239,7 +231,8 @@ const Intro = () => {
             value: event.currentTarget.value
         });
     }, []);
-    const confirmPasswordOnSubmit = React.useCallback(() => {
+    const confirmPasswordOnSubmit = React.useCallback((event) => {
+        event.preventDefault();
         termsRef.current.focus();
     }, []);
     const toggleTermsAccepted = React.useCallback(() => {
@@ -251,10 +244,19 @@ const Intro = () => {
     const toggleMarketingAccepted = React.useCallback(() => {
         dispatch({ type: 'toggle-checkbox', name: 'marketingAccepted' });
     }, []);
-    const switchFormOnClick = React.useCallback(() => {
-        const queryParams = new URLSearchParams([['form', state.form === SIGNUP_FORM ? LOGIN_FORM : SIGNUP_FORM]]);
+    const switchForm = React.useCallback((form) => {
+        const queryParams = new URLSearchParams([['form', form]]);
         setQueryParams(queryParams);
-    }, [state.form]);
+    }, []);
+    const formOnSubmit = React.useCallback((event) => {
+        event.preventDefault();
+        state.form === SIGNUP_FORM ? signup() : loginWithEmail();
+    }, [state.form, signup, loginWithEmail]);
+    const cancelAuthentication = React.useCallback(() => {
+        stopFacebookLogin();
+        stopAppleLogin();
+        closeLoaderModal();
+    }, []);
     React.useEffect(() => {
         if ([LOGIN_FORM, SIGNUP_FORM].includes(queryParams.get('form'))) {
             dispatch({ type: 'set-form', form: queryParams.get('form') });
@@ -282,6 +284,10 @@ const Intro = () => {
         const onCoreError = (source) => {
             if (source.event === 'UserAuthenticated') {
                 closeLoaderModal();
+                dispatch({
+                    type: 'error',
+                    error: t(state.form === SIGNUP_FORM ? 'SIGNUP_FAILED' : 'LOGIN_FAILED')
+                });
             }
         };
         core.on('event', onCoreEvent);
@@ -290,126 +296,176 @@ const Intro = () => {
             core.off('event', onCoreEvent);
             core.off('error', onCoreError);
         };
-    }, [routeFocused]);
+    }, [routeFocused, state.form]);
     return (
         <div className={styles['intro-container']}>
             <div className={styles['background-container']} />
             <div className={styles['heading-container']}>
                 <div className={styles['logo-container']}>
-                    <Image className={styles['logo']} src={require('/assets/images/logo.png')} alt={' '} />
+                    <Image className={styles['logo']} src={require('/assets/images/logo.png')} alt={'Stremio'} />
                 </div>
-                <div className={styles['title-container']}>
+                <h1 className={styles['title-container']}>
                     {t('WEBSITE_SLOGAN_NEW_NEW')}
-                </div>
-                <div className={styles['slogan-container']}>
+                </h1>
+                <p className={styles['slogan-container']}>
                     {t('WEBSITE_SLOGAN_ALL')}
-                </div>
+                </p>
             </div>
-            <div className={styles['content-container']}>
-                <div className={styles['form-container']}>
-                    <CredentialsTextInput
-                        ref={emailRef}
-                        className={styles['credentials-text-input']}
-                        type={'email'}
-                        placeholder={t('EMAIL')}
-                        value={state.email}
-                        onChange={emailOnChange}
-                        onSubmit={emailOnSubmit}
-                    />
-                    <CredentialsTextInput
-                        ref={passwordRef}
-                        className={styles['credentials-text-input']}
-                        type={'password'}
-                        placeholder={t('PASSWORD')}
-                        value={state.password}
-                        onChange={passwordOnChange}
-                        onSubmit={passwordOnSubmit}
-                    />
+            <main className={styles['auth-card']}>
+                <div className={styles['form-tabs']} role={'tablist'} aria-label={`${t('LOG_IN')} / ${t('SIGN_UP')}`}>
+                    <button
+                        id={'auth-login-tab'}
+                        className={classnames(styles['tab-button'], { [styles['active']]: state.form === LOGIN_FORM })}
+                        type={'button'}
+                        role={'tab'}
+                        aria-selected={state.form === LOGIN_FORM}
+                        aria-controls={'auth-form-panel'}
+                        onClick={() => switchForm(LOGIN_FORM)}
+                    >
+                        {t('LOG_IN')}
+                    </button>
+                    <button
+                        id={'auth-signup-tab'}
+                        className={classnames(styles['tab-button'], { [styles['active']]: state.form === SIGNUP_FORM })}
+                        type={'button'}
+                        role={'tab'}
+                        aria-selected={state.form === SIGNUP_FORM}
+                        aria-controls={'auth-form-panel'}
+                        onClick={() => switchForm(SIGNUP_FORM)}
+                    >
+                        {t('SIGN_UP')}
+                    </button>
+                </div>
+                <form
+                    id={'auth-form-panel'}
+                    className={styles['form-container']}
+                    role={'tabpanel'}
+                    aria-labelledby={state.form === SIGNUP_FORM ? 'auth-signup-tab' : 'auth-login-tab'}
+                    noValidate={true}
+                    onSubmit={formOnSubmit}
+                >
+                    <h2 id={'auth-form-title'} className={styles['form-title']}>
+                        {state.form === SIGNUP_FORM ? t('SIGN_UP_EMAIL') : t('LOGIN_LABEL')}
+                    </h2>
+                    <div className={styles['field-container']}>
+                        <label className={styles['field-label']} htmlFor={'auth-email'}>{t('EMAIL')}</label>
+                        <CredentialsTextInput
+                            ref={emailRef}
+                            id={'auth-email'}
+                            name={'email'}
+                            className={styles['credentials-text-input']}
+                            type={'email'}
+                            autoComplete={'email'}
+                            value={state.email}
+                            aria-invalid={state.error.length > 0}
+                            aria-describedby={state.error.length > 0 ? 'auth-error' : undefined}
+                            onChange={emailOnChange}
+                            onSubmit={emailOnSubmit}
+                        />
+                    </div>
+                    <div className={styles['field-container']}>
+                        <label className={styles['field-label']} htmlFor={'auth-password'}>{t('PASSWORD')}</label>
+                        <CredentialsTextInput
+                            ref={passwordRef}
+                            id={'auth-password'}
+                            name={'password'}
+                            className={styles['credentials-text-input']}
+                            type={'password'}
+                            autoComplete={state.form === SIGNUP_FORM ? 'new-password' : 'current-password'}
+                            value={state.password}
+                            aria-invalid={state.error.length > 0}
+                            aria-describedby={state.error.length > 0 ? 'auth-error' : undefined}
+                            onChange={passwordOnChange}
+                            onSubmit={passwordOnSubmit}
+                        />
+                    </div>
                     {
                         state.form === SIGNUP_FORM ?
                             <React.Fragment>
-                                <CredentialsTextInput
-                                    ref={confirmPasswordRef}
-                                    className={styles['credentials-text-input']}
-                                    type={'password'}
-                                    placeholder={t('PASSWORD_CONFIRM')}
-                                    value={state.confirmPassword}
-                                    onChange={confirmPasswordOnChange}
-                                    onSubmit={confirmPasswordOnSubmit}
-                                />
-                                <Checkbox
-                                    ref={termsRef}
-                                    label={t('READ_AND_AGREE')}
-                                    link={t('TOS')}
-                                    href={'https://www.stremio.com/tos'}
-                                    checked={state.termsAccepted}
-                                    onChange={toggleTermsAccepted}
-                                />
-                                <Checkbox
-                                    ref={privacyPolicyRef}
-                                    label={t('READ_AND_AGREE')}
-                                    link={t('PRIVACY_POLICY')}
-                                    href={'https://www.stremio.com/privacy'}
-                                    checked={state.privacyPolicyAccepted}
-                                    onChange={togglePrivacyPolicyAccepted}
-                                />
-                                <Checkbox
-                                    ref={marketingRef}
-                                    label={t('MARKETING_AGREE')}
-                                    checked={state.marketingAccepted}
-                                    onChange={toggleMarketingAccepted}
-                                />
+                                <div className={styles['field-container']}>
+                                    <label className={styles['field-label']} htmlFor={'auth-confirm-password'}>{t('PASSWORD_CONFIRM')}</label>
+                                    <CredentialsTextInput
+                                        ref={confirmPasswordRef}
+                                        id={'auth-confirm-password'}
+                                        name={'confirmPassword'}
+                                        className={styles['credentials-text-input']}
+                                        type={'password'}
+                                        autoComplete={'new-password'}
+                                        value={state.confirmPassword}
+                                        aria-invalid={state.error.length > 0}
+                                        aria-describedby={state.error.length > 0 ? 'auth-error' : undefined}
+                                        onChange={confirmPasswordOnChange}
+                                        onSubmit={confirmPasswordOnSubmit}
+                                    />
+                                </div>
+                                <div className={styles['consent-container']}>
+                                    <Checkbox
+                                        ref={termsRef}
+                                        className={styles['consent-checkbox']}
+                                        name={'termsAccepted'}
+                                        label={t('READ_AND_AGREE')}
+                                        link={t('TOS')}
+                                        href={'https://www.stremio.com/tos'}
+                                        checked={state.termsAccepted}
+                                        onChange={toggleTermsAccepted}
+                                    />
+                                    <Checkbox
+                                        ref={privacyPolicyRef}
+                                        className={styles['consent-checkbox']}
+                                        name={'privacyPolicyAccepted'}
+                                        label={t('READ_AND_AGREE')}
+                                        link={t('PRIVACY_POLICY')}
+                                        href={'https://www.stremio.com/privacy'}
+                                        checked={state.privacyPolicyAccepted}
+                                        onChange={togglePrivacyPolicyAccepted}
+                                    />
+                                    <Checkbox
+                                        ref={marketingRef}
+                                        className={styles['consent-checkbox']}
+                                        name={'marketingAccepted'}
+                                        label={t('MARKETING_AGREE')}
+                                        checked={state.marketingAccepted}
+                                        onChange={toggleMarketingAccepted}
+                                    />
+                                </div>
                             </React.Fragment>
                             :
-                            <div className={styles['forgot-password-link-container']}>
-                                <Button className={styles['forgot-password-link']} onClick={openPasswordRestModal}>{t('FORGOT_PASSWORD')}</Button>
-                            </div>
+                            <button className={styles['forgot-password-link']} type={'button'} onClick={openPasswordRestModal}>
+                                {t('FORGOT_PASSWORD')}
+                            </button>
                     }
                     {
                         state.error && state.error.length > 0 ?
-                            <div ref={errorRef} className={styles['error-message']}>{state.error}</div>
+                            <div id={'auth-error'} ref={errorRef} className={styles['error-message']} role={'alert'} aria-live={'polite'}>{state.error}</div>
                             :
                             null
                     }
-                    <Button className={classnames(styles['form-button'], styles['submit-button'])} onClick={state.form === SIGNUP_FORM ? signup : loginWithEmail}>
-                        <div className={styles['label']}>{state.form === SIGNUP_FORM ? t('SIGN_UP') : t('LOG_IN')}</div>
-                    </Button>
+                    <button className={classnames(styles['form-button'], styles['submit-button'])} type={'submit'}>
+                        {state.form === SIGNUP_FORM ? t('SIGN_UP') : t('LOG_IN')}
+                    </button>
+                </form>
+                <div className={styles['divider']}>
+                    <span>{t('OR')}</span>
                 </div>
-                <div className={styles['options-container']}>
-                    <Button className={classnames(styles['form-button'], styles['facebook-button'])} onClick={loginWithFacebook}>
+                <div className={styles['social-buttons']}>
+                    <button className={classnames(styles['form-button'], styles['facebook-button'])} type={'button'} onClick={loginWithFacebook}>
                         <Icon className={styles['icon']} name={'facebook'} />
-                        <div className={styles['label']}>{t('FB_LOGIN')}</div>
-                    </Button>
-                    <Button className={classnames(styles['form-button'], styles['apple-button'])} onClick={loginWithApple}>
+                        <span>{t('FB_LOGIN')}</span>
+                    </button>
+                    <button className={classnames(styles['form-button'], styles['apple-button'])} type={'button'} onClick={loginWithApple}>
                         <Icon className={styles['icon']} name={'macos'} />
-                        <div className={styles['label']}>{t('APPLE_LOGIN')}</div>
-                    </Button>
-                    {
-                        state.form === SIGNUP_FORM ?
-                            <Button className={classnames(styles['form-button'], styles['login-form-button'])} onClick={switchFormOnClick}>
-                                <div className={styles['label']}>{t('LOG_IN')}</div>
-                            </Button>
-                            :
-                            null
-                    }
-                    {
-                        state.form === LOGIN_FORM ?
-                            <Button className={classnames(styles['form-button'], styles['signup-form-button'])} onClick={switchFormOnClick}>
-                                <div className={styles['label']}>{t('SIGN_UP_EMAIL')}</div>
-                            </Button>
-                            :
-                            null
-                    }
-                    {
-                        state.form === SIGNUP_FORM ?
-                            <Button className={classnames(styles['form-button'], styles['guest-login-button'])} onClick={loginAsGuest}>
-                                <div className={styles['label']}>{t('GUEST_LOGIN')}</div>
-                            </Button>
-                            :
-                            null
-                    }
+                        <span>{t('APPLE_LOGIN')}</span>
+                    </button>
                 </div>
-            </div>
+                {
+                    state.form === SIGNUP_FORM ?
+                        <button className={styles['guest-login-button']} type={'button'} onClick={loginAsGuest}>
+                            {t('GUEST_LOGIN')}
+                        </button>
+                        :
+                        null
+                }
+            </main>
             {
                 passwordRestModalOpen ?
                     <PasswordResetModal email={state.email} onCloseRequest={closePasswordResetModal} />
@@ -422,9 +478,9 @@ const Intro = () => {
                         <div className={styles['loader-container']}>
                             <Icon className={styles['icon']} name={'person'} />
                             <div className={styles['label']}>{t('AUTHENTICATING')}</div>
-                            <Button className={styles['button']} onClick={cancelLoginWithFacebook && cancelLoginWithApple}>
+                            <button className={styles['button']} type={'button'} onClick={cancelAuthentication}>
                                 {t('BUTTON_CANCEL')}
-                            </Button>
+                            </button>
                         </div>
                     </Modal>
                     :
