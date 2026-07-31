@@ -203,7 +203,7 @@ const ControlBar = React.forwardRef(({
                     </Button>
                     {
                         pictureInPictureSupported ?
-                            <Button className={styles['control-bar-button']} title={pictureInPictureActive ? 'Exit picture in picture' : 'Picture in picture'} tabIndex={-1} onClick={onTogglePictureInPicture}>
+                            <Button className={styles['control-bar-button']} title={pictureInPictureActive ? t('PLAYER_EXIT_PICTURE_IN_PICTURE', 'Exit picture in picture') : t('PLAYER_PICTURE_IN_PICTURE', 'Picture in picture')} tabIndex={-1} onClick={onTogglePictureInPicture}>
                                 <Icon className={styles['icon']} name={'picture-in-picture'} />
                             </Button>
                             :
