@@ -11,6 +11,7 @@ const { Button, Image, MultiselectMenu } = require('stremio/components');
 const { useCore } = require('stremio/core');
 const { default: parseStreamBadges } = require('stremio/common/parseStreamBadges');
 const Stream = require('./Stream');
+const getStreamsListStatus = require('./getStreamsListStatus');
 const styles = require('./styles');
 const { usePlatform, useProfile } = require('stremio/common');
 const { default: SeasonEpisodePicker } = require('../EpisodePicker');
@@ -43,9 +44,10 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
             navigate(-1);
         }
     }, [video]);
-    const countLoadingAddons = React.useMemo(() => {
-        return props.streams.filter((stream) => stream.content.type === 'Loading').length;
+    const loadingAddons = React.useMemo(() => {
+        return props.streams.filter((stream) => stream.content.type === 'Loading');
     }, [props.streams]);
+    const countLoadingAddons = loadingAddons.length;
     const streamsByAddon = React.useMemo(() => {
         return props.streams
             .filter((streams) => streams.content.type === 'Ready')
@@ -112,6 +114,15 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
             return badges.some(({ label }) => label === qualityFilter);
         });
     }, [filteredStreams, qualityFilter]);
+    const status = React.useMemo(() => {
+        return getStreamsListStatus(props.streams, filteredStreams);
+    }, [props.streams, filteredStreams]);
+    const loadingPlaceholders = loadingAddons.map(({ addon }, index) => (
+        <Stream.Placeholder
+            key={addon.transportUrl ?? index}
+            addonName={addon.manifest.name}
+        />
+    ));
 
     const handleEpisodePicker = React.useCallback((season, episode) => {
         onEpisodeSearch(season, episode);
@@ -146,7 +157,7 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                 }
             </div>
             {
-                props.streams.length === 0 ?
+                status === 'no-addons' ?
                     <div className={styles['message-container']}>
                         {
                             type === 'series' ?
@@ -157,7 +168,7 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                         <div className={styles['label']}>{t('ERR_NO_ADDONS_FOR_STREAMS')}</div>
                     </div>
                     :
-                    props.streams.every((streams) => streams.content.type === 'Err') ?
+                    status === 'no-streams' ?
                         <div className={styles['message-container']}>
                             {
                                 type === 'series' ?
@@ -182,10 +193,9 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                             }
                         </div>
                         :
-                        filteredStreams.length === 0 ?
+                        status === 'loading' && filteredStreams.length === 0 ?
                             <div className={styles['streams-container']}>
-                                <Stream.Placeholder />
-                                <Stream.Placeholder />
+                                {loadingPlaceholders}
                             </div>
                             :
                             <React.Fragment>
@@ -237,6 +247,9 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                                             onClick={stream.onClick}
                                         />
                                     ))}
+                                    {status === 'loading' &&
+                                        loadingPlaceholders
+                                    }
                                     {
                                         showInstallAddonsButton ?
                                             <Button className={styles['install-button-container']} title={t('ADDON_CATALOGUE_MORE')} href={'#/addons'}>
