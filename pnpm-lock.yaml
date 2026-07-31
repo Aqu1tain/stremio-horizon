@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@stremio/stremio-video': cbafb50d62f84c1d7ad919e5bd75c3942db93098c461c3803daad84e8b2c9aa2
+  '@stremio/stremio-video': 5537ad2c7201188f5f25b7b40f4ca363f3b8c3148e3f20bd83ca121926ca450c
 
 importers:
 
@@ -28,7 +28,7 @@ importers:
         version: 5.10.0
       '@stremio/stremio-video':
         specifier: 0.0.89
-        version: 0.0.89(patch_hash=cbafb50d62f84c1d7ad919e5bd75c3942db93098c461c3803daad84e8b2c9aa2)
+        version: 0.0.89(patch_hash=5537ad2c7201188f5f25b7b40f4ca363f3b8c3148e3f20bd83ca121926ca450c)
       a-color-picker:
         specifier: 1.2.1
         version: 1.2.1
@@ -6991,7 +6991,7 @@ snapshots:
 
   '@stremio/stremio-icons@5.10.0': {}
 
-  '@stremio/stremio-video@0.0.89(patch_hash=cbafb50d62f84c1d7ad919e5bd75c3942db93098c461c3803daad84e8b2c9aa2)':
+  '@stremio/stremio-video@0.0.89(patch_hash=5537ad2c7201188f5f25b7b40f4ca363f3b8c3148e3f20bd83ca121926ca450c)':
     dependencies:
       buffer: 6.0.3
       color: 4.2.3

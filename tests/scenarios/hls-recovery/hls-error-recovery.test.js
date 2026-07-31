@@ -130,12 +130,34 @@ describe('hls.js error recovery (patched HTMLVideo)', () => {
         expect(errors[0]).toMatchObject({ critical: true });
     });
 
-    test('a buffered fragment resets the recovery budget', async () => {
+    test('video fragments buffering between audio errors do not refill the budget', async () => {
         const { hls, errors } = await startHlsPlayback();
 
+        // The failure mode is video playing on while audio is silent, so fragments keep
+        // arriving throughout. If they reset the budget the cap is never reached and the
+        // stall is never surfaced.
+        for (let i = 0; i < 4; i++) {
+            hls.emit(HLS_EVENTS.ERROR, fatalMediaError());
+            hls.emit(HLS_EVENTS.FRAG_BUFFERED, {});
+        }
+
+        expect(hls.recoverMediaError).toHaveBeenCalledTimes(3);
+        expect(errors).toHaveLength(1);
+        expect(errors[0]).toMatchObject({ critical: true });
+    });
+
+    test('a buffered fragment resets the budget once playback has been quiet', async () => {
+        const { hls, errors } = await startHlsPlayback();
+        const nowSpy = jest.spyOn(Date, 'now');
+        const base = Date.now();
+
+        nowSpy.mockReturnValue(base);
         for (let i = 0; i < 3; i++) {
             hls.emit(HLS_EVENTS.ERROR, fatalMediaError());
         }
+
+        // Quiet for long enough that playback counts as genuinely recovered.
+        nowSpy.mockReturnValue(base + 60000);
         hls.emit(HLS_EVENTS.FRAG_BUFFERED, {});
         hls.emit(HLS_EVENTS.ERROR, fatalMediaError());
 

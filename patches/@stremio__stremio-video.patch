@@ -1,8 +1,8 @@
 diff --git a/src/HTMLVideo/HTMLVideo.js b/src/HTMLVideo/HTMLVideo.js
-index 902b93e3564339506e7757688dbd8ca11feb5ace..466aeb3080d5743ad6b20440fcdd372a017c725b 100644
+index 902b93e3564339506e7757688dbd8ca11feb5ace..50802b7cb033c45cc7b84399ef3d7a9acb220d14 100644
 --- a/src/HTMLVideo/HTMLVideo.js
 +++ b/src/HTMLVideo/HTMLVideo.js
-@@ -611,6 +611,74 @@ function HTMLVideo(options) {
+@@ -611,6 +611,82 @@ function HTMLVideo(options) {
  
                              if (contentType === 'application/vnd.apple.mpegurl' && Hls.isSupported()) {
                                  hls = new Hls(HLS_CONFIG);
@@ -13,6 +13,7 @@ index 902b93e3564339506e7757688dbd8ca11feb5ace..466aeb3080d5743ad6b20440fcdd372a
 +                                var MEDIA_ERROR_RECOVERY_LIMIT = 3;
 +                                var MEDIA_ERROR_BURST_WINDOW_MS = 3000;
 +                                var NON_FATAL_RELOAD_THROTTLE_MS = 3000;
++                                var RECOVERY_SETTLE_MS = 10000;
 +                                var lastMediaErrorAt = 0;
 +                                var lastNonFatalReloadAt = 0;
 +                                var mediaErrorRecoveryAttempts = 0;
@@ -72,6 +73,13 @@ index 902b93e3564339506e7757688dbd8ca11feb5ace..466aeb3080d5743ad6b20440fcdd372a
 +                                }
 +                                hls.on(Hls.Events.ERROR, recoverFromHlsError);
 +                                hls.on(Hls.Events.FRAG_BUFFERED, function() {
++                                    // The failure this guards against is video continuing while audio
++                                    // stays silent, so video fragments keep buffering throughout. Clearing
++                                    // the budget on any buffered fragment would refill it between two audio
++                                    // errors and the limit would never be reached. Only treat playback as
++                                    // recovered once it has been quiet for a while.
++                                    if (mediaErrorRecoveryAttempts === 0) return;
++                                    if (Date.now() - lastMediaErrorAt < RECOVERY_SETTLE_MS) return;
 +                                    mediaErrorRecoveryAttempts = 0;
 +                                });
                                  hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function() {
