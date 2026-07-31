@@ -4,6 +4,20 @@ import useLiveRef from 'stremio/common/useLiveRef';
 
 const DEFAULT_SEEK_OFFSET = 10;
 
+const MEDIA_SESSION_ACTIONS: MediaSessionAction[] = ['play', 'pause', 'nexttrack', 'seekto', 'seekbackward', 'seekforward'];
+
+// Media Session is absent in some browsers, and setActionHandler throws for any action the
+// browser does not implement, so neither installing nor tearing down can be taken for granted.
+const setHandler = (action: MediaSessionAction, handler: MediaSessionActionHandler | null) => {
+    if (!navigator.mediaSession) return;
+
+    try {
+        navigator.mediaSession.setActionHandler(action, handler);
+    } catch {
+        // Unsupported action — nothing to install and nothing to clean up.
+    }
+};
+
 const useMediaSession = (
     videoState: VideoState,
     player: Player,
@@ -52,11 +66,16 @@ const useMediaSession = (
         if (!navigator.mediaSession || typeof navigator.mediaSession.setPositionState !== 'function') return;
 
         const { time, duration, playbackSpeed } = videoState;
-        if (typeof time !== 'number' || typeof duration !== 'number') return;
+        const durationSeconds = typeof duration === 'number' ? duration / 1000 : NaN;
+        const positionSeconds = typeof time === 'number' ? time / 1000 : NaN;
 
-        const durationSeconds = duration / 1000;
-        const positionSeconds = time / 1000;
-        if (!isFinite(durationSeconds) || !isFinite(positionSeconds) || durationSeconds <= 0) return;
+        // Clear rather than bail out: a stream with no usable duration — a live one, or the
+        // gap while the next one loads — would otherwise inherit the previous timeline and
+        // let the OS controls seek somewhere meaningless.
+        if (!isFinite(durationSeconds) || !isFinite(positionSeconds) || durationSeconds <= 0) {
+            navigator.mediaSession.setPositionState();
+            return;
+        }
 
         navigator.mediaSession.setPositionState({
             duration: durationSeconds,
@@ -101,36 +120,28 @@ const useMediaSession = (
 
     // Callbacks
     useEffect(() => {
-        if (navigator.mediaSession) {
-            navigator.mediaSession.setActionHandler('play', onPlayRequested);
-            navigator.mediaSession.setActionHandler('pause', onPauseRequested);
-        }
+        setHandler('play', onPlayRequested);
+        setHandler('pause', onPauseRequested);
+        setHandler('nexttrack', player.nextVideo ? onNextVideoRequested : null);
 
-        const nexVideoCallback = player.nextVideo ? onNextVideoRequested : null;
-        if (navigator.mediaSession && nexVideoCallback) {
-            navigator.mediaSession.setActionHandler('nexttrack', nexVideoCallback);
-        }
-
-        if (navigator.mediaSession) {
-            navigator.mediaSession.setActionHandler('seekto', ({ seekTime, fastSeek }) => {
-                // Dragging the scrubber emits a stream of fastSeek events followed by a
-                // final one without it. Committing each intermediate seek fights the drag,
-                // because the position effect below keeps re-asserting the stale time.
-                if (fastSeek || typeof seekTime !== 'number') return;
-                onSeekRequested(seekTime * 1000);
-            });
-            navigator.mediaSession.setActionHandler('seekbackward', ({ seekOffset }) => {
-                const { time } = videoStateRef.current;
-                if (typeof time !== 'number') return;
-                onSeekRequested(Math.max(time - (seekOffset || DEFAULT_SEEK_OFFSET) * 1000, 0));
-            });
-            navigator.mediaSession.setActionHandler('seekforward', ({ seekOffset }) => {
-                const { time, duration } = videoStateRef.current;
-                if (typeof time !== 'number') return;
-                const next = time + (seekOffset || DEFAULT_SEEK_OFFSET) * 1000;
-                onSeekRequested(typeof duration === 'number' ? Math.min(next, duration) : next);
-            });
-        }
+        setHandler('seekto', ({ seekTime, fastSeek }) => {
+            // Dragging the scrubber emits a stream of fastSeek events followed by a
+            // final one without it. Committing each intermediate seek fights the drag,
+            // because the position effect above keeps re-asserting the stale time.
+            if (fastSeek || typeof seekTime !== 'number') return;
+            onSeekRequested(seekTime * 1000);
+        });
+        setHandler('seekbackward', ({ seekOffset }) => {
+            const { time } = videoStateRef.current;
+            if (typeof time !== 'number') return;
+            onSeekRequested(Math.max(time - (seekOffset || DEFAULT_SEEK_OFFSET) * 1000, 0));
+        });
+        setHandler('seekforward', ({ seekOffset }) => {
+            const { time, duration } = videoStateRef.current;
+            if (typeof time !== 'number') return;
+            const next = time + (seekOffset || DEFAULT_SEEK_OFFSET) * 1000;
+            onSeekRequested(typeof duration === 'number' ? Math.min(next, duration) : next);
+        });
 
         const onMediaStatus = ({ paused }: MediaStatus) => {
             paused ? onPauseRequested() : onPlayRequested();
@@ -139,12 +150,7 @@ const useMediaSession = (
         shell.on('media.status', onMediaStatus);
 
         return () => {
-            navigator.mediaSession.setActionHandler('play', null);
-            navigator.mediaSession.setActionHandler('pause', null);
-            navigator.mediaSession.setActionHandler('nexttrack', null);
-            navigator.mediaSession.setActionHandler('seekto', null);
-            navigator.mediaSession.setActionHandler('seekbackward', null);
-            navigator.mediaSession.setActionHandler('seekforward', null);
+            MEDIA_SESSION_ACTIONS.forEach((action) => setHandler(action, null));
             shell.off('media.status', onMediaStatus);
         };
     }, [player.nextVideo, onPlayRequested, onPauseRequested, onNextVideoRequested, onSeekRequested]);
