@@ -38,7 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org).
   by the position updates
 - Fullscreen state now also tracks webkit-prefixed fullscreen changes, so Safari does not leave the
   toggle stale after leaving fullscreen
-
 - Silent audio after hls.js exhausts its retries, via a patch to `@stremio/stremio-video` that adds
   the missing `Hls.Events.ERROR` recovery listener (Stremio/stremio-video#142). Horizon's Tauri shell
   exposes no `shellTransport`, so all of its playback goes through `HTMLVideo` + hls.js and is exposed
