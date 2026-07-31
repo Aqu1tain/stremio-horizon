@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-07-31
+
 ### Added
 
 - Picture-in-Picture button in the player control bar, shown only when the active video
@@ -106,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.1...v0.1.2
