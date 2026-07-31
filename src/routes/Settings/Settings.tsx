@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import throttle from 'lodash.throttle';
 import { usePlatform, useProfile, useStreamingServer, useRouteFocused, withCoreSuspender } from 'stremio/common';
 import { MainNavBars } from 'stremio/components';
+import { RouteLoading } from 'stremio/components/RouteLoading';
 import { SECTIONS } from './constants';
 import Menu from './Menu';
 import General from './General';
@@ -120,8 +121,6 @@ const Settings = () => {
     );
 };
 
-const SettingsFallback = () => (
-    <MainNavBars className={styles['settings-container']} route={'settings'} />
-);
+const SettingsFallback = () => <RouteLoading pathname={'/settings'} />;
 
 export default withCoreSuspender(Settings, SettingsFallback);

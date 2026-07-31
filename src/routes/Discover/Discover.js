@@ -9,6 +9,7 @@ const { default: Icon } = require('stremio/components/Icon');
 const { useCore } = require('stremio/core');
 const { CONSTANTS, useBinaryState, useOnScrollToBottom, withCoreSuspender } = require('stremio/common');
 const { AddonDetailsModal, Button, DelayedRenderer, Image, MainNavBars, MetaItem, MetaPreview, ModalDialog, MultiselectMenu } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const useDiscover = require('./useDiscover');
 const useSelectableInputs = require('./useSelectableInputs');
 const styles = require('./styles');
@@ -264,8 +265,6 @@ const Discover = () => {
     );
 };
 
-const DiscoverFallback = () => (
-    <MainNavBars className={styles['discover-container']} route={'discover'} />
-);
+const DiscoverFallback = () => <RouteLoading pathname={'/discover'} />;
 
 module.exports = withCoreSuspender(Discover, DiscoverFallback);

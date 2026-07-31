@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useProfile, withCoreSuspender } from 'stremio/common';
 import { MainNavBars, BottomSheet } from 'stremio/components';
+import { RouteLoading } from 'stremio/components/RouteLoading';
 import Selector from './Selector';
 import Table from './Table';
 import List from './List';
@@ -72,8 +73,6 @@ const Calendar = () => {
     );
 };
 
-const CalendarFallback = () => (
-    <MainNavBars className={styles['calendar']} />
-);
+const CalendarFallback = () => <RouteLoading pathname={'/calendar'} />;
 
 export default withCoreSuspender(Calendar, CalendarFallback);

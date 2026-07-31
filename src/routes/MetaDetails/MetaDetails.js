@@ -7,7 +7,8 @@ const { default: Image } = require('stremio/components/Image');
 const { default: MainNavBars } = require('stremio/components/MainNavBars');
 const ModalDialog = require('stremio/components/ModalDialog');
 const SharePrompt = require('stremio/components/SharePrompt');
-const { DelayedRenderer, HorizontalNavBar } = require('stremio/components');
+const { DelayedRenderer } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const { useCore } = require('stremio/core');
 const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const { withCoreSuspender } = require('stremio/common');
@@ -239,11 +240,7 @@ const MetaDetails = () => {
     }
 
     if (metaItem.content.type === 'Loading') {
-        return (
-            <MainNavBars className={styles['metadetails-container']} route={'metadetails'} overlay>
-                <div className={styles['loading-container']} />
-            </MainNavBars>
-        );
+        return <RouteLoading pathname={'/metadetails'} />;
     }
 
     return (
@@ -411,14 +408,6 @@ const MetaDetails = () => {
     );
 };
 
-const MetaDetailsFallback = () => (
-    <div className={styles['metadetails-container']}>
-        <HorizontalNavBar
-            className={styles['nav-bar']}
-            backButton={true}
-            navMenu={true}
-        />
-    </div>
-);
+const MetaDetailsFallback = () => <RouteLoading pathname={'/metadetails'} />;
 
 module.exports = withCoreSuspender(MetaDetails, MetaDetailsFallback);
