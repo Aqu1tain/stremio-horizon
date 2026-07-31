@@ -28,6 +28,28 @@
         text-align: center;            
     }
 
+    .vpn-hint {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .vpn-help-button {
+        flex: none;
+        margin-top: 1rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 2rem;
+        background-color: var(--secondary-accent-color);
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--primary-foreground-color);
+
+        &:hover {
+            outline: var(--focus-outline-size) solid var(--secondary-accent-color);
+            background-color: transparent;
+        }
+    }
+
     .playlist-button {
         flex: none;
         display: flex;
