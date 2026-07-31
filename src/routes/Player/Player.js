@@ -14,6 +14,7 @@ const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigat
 const { useSettings, useProfile, useFullscreen, useBinaryState, useToast, useStreamingServer, withCoreSuspender, usePlatform, onShortcut, getKeyboardShortcutKey, getKeyboardShortcutKeys, useDiscord, EMPTY_DISCORD_TIMESTAMPS, getPlaybackDiscordActivity } = require('stremio/common');
 const { default: toPath } = require('stremio-router/toPath');
 const { HorizontalNavBar, Transition, ContextMenu } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const { default: Buffering } = require('./Buffering');
 const VolumeChangeIndicator = require('./VolumeChangeIndicator');
 const Error = require('./Error');
@@ -1175,8 +1176,6 @@ const Player = () => {
     );
 };
 
-const PlayerFallback = () => (
-    <div className={classnames(styles['player-container'])} />
-);
+const PlayerFallback = () => <RouteLoading pathname={'/player'} />;
 
 module.exports = withCoreSuspender(Player, PlayerFallback);

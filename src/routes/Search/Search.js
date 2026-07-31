@@ -7,6 +7,7 @@ const { default: useTranslate } = require('stremio/common/useTranslate');
 const { default: Icon } = require('stremio/components/Icon');
 const { withCoreSuspender, getVisibleChildrenRange } = require('stremio/common');
 const { Image, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const useSearch = require('./useSearch');
 const styles = require('./styles');
 const { useSearchParams } = require('react-router-dom');
@@ -128,9 +129,6 @@ const Search = () => {
     );
 };
 
-const SearchFallback = () => {
-    const [queryParams] = useSearchParams();
-    return <MainNavBars className={styles['search-container']} route={'search'} query={queryParams.get('search') ?? queryParams.get('query')} />;
-};
+const SearchFallback = () => <RouteLoading pathname={'/search'} />;
 
 module.exports = withCoreSuspender(Search, SearchFallback);

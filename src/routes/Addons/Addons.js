@@ -9,6 +9,7 @@ const { default: Icon } = require('stremio/components/Icon');
 const { useCore } = require('stremio/core');
 const { usePlatform, useBinaryState, withCoreSuspender } = require('stremio/common');
 const { AddonDetailsModal, Button, Image, MainNavBars, ModalDialog, SearchBar, SharePrompt, TextInput, MultiselectMenu } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const { default: useToast } = require('stremio/common/Toast/useToast');
 const Addon = require('./Addon');
 const useInstalledAddons = require('./useInstalledAddons');
@@ -312,8 +313,6 @@ const Addons = () => {
     );
 };
 
-const AddonsFallback = () => (
-    <MainNavBars className={styles['addons-container']} route={'addons'} />
-);
+const AddonsFallback = () => <RouteLoading pathname={'/addons'} />;
 
 module.exports = withCoreSuspender(Addons, AddonsFallback);

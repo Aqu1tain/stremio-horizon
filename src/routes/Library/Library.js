@@ -10,6 +10,7 @@ const NotFound = require('stremio/routes/NotFound');
 const { useProfile, useNotifications, useOnScrollToBottom, withCoreSuspender } = require('stremio/common');
 const { default: toPath } = require('stremio-router/toPath');
 const { DelayedRenderer, Chips, Image, MainNavBars, LibItem, MultiselectMenu } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const { default: Placeholder } = require('./Placeholder');
 const useLibrary = require('./useLibrary');
 const useSelectableInputs = require('./useSelectableInputs');
@@ -128,9 +129,7 @@ Library.propTypes = {
     model: PropTypes.oneOf(['library', 'continue_watching']),
 };
 
-const LibraryFallback = ({ model }) => (
-    <MainNavBars className={styles['library-container']} route={model} />
-);
+const LibraryFallback = ({ model }) => <RouteLoading pathname={model === 'continue_watching' ? '/continuewatching' : '/library'} />;
 
 LibraryFallback.propTypes = Library.propTypes;
 

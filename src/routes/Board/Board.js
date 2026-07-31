@@ -6,6 +6,7 @@ const debounce = require('lodash.debounce');
 const { default: useTranslate } = require('stremio/common/useTranslate');
 const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChildrenRange, useProfile } = require('stremio/common');
 const { ContinueWatchingItem, EventModal, HeroBanner, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
+const { RouteLoading } = require('stremio/components/RouteLoading');
 const useBoard = require('./useBoard');
 const useContinueWatchingPreview = require('./useContinueWatchingPreview');
 const styles = require('./styles');
@@ -125,10 +126,6 @@ const Board = () => {
     );
 };
 
-const BoardFallback = () => (
-    <div className={styles['board-container']}>
-        <MainNavBars className={styles['board-content-container']} route={'board'} />
-    </div>
-);
+const BoardFallback = () => <RouteLoading pathname={'/'} />;
 
 module.exports = withCoreSuspender(Board, BoardFallback);
