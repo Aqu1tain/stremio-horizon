@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
 import { usePlatform } from 'stremio/common';
+import useLiveRef from 'stremio/common/useLiveRef';
+
+const DEFAULT_SEEK_OFFSET = 10;
 
 const useMediaSession = (
     videoState: VideoState,
@@ -8,8 +11,10 @@ const useMediaSession = (
     onPlayRequested: () => void,
     onPauseRequested: () => void,
     onNextVideoRequested: () => void,
+    onSeekRequested: (time: number) => void,
 ) => {
     const { shell } = usePlatform();
+    const videoStateRef = useLiveRef(videoState);
 
     useEffect(() => {
         if (!('audioSession' in navigator)) return;
@@ -39,6 +44,26 @@ const useMediaSession = (
             }
         };
     }, [videoState.paused]);
+
+    // Position — the Picture-in-Picture window and the OS media controls draw their
+    // scrubber from this alone; without it their timeline is inert. Core reports
+    // milliseconds, the Media Session API wants seconds.
+    useEffect(() => {
+        if (!navigator.mediaSession || typeof navigator.mediaSession.setPositionState !== 'function') return;
+
+        const { time, duration, playbackSpeed } = videoState;
+        if (typeof time !== 'number' || typeof duration !== 'number') return;
+
+        const durationSeconds = duration / 1000;
+        const positionSeconds = time / 1000;
+        if (!isFinite(durationSeconds) || !isFinite(positionSeconds) || durationSeconds <= 0) return;
+
+        navigator.mediaSession.setPositionState({
+            duration: durationSeconds,
+            position: Math.min(Math.max(positionSeconds, 0), durationSeconds),
+            playbackRate: playbackSpeed || 1,
+        });
+    }, [videoState.time, videoState.duration, videoState.playbackSpeed]);
 
     // Metadata
     useEffect(() => {
@@ -86,6 +111,23 @@ const useMediaSession = (
             navigator.mediaSession.setActionHandler('nexttrack', nexVideoCallback);
         }
 
+        if (navigator.mediaSession) {
+            navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
+                if (typeof seekTime === 'number') onSeekRequested(seekTime * 1000);
+            });
+            navigator.mediaSession.setActionHandler('seekbackward', ({ seekOffset }) => {
+                const { time } = videoStateRef.current;
+                if (typeof time !== 'number') return;
+                onSeekRequested(Math.max(time - (seekOffset || DEFAULT_SEEK_OFFSET) * 1000, 0));
+            });
+            navigator.mediaSession.setActionHandler('seekforward', ({ seekOffset }) => {
+                const { time, duration } = videoStateRef.current;
+                if (typeof time !== 'number') return;
+                const next = time + (seekOffset || DEFAULT_SEEK_OFFSET) * 1000;
+                onSeekRequested(typeof duration === 'number' ? Math.min(next, duration) : next);
+            });
+        }
+
         const onMediaStatus = ({ paused }: MediaStatus) => {
             paused ? onPauseRequested() : onPlayRequested();
         };
@@ -96,9 +138,12 @@ const useMediaSession = (
             navigator.mediaSession.setActionHandler('play', null);
             navigator.mediaSession.setActionHandler('pause', null);
             navigator.mediaSession.setActionHandler('nexttrack', null);
+            navigator.mediaSession.setActionHandler('seekto', null);
+            navigator.mediaSession.setActionHandler('seekbackward', null);
+            navigator.mediaSession.setActionHandler('seekforward', null);
             shell.off('media.status', onMediaStatus);
         };
-    }, [player.nextVideo, onPlayRequested, onPauseRequested, onNextVideoRequested]);
+    }, [player.nextVideo, onPlayRequested, onPauseRequested, onNextVideoRequested, onSeekRequested]);
 };
 
 export default useMediaSession;

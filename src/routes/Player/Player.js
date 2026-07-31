@@ -669,7 +669,7 @@ const Player = () => {
         };
     }, [discord.setActivity]);
 
-    useMediaSession(video.state, player, fullscreen, onPlayRequested, onPauseRequested, onNextVideoRequested);
+    useMediaSession(video.state, player, fullscreen, onPlayRequested, onPauseRequested, onNextVideoRequested, onSeekRequested);
 
     React.useEffect(() => {
         const onMediaKey = (action) => {

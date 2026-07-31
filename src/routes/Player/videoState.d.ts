@@ -1,3 +1,6 @@
 type VideoState = {
-    paused?: boolean;
+    paused?: boolean | null;
+    time?: number | null;
+    duration?: number | null;
+    playbackSpeed?: number | null;
 };
