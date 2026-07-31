@@ -26,8 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org).
   Horizon's Tauri guard so the Tauri build does not mistake WebView2 for a Stremio shell
 - Player subtitle handling extracted upstream into `useSubtitles`, replacing Horizon's inline copy
 - Node.js 22 and pnpm 11 are now required
+- Settings menu no longer draws an accent border on the selected item
 
 ### Fixed
+
+- Picture-in-Picture scrubber and skip controls, by publishing media session position state and
+  seek handlers; intermediate `fastSeek` events are ignored so dragging the scrubber is not fought
+  by the position updates
+- Fullscreen state now also tracks webkit-prefixed fullscreen changes, so Safari does not leave the
+  toggle stale after leaving fullscreen
 
 - Silent audio after hls.js exhausts its retries, via a patch to `@stremio/stremio-video` that adds
   the missing `Hls.Events.ERROR` recovery listener (Stremio/stremio-video#142). Horizon's Tauri shell
