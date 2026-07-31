@@ -15,6 +15,14 @@ type Props = {
 const hasWebkitFullscreen = typeof HTMLVideoElement !== 'undefined' &&
     typeof HTMLVideoElement.prototype.webkitEnterFullscreen === 'function';
 
+// WKWebView only implements the webkit-prefixed half of the Fullscreen API, so reading
+// document.fullscreenElement alone leaves the state stale whenever fullscreen is left by
+// any route other than our own button (Esc, the green button, the Window menu).
+const fullscreenElement = (): Element | null =>
+    document.fullscreenElement ?? (document as any).webkitFullscreenElement ?? null;
+
+const documentIsFullscreen = () => fullscreenElement() === document.documentElement;
+
 const FullscreenProvider = ({ children }: Props) => {
     const { shell } = usePlatform();
     const [settings] = useSettings();
@@ -25,7 +33,7 @@ const FullscreenProvider = ({ children }: Props) => {
 
     const [fullscreen, setFullscreen] = useState<boolean>(() => {
         if (typeof document === 'undefined') return false;
-        return document.fullscreenElement === document.documentElement;
+        return documentIsFullscreen();
     });
 
     const setVideoElement = useCallback((el: HTMLVideoElement | null) => {
@@ -52,8 +60,8 @@ const FullscreenProvider = ({ children }: Props) => {
     const exitFullscreen = useCallback(() => {
         if (shell.active) {
             shell.send('win-set-visibility', { fullscreen: false });
-        } else if (document.fullscreenElement === document.documentElement) {
-            document.exitFullscreen();
+        } else if (documentIsFullscreen()) {
+            document.exitFullscreen ? document.exitFullscreen() : (document as any).webkitExitFullscreen?.();
         } else if (videoElementRef.current && (videoElementRef.current as any).webkitDisplayingFullscreen) {
             (videoElementRef.current as any).webkitExitFullscreen();
         }
@@ -73,7 +81,7 @@ const FullscreenProvider = ({ children }: Props) => {
         };
 
         const onFullscreenChange = () => {
-            setFullscreen(document.fullscreenElement === document.documentElement);
+            setFullscreen(documentIsFullscreen());
         };
 
         const onWebkitFullscreenChange = () => {
@@ -95,6 +103,7 @@ const FullscreenProvider = ({ children }: Props) => {
         shell.on('win-visibility-changed', onWindowVisibilityChanged);
         document.addEventListener('keydown', onKeyDown);
         document.addEventListener('fullscreenchange', onFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', onFullscreenChange);
         videoElement?.addEventListener('webkitbeginfullscreen', onWebkitFullscreenChange);
         videoElement?.addEventListener('webkitendfullscreen', onWebkitFullscreenChange);
 
@@ -102,6 +111,7 @@ const FullscreenProvider = ({ children }: Props) => {
             shell.off('win-visibility-changed', onWindowVisibilityChanged);
             document.removeEventListener('keydown', onKeyDown);
             document.removeEventListener('fullscreenchange', onFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
             videoElement?.removeEventListener('webkitbeginfullscreen', onWebkitFullscreenChange);
             videoElement?.removeEventListener('webkitendfullscreen', onWebkitFullscreenChange);
         };
