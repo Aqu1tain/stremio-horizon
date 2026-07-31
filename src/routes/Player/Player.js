@@ -1010,7 +1010,8 @@ const Player = () => {
                     <Error
                         ref={errorRef}
                         className={classnames(styles['layer'], styles['error-layer'])}
-                        stream={video.state.stream}
+                        stream={video.state.stream ?? (player.stream?.type === 'Ready' ? player.stream.content : player.selected?.stream)}
+                        sourceStream={player.stream?.type === 'Ready' ? player.stream.content : player.selected?.stream}
                         {...error}
                     />
                     :
