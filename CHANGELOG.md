@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-07-31
+
+### Added
+
+- Persistent stream loading placeholders that identify which addons are still responding
+- Contextual route skeletons that preserve navigation while pages, details and the player load
+
+### Changed
+
+- Redesigned login and registration flow with a focused card, clearer tabs and actions, native
+  form semantics, improved keyboard accessibility and visible authentication errors
+
+### Fixed
+
+- Recover once automatically when an application update leaves a stale lazy-loaded chunk in the
+  browser cache, then offer explicit Retry and Home recovery actions
+- Movie and series details now show their skeleton immediately instead of an empty dark area while
+  metadata is loading
+- AllDebrid playback failures now explain when the current IP or VPN is not authorized
+
 ## [0.1.5] - 2026-07-31
 
 ### Added
@@ -108,7 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.2...v0.1.3
