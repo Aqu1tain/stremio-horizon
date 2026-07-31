@@ -1,0 +1,79 @@
+diff --git a/src/HTMLVideo/HTMLVideo.js b/src/HTMLVideo/HTMLVideo.js
+index 902b93e3564339506e7757688dbd8ca11feb5ace..466aeb3080d5743ad6b20440fcdd372a017c725b 100644
+--- a/src/HTMLVideo/HTMLVideo.js
++++ b/src/HTMLVideo/HTMLVideo.js
+@@ -611,6 +611,74 @@ function HTMLVideo(options) {
+ 
+                             if (contentType === 'application/vnd.apple.mpegurl' && Hls.isSupported()) {
+                                 hls = new Hls(HLS_CONFIG);
++                                // Upstream registers no Hls ERROR listener, so once hls.js exhausts its
++                                // retries the audio source buffer can stay stalled while video keeps
++                                // decoding: playback looks normal and unmuted but is silent until reload.
++                                // See Stremio/stremio-video#142. Remove this patch once that lands.
++                                var MEDIA_ERROR_RECOVERY_LIMIT = 3;
++                                var MEDIA_ERROR_BURST_WINDOW_MS = 3000;
++                                var NON_FATAL_RELOAD_THROTTLE_MS = 3000;
++                                var lastMediaErrorAt = 0;
++                                var lastNonFatalReloadAt = 0;
++                                var mediaErrorRecoveryAttempts = 0;
++                                function isStallingNonFatalError(details) {
++                                    return details === Hls.ErrorDetails.BUFFER_STALLED_ERROR
++                                        || details === Hls.ErrorDetails.BUFFER_APPENDING_ERROR
++                                        || details === Hls.ErrorDetails.AUDIO_TRACK_LOAD_ERROR
++                                        || details === Hls.ErrorDetails.AUDIO_TRACK_LOAD_TIMEOUT;
++                                }
++                                function recoverFromHlsError(_, data) {
++                                    if (!data.fatal) {
++                                        if (!isStallingNonFatalError(data.details)) {
++                                            return;
++                                        }
++                                        // gap-controller re-emits bufferStalledError on every stall tick,
++                                        // so throttle rather than restarting the load dozens of times.
++                                        var stalledAt = Date.now();
++                                        if (stalledAt - lastNonFatalReloadAt < NON_FATAL_RELOAD_THROTTLE_MS) {
++                                            return;
++                                        }
++                                        lastNonFatalReloadAt = stalledAt;
++                                        hls.startLoad();
++                                        return;
++                                    }
++
++                                    if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
++                                        hls.startLoad();
++                                        return;
++                                    }
++
++                                    if (data.type !== Hls.ErrorTypes.MEDIA_ERROR) {
++                                        return;
++                                    }
++
++                                    if (mediaErrorRecoveryAttempts >= MEDIA_ERROR_RECOVERY_LIMIT) {
++                                        // Fatal hls.js errors never reach videoElement.onerror, so surface
++                                        // it here; onError with critical unloads instead of stalling silently.
++                                        onError(Object.assign({}, ERROR.HTML_VIDEO.MEDIA_ERR_DECODE, {
++                                            critical: true,
++                                            error: data
++                                        }));
++                                        return;
++                                    }
++
++                                    var now = Date.now();
++                                    var withinBurstWindow = now - lastMediaErrorAt < MEDIA_ERROR_BURST_WINDOW_MS;
++                                    lastMediaErrorAt = now;
++                                    mediaErrorRecoveryAttempts++;
++
++                                    if (withinBurstWindow) {
++                                        // A second media error this quickly usually means the audio codec
++                                        // is the culprit; swap it before retrying recovery.
++                                        hls.swapAudioCodec();
++                                    }
++
++                                    hls.recoverMediaError();
++                                }
++                                hls.on(Hls.Events.ERROR, recoverFromHlsError);
++                                hls.on(Hls.Events.FRAG_BUFFERED, function() {
++                                    mediaErrorRecoveryAttempts = 0;
++                                });
+                                 hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, function() {
+                                     onPropChanged('audioTracks');
+                                     onPropChanged('selectedAudioTrackId');
