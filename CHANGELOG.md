@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Player subtitle handling extracted upstream into `useSubtitles`, replacing Horizon's inline copy
 - Node.js 22 and pnpm 11 are now required
 - Settings menu no longer draws an accent border on the selected item
+- Bump the stremio-translations fork to upstream 1.53.2, keeping Horizon's own keys and the
+  "Stremio Horizon" updater branding, so the Discord toggle and the new Picture-in-Picture
+  labels are translated rather than falling back to English
 
 ### Fixed
 

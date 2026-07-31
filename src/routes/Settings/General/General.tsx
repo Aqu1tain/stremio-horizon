@@ -178,7 +178,7 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
             {
                 discord.available &&
                     <Category icon={'discord'} label={'Discord'}>
-                        <Option className={styles['discord-container']} label={'Rich Presence'}>
+                        <Option className={styles['discord-container']} label={t('SETTINGS_DISCORD')}>
                             <Toggle
                                 tabIndex={-1}
                                 {...discordToggle}
