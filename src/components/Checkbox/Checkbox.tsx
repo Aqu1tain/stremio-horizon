@@ -1,6 +1,6 @@
 // Copyright (C) 2017-2025 Smart code 203358507
 
-import React, { useCallback, ChangeEvent, KeyboardEvent, RefCallback } from 'react';
+import React, { useCallback, ChangeEvent, RefCallback } from 'react';
 import classNames from 'classnames';
 import styles from './Checkbox.less';
 import Button from '../Button';
@@ -18,7 +18,7 @@ type Props = {
     onChange?: (props: {
         type: string;
         checked: boolean;
-        reactEvent: KeyboardEvent<HTMLInputElement> | ChangeEvent<HTMLInputElement>;
+        reactEvent: ChangeEvent<HTMLInputElement>;
         nativeEvent: Event;
     }) => void;
     error?: string;
@@ -37,17 +37,6 @@ const Checkbox = React.forwardRef<HTMLInputElement, Props>(({ name, disabled, cl
         }
     }, [disabled, onChange]);
 
-    const onKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
-        if ((event.key === 'Enter' || event.key === ' ') && !disabled) {
-            onChange && onChange({
-                type: 'select',
-                checked: !checked,
-                reactEvent: event as KeyboardEvent<HTMLInputElement>,
-                nativeEvent: event.nativeEvent,
-            });
-        }
-    }, [disabled, checked, onChange]);
-
     return (
         <div className={classNames(styles['checkbox'], className)}>
             <label className={styles['label']} htmlFor={name}>
@@ -58,14 +47,11 @@ const Checkbox = React.forwardRef<HTMLInputElement, Props>(({ name, disabled, cl
                         { [styles['disabled']]: disabled },
                         { [styles['error']]: error }
                     )}
-                    role={'checkbox'}
-                    tabIndex={disabled ? -1 : 0}
-                    aria-checked={checked}
-                    onKeyDown={onKeyDown}
                 >
                     <input
                         ref={ref}
                         id={name}
+                        name={name}
                         type={'checkbox'}
                         checked={checked}
                         disabled={disabled}
@@ -79,10 +65,10 @@ const Checkbox = React.forwardRef<HTMLInputElement, Props>(({ name, disabled, cl
                     }
                 </div>
                 <div>
-                    <span>{label}</span>
+                    <span>{label}{href && link ? ' ' : null}</span>
                     {
                         href && link ?
-                            <Button className={styles['link']} href={href} target={'_blank'} tabIndex={-1}>
+                            <Button className={styles['link']} href={href} target={'_blank'}>
                                 {link}
                             </Button>
                             : null
