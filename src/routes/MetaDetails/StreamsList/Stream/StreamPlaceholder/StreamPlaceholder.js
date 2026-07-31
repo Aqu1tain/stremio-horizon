@@ -6,11 +6,18 @@ const classnames = require('classnames');
 const PlayIconCircleCentered = require('./PlayIconCircleCentered');
 const styles = require('./styles');
 
-const StreamPlaceholder = ({ className }) => {
+const StreamPlaceholder = ({ className, addonName }) => {
+    const hasAddonName = typeof addonName === 'string' && addonName.length > 0;
+
     return (
         <div className={classnames(className, styles['stream-placeholder-container'])}>
             <div className={styles['addon-container']}>
-                <div className={styles['addon-name']} />
+                <div
+                    className={classnames(styles['addon-name'], { [styles['addon-name-placeholder']]: !hasAddonName })}
+                    title={hasAddonName ? addonName : undefined}
+                >
+                    {hasAddonName ? addonName : null}
+                </div>
             </div>
             <div className={styles['info-container']}>
                 <div className={styles['description-container']} />
@@ -22,7 +29,8 @@ const StreamPlaceholder = ({ className }) => {
 };
 
 StreamPlaceholder.propTypes = {
-    className: PropTypes.string
+    className: PropTypes.string,
+    addonName: PropTypes.string
 };
 
 module.exports = StreamPlaceholder;
