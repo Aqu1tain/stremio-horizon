@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePlatform } from 'stremio/common';
 import { Button } from 'stremio/components';
 import Icon from 'stremio/components/Icon';
-import { useServices } from 'stremio/services';
 import { Option, Section } from '../components';
 import styles from './Info.less';
 
@@ -11,7 +11,7 @@ type Props = {
 };
 
 const Info = ({ streamingServer }: Props) => {
-    const { shell } = useServices();
+    const { shell } = usePlatform();
     const { t } = useTranslation();
     const [copied, setCopied] = useState(false);
 
@@ -34,10 +34,10 @@ const Info = ({ streamingServer }: Props) => {
                 </div>
             </Option>
             {
-                typeof shell?.transport?.props?.shellVersion === 'string' &&
+                typeof shell.state.version === 'string' &&
                     <Option label={'Stremio Horizon App'}>
                         <div className={styles['label']}>
-                            {shell.transport.props.shellVersion}
+                            {shell.state.version}
                         </div>
                     </Option>
             }

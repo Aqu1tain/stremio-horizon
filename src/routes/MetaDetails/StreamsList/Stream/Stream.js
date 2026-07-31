@@ -5,10 +5,10 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
 const { t } = require('i18next');
+const { useCore } = require('stremio/core');
 const { useProfile, usePlatform, useToast, useBinaryState } = require('stremio/common');
 const { Button, Image, Popup } = require('stremio/components');
-const { useServices } = require('stremio/services');
-const { useRouteFocused } = require('stremio-router');
+const { default: useRouteFocused } = require('stremio/common/useRouteFocused');
 const { default: parseStreamBadges } = require('stremio/common/parseStreamBadges');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
@@ -17,10 +17,10 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
     const profile = useProfile();
     const toast = useToast();
     const platform = usePlatform();
-    const { core } = useServices();
+    const core = useCore();
     const routeFocused = useRouteFocused();
 
-    const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
+    const [menuOpen, openMenu, closeMenu, toggleMenu] = useBinaryState(false);
     const [expanded, setExpanded] = React.useState(false);
     const toggleExpanded = React.useCallback((event) => {
         if (!event.nativeEvent.buttonClickPrevented) {
@@ -32,12 +32,12 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
         if (!event.nativeEvent.togglePopupPrevented) {
             if (event.nativeEvent.ctrlKey || event.nativeEvent.button === 2) {
                 event.preventDefault();
-                toggleMenu();
+                openMenu();
             }
         }
-    }, []);
+    }, [openMenu]);
     const popupLabelOnContextMenu = React.useCallback((event) => {
-        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey) {
+        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
             event.preventDefault();
         }
     }, [toggleMenu]);
@@ -56,6 +56,9 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
     }, []);
     const popupMenuOnContextMenu = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
+        if (!event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
+            event.preventDefault();
+        }
     }, []);
     const popupMenuOnClick = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;

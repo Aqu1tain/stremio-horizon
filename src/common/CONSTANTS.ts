@@ -50,6 +50,7 @@ export const ICON_FOR_TYPE = new Map<string, string>([
 export const MIME_SIGNATURES: Record<string, string[]> = {
     'application/x-subrip': ['310D0A', '310A'],
     'text/vtt': ['574542565454'],
+    'application/x-bittorrent': ['64'],
 };
 
 export const SUPPORTED_LOCAL_SUBTITLES = [

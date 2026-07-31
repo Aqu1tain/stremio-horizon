@@ -9,12 +9,12 @@ const SearchBar = require('stremio/components/NavBar/HorizontalNavBar/SearchBar'
 import styles from './MainNavBars.less';
 
 const TABS = [
-    { id: 'board', label: 'Home', icon: 'home', href: '#/' },
-    { id: 'discover', label: 'Discover', icon: 'discover', href: '#/discover' },
-    { id: 'library', label: 'Library', icon: 'library', href: '#/library' },
-    { id: 'calendar', label: 'Calendar', icon: 'calendar', href: '#/calendar' },
-    { id: 'addons', label: 'ADDONS', icon: 'addons', href: '#/addons' },
-    { id: 'settings', label: 'SETTINGS', icon: 'settings', href: '#/settings' },
+    { id: 'board', label: 'Home', icon: 'home', href: '/' },
+    { id: 'discover', label: 'Discover', icon: 'discover', href: '/discover' },
+    { id: 'library', label: 'Library', icon: 'library', href: '/library' },
+    { id: 'calendar', label: 'Calendar', icon: 'calendar', href: '/calendar' },
+    { id: 'addons', label: 'ADDONS', icon: 'addons', href: '/addons' },
+    { id: 'settings', label: 'SETTINGS', icon: 'settings', href: '/settings' },
 ];
 
 const TOP_NAV_TABS = TABS.filter((tab) => tab.id !== 'settings');

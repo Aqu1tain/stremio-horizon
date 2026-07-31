@@ -2,32 +2,38 @@
 
 const React = require('react');
 const { useTranslation } = require('react-i18next');
+const { useNavigate } = require('react-router');
+const { default: toPath } = require('stremio-router/toPath');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
-const { useRouteFocused } = require('stremio-router');
+const { default: useRouteFocused } = require('stremio/common/useRouteFocused');
 const { default: Icon } = require('stremio/components/Icon');
 const { Button, Image, Popup } = require('stremio/components');
 const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const { default: useProfile } = require('stremio/common/useProfile');
+const { usePlatform } = require('stremio/common/Platform');
 const VideoPlaceholder = require('./VideoPlaceholder');
 const styles = require('./styles');
 
-const Video = ({ className, id, title, thumbnail, season, episode, released, upcoming, watched, progress, scheduled, seasonWatched, selected, deepLinks, onMarkVideoAsWatched, onMarkSeasonAsWatched, ...props }) => {
+const Video = ({ className, id, title, thumbnail, season, episode, released, upcoming, watched, progress, scheduled, seasonWatched, selected, deepLinks, onSelect, onMarkVideoAsWatched, onMarkSeasonAsWatched, ...props }) => {
     const routeFocused = useRouteFocused();
     const profile = useProfile();
+    const navigate = useNavigate();
+    const platform = usePlatform();
     const { t } = useTranslation();
-    const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
+
+    const [menuOpen, openMenu, closeMenu, toggleMenu] = useBinaryState(false);
 
     const popupLabelOnMouseUp = React.useCallback((event) => {
         if (!event.nativeEvent.togglePopupPrevented) {
             if (event.nativeEvent.ctrlKey || event.nativeEvent.button === 2) {
                 event.preventDefault();
-                toggleMenu();
+                openMenu();
             }
         }
-    }, []);
+    }, [openMenu]);
     const popupLabelOnContextMenu = React.useCallback((event) => {
-        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey) {
+        if (!event.nativeEvent.togglePopupPrevented && !event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
             event.preventDefault();
         }
     }, [toggleMenu]);
@@ -41,6 +47,9 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
     }, []);
     const popupMenuOnContextMenu = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
+        if (!event.nativeEvent.ctrlKey && !event.nativeEvent.shiftKey) {
+            event.preventDefault();
+        }
     }, []);
     const popupMenuOnClick = React.useCallback((event) => {
         event.nativeEvent.togglePopupPrevented = true;
@@ -61,14 +70,33 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         onMarkSeasonAsWatched(season, seasonWatched);
     }, [season, seasonWatched, onMarkSeasonAsWatched]);
     const notPlayable = upcoming || !(released instanceof Date) || isNaN(released.getTime());
+    const selectVideo = React.useCallback(() => {
+        if (typeof onSelect === 'function') {
+            onSelect();
+        }
+    }, [onSelect]);
     const videoButtonOnClick = React.useCallback(() => {
         if (notPlayable) return;
-        if (typeof deepLinks?.player === 'string') {
-            window.location = deepLinks.player;
-        } else if (typeof deepLinks?.metaDetailsStreams === 'string') {
-            window.location.replace(deepLinks.metaDetailsStreams);
+
+        selectVideo();
+
+        if (deepLinks && typeof deepLinks.metaDetailsStreams === 'string') {
+            navigate(toPath(deepLinks.metaDetailsStreams), { replace: !platform.isMobile });
         }
-    }, [notPlayable, deepLinks]);
+    }, [notPlayable, deepLinks, navigate, platform.isMobile, selectVideo]);
+    const playButtonOnClick = React.useCallback((event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (notPlayable) return;
+
+        selectVideo();
+        if (deepLinks && typeof deepLinks.player === 'string') {
+            navigate(toPath(deepLinks.player));
+        }
+    }, [notPlayable, deepLinks, navigate, selectVideo]);
+    const playButtonOnKeyDown = React.useCallback((event) => {
+        event.stopPropagation();
+    }, []);
     const renderLabel = React.useMemo(() => function renderLabel({ className, id, title, thumbnail, episode, released, upcoming, watched, progress, scheduled, children, ref, ...props }) {
         const blurThumbnail = profile.settings.hideSpoilers && season && episode && !watched;
 
@@ -153,10 +181,23 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                         </div>
                     </div>
                 </div>
+                {
+                    deepLinks && typeof deepLinks.player === 'string' ?
+                        <Button
+                            className={styles['play-button-container']}
+                            title={t('CTX_WATCH')}
+                            onClick={playButtonOnClick}
+                            onKeyDown={playButtonOnKeyDown}
+                        >
+                            <Icon className={styles['play-icon']} name={'play'} />
+                        </Button>
+                        :
+                        null
+                }
                 {children}
             </Button>
         );
-    }, [selected]);
+    }, [deepLinks, playButtonOnClick, playButtonOnKeyDown, selected]);
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (
             <div className={styles['context-menu-content']} onPointerDown={popupMenuOnPointerDown} onContextMenu={popupMenuOnContextMenu} onClick={popupMenuOnClick} onKeyDown={popupMenuOnKeyDown}>
@@ -222,6 +263,7 @@ Video.propTypes = {
         metaDetailsStreams: PropTypes.string,
         player: PropTypes.string
     }),
+    onSelect: PropTypes.func,
     onMarkVideoAsWatched: PropTypes.func,
     onMarkSeasonAsWatched: PropTypes.func,
 };

@@ -1,6 +1,5 @@
 const React = require('react');
-const PropTypes = require('prop-types');
-
+const { useParams, useLocation, useNavigate } = require('react-router');
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('stremio/components/Icon');
 const { default: Button } = require('stremio/components/Button');
@@ -9,7 +8,7 @@ const { default: MainNavBars } = require('stremio/components/MainNavBars');
 const ModalDialog = require('stremio/components/ModalDialog');
 const SharePrompt = require('stremio/components/SharePrompt');
 const { DelayedRenderer, HorizontalNavBar } = require('stremio/components');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const { withCoreSuspender } = require('stremio/common');
 const { default: useBinaryState } = require('stremio/common/useBinaryState');
@@ -26,12 +25,22 @@ const useSeason = require('./useSeason');
 const useMetaExtensionTabs = require('./useMetaExtensionTabs');
 const styles = require('./styles');
 
-const MetaDetails = ({ urlParams, queryParams }) => {
+const GAMEPAD_HANDLER_ID = 'metadetails';
+
+const MetaDetails = () => {
+    const { type, id, videoId } = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
     const contentRef = React.useRef(null);
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
+    const urlParams = React.useMemo(() => ({
+        type,
+        id,
+        videoId
+    }), [type, id, videoId]);
     const metaDetails = useMetaDetails(urlParams);
-    const [season, setSeason] = useSeason(urlParams, queryParams);
+    const [season, setSeason] = useSeason();
     const [, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
     const [activeTab, setActiveTab] = React.useState('streams');
@@ -154,12 +163,12 @@ const MetaDetails = ({ urlParams, queryParams }) => {
 
     const handleEpisodeSearch = React.useCallback((seasonNum, episode) => {
         const searchVideoHash = encodeURIComponent(`${urlParams.id}:${seasonNum}:${episode}`);
-        const url = window.location.hash;
+        const url = location.pathname;
         const searchVideoPath = (!urlParams.videoId)
             ? url + (!url.endsWith('/') ? '/' : '') + searchVideoHash
             : url.replace(encodeURIComponent(urlParams.videoId), searchVideoHash);
-        window.location = searchVideoPath;
-    }, [urlParams]);
+        navigate(searchVideoPath, { replace: true });
+    }, [urlParams, location, navigate]);
 
     const [descriptionTruncated, setDescriptionTruncated] = React.useState(false);
 
@@ -192,7 +201,7 @@ const MetaDetails = ({ urlParams, queryParams }) => {
         return meta?.description ?? null;
     }, [video, resumeVideo, meta]);
 
-    useContentGamepadNavigation(contentRef, urlParams.path);
+    useContentGamepadNavigation(contentRef, GAMEPAD_HANDLER_ID);
 
     if (metaPath === null) {
         return (
@@ -400,16 +409,6 @@ const MetaDetails = ({ urlParams, queryParams }) => {
             }
         </MainNavBars>
     );
-};
-
-MetaDetails.propTypes = {
-    urlParams: PropTypes.shape({
-        path: PropTypes.string,
-        type: PropTypes.string,
-        id: PropTypes.string,
-        videoId: PropTypes.string
-    }),
-    queryParams: PropTypes.instanceOf(URLSearchParams)
 };
 
 const MetaDetailsFallback = () => (

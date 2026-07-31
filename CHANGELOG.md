@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Added
+
+- Picture-in-Picture button in the player control bar, shown only when the active video
+  implementation is an HTML video element
+- Discord Rich Presence toggle in Settings (upstream)
+- Play button on episode rows, jumping straight to the player (upstream)
+- Cast device menu in the player, backed by the streaming server (upstream)
+
+### Changed
+
+- Merge upstream stremio-web v5.0.0-beta.37, v5.0.0-beta.38 and v5.0.0-beta.39
+- Routing migrated to react-router with a HashRouter; the bespoke `stremio-router` is now a thin
+  wrapper over it
+- Core moved from a service to a `CoreProvider` context (`useCore()` replaces `useServices().core`);
+  the dead-worker timeout and heartbeat now live in `src/core/createTransport.ts`
+- Shell moved into `PlatformProvider` (`usePlatform().shell` replaces `useShell()`), keeping
+  Horizon's Tauri guard so the Tauri build does not mistake WebView2 for a Stremio shell
+- Player subtitle handling extracted upstream into `useSubtitles`, replacing Horizon's inline copy
+- Node.js 22 and pnpm 11 are now required
+- Settings menu no longer draws an accent border on the selected item
+- Bump the stremio-translations fork to upstream 1.53.2, keeping Horizon's own keys and the
+  "Stremio Horizon" updater branding, so the Discord toggle and the new Picture-in-Picture
+  labels are translated rather than falling back to English
+
+### Fixed
+
+- Picture-in-Picture scrubber and skip controls, by publishing media session position state and
+  seek handlers; intermediate `fastSeek` events are ignored so dragging the scrubber is not fought
+  by the position updates
+- Fullscreen state now also tracks webkit-prefixed fullscreen changes, so Safari does not leave the
+  toggle stale after leaving fullscreen
+- Silent audio after hls.js exhausts its retries, via a patch to `@stremio/stremio-video` that adds
+  the missing `Hls.Events.ERROR` recovery listener (Stremio/stremio-video#142). Horizon's Tauri shell
+  exposes no `shellTransport`, so all of its playback goes through `HTMLVideo` + hls.js and is exposed
+  to this in a way the Qt shell is not
+- Gamepad guide modal scrolling now uses upstream's flex layout instead of Horizon's overflow patch
+
 ## [0.1.4] - 2026-05-26
 
 ### Changed

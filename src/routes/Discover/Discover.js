@@ -2,10 +2,11 @@
 
 const React = require('react');
 const { useTranslation } = require('react-i18next');
-const PropTypes = require('prop-types');
+const { useParams } = require('react-router');
+const { useSearchParams } = require('react-router-dom');
 const classnames = require('classnames');
 const { default: Icon } = require('stremio/components/Icon');
-const { useServices } = require('stremio/services');
+const { useCore } = require('stremio/core');
 const { CONSTANTS, useBinaryState, useOnScrollToBottom, withCoreSuspender } = require('stremio/common');
 const { AddonDetailsModal, Button, DelayedRenderer, Image, MainNavBars, MetaItem, MetaPreview, ModalDialog, MultiselectMenu } = require('stremio/components');
 const useDiscover = require('./useDiscover');
@@ -14,9 +15,16 @@ const styles = require('./styles');
 
 const SCROLL_TO_BOTTOM_THRESHOLD = 400;
 
-const Discover = ({ urlParams, queryParams }) => {
+const Discover = () => {
+    const { type, transportUrl, catalogId } = useParams();
+    const urlParams = React.useMemo(() => ({
+        type,
+        transportUrl,
+        catalogId
+    }), [type, transportUrl, catalogId]);
+    const [queryParams] = useSearchParams();
     const { t } = useTranslation();
-    const { core } = useServices();
+    const core = useCore();
     const [discover, loadNextPage] = useDiscover(urlParams, queryParams);
     const [selectInputs, hasNextPage] = useSelectableInputs(discover);
     const [inputsModalOpen, openInputsModal, closeInputsModal] = useBinaryState(false);
@@ -254,15 +262,6 @@ const Discover = ({ urlParams, queryParams }) => {
             }
         </MainNavBars>
     );
-};
-
-Discover.propTypes = {
-    urlParams: PropTypes.shape({
-        transportUrl: PropTypes.string,
-        type: PropTypes.string,
-        catalogId: PropTypes.string
-    }),
-    queryParams: PropTypes.instanceOf(URLSearchParams)
 };
 
 const DiscoverFallback = () => (
