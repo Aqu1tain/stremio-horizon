@@ -112,8 +112,12 @@ const useMediaSession = (
         }
 
         if (navigator.mediaSession) {
-            navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
-                if (typeof seekTime === 'number') onSeekRequested(seekTime * 1000);
+            navigator.mediaSession.setActionHandler('seekto', ({ seekTime, fastSeek }) => {
+                // Dragging the scrubber emits a stream of fastSeek events followed by a
+                // final one without it. Committing each intermediate seek fights the drag,
+                // because the position effect below keeps re-asserting the stale time.
+                if (fastSeek || typeof seekTime !== 'number') return;
+                onSeekRequested(seekTime * 1000);
             });
             navigator.mediaSession.setActionHandler('seekbackward', ({ seekOffset }) => {
                 const { time } = videoStateRef.current;
