@@ -124,56 +124,58 @@
                 opacity: 0.44;
             }
 
-            .upcoming-watched-container {
-                flex: 0 1 auto;
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                height: 1.6rem;
-                border-radius: 0.3rem;
+        }
+    }
 
-                &>:nth-child(2) {
-                    margin-left: 0.5rem;
-                }
+    .upcoming-watched-container {
+        flex: 0 1 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 1.6rem;
+        margin-right: 0.75rem;
+        border-radius: 0.3rem;
 
-                .upcoming-container,
-                .watched-container {
-                    flex: none;
-                    display: flex;
-                    align-items: center;
-                    height: 100%;
-                    padding: 0 0.5rem;
-                    max-width: 10rem;
+        &>:nth-child(2) {
+            margin-left: 0.5rem;
+        }
 
-                    &:not(:only-child) {
-                        max-width: 5rem;
-                    }
+        .upcoming-container,
+        .watched-container {
+            flex: none;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 0.5rem;
+            max-width: 10rem;
 
-                    .flag-icon {
-                        height: 1.15rem;
-                        width: 1.15rem;
-                        margin-right: 0.25rem;
-                        color: var(--secondary-foreground-color);
-                    }
-
-                    .flag-label {
-                        font-size: 0.8rem;
-                        font-weight: 800;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        text-transform: uppercase;
-                        color: var(--secondary-foreground-color);
-                    }
-                }
-
-                .upcoming-container {
-                    background-color: var(--secondary-accent-color);
-                }
-
-                .watched-container {
-                    background-color: var(--tertiary-accent-color);
-                }
+            &:not(:only-child) {
+                max-width: 5rem;
             }
+
+            .flag-icon {
+                height: 1.15rem;
+                width: 1.15rem;
+                margin-right: 0.25rem;
+                color: var(--secondary-foreground-color);
+            }
+
+            .flag-label {
+                font-size: 0.8rem;
+                font-weight: 800;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                text-transform: uppercase;
+                color: var(--secondary-foreground-color);
+            }
+        }
+
+        .upcoming-container {
+            background-color: var(--secondary-accent-color);
+        }
+
+        .watched-container {
+            background-color: var(--tertiary-accent-color);
         }
     }
 

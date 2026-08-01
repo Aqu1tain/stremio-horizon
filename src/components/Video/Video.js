@@ -171,6 +171,10 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                                     :
                                     null
                         }
+                    </div>
+                </div>
+                {
+                    upcoming || watched ?
                         <div className={styles['upcoming-watched-container']}>
                             {
                                 upcoming && !watched ?
@@ -190,8 +194,9 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                                     null
                             }
                         </div>
-                    </div>
-                </div>
+                        :
+                        null
+                }
                 {
                     typeof onDownload === 'function' ?
                         <Button
