@@ -7,13 +7,15 @@ const { t } = require('i18next');
 const { useCore } = require('stremio/core');
 const { useProfile } = require('stremio/common');
 const { Image, SearchBar, Toggle, Video } = require('stremio/components');
+const { downloadsAvailable, listDownloads, listenDownloadChanged, listenDownloadRemoved } = require('stremio/lib/downloads');
+const { mergeDownload } = require('stremio/routes/Downloads/utils');
 const SeasonsBar = require('./SeasonsBar');
 const { default: EpisodePicker } = require('../EpisodePicker');
 const styles = require('./styles');
 
 let savedScrollTop = 0;
 
-const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, selectedVideoId, toggleNotifications }) => {
+const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, selectedVideoId, toggleNotifications, resolvingVideoId, onDownloadVideo }) => {
     const core = useCore();
     const profile = useProfile();
     const showNotificationsToggle = React.useMemo(() => {
@@ -100,6 +102,42 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
     }, [selectedSeason]);
 
     const [search, setSearch] = React.useState('');
+    const [downloads, setDownloads] = React.useState([]);
+    React.useEffect(() => {
+        if (!downloadsAvailable()) return undefined;
+        let active = true;
+        listDownloads().then((items) => active && setDownloads(items)).catch(() => undefined);
+        const changedListener = listenDownloadChanged((changed) => {
+            if (active) setDownloads((current) => mergeDownload(current, changed));
+        });
+        const removedListener = listenDownloadRemoved((id) => {
+            if (active) setDownloads((current) => current.filter((item) => item.id !== id));
+        });
+        return () => {
+            active = false;
+            changedListener.then((unlisten) => unlisten()).catch(() => undefined);
+            removedListener.then((unlisten) => unlisten()).catch(() => undefined);
+        };
+    }, []);
+    const downloadStatusByVideo = React.useMemo(() => {
+        const result = new Map();
+        const content = metaItem?.content?.type === 'Ready' ? metaItem.content.content : null;
+        for (const item of downloads) {
+            let matchedVideoId = item.videoId;
+            if (!matchedVideoId && content && item.title === content.name) {
+                const match = item.subtitle?.match(/^S(\d+)\s+E(\d+)/i);
+                if (match) {
+                    matchedVideoId = videos.find((video) => video.season === Number(match[1]) && video.episode === Number(match[2]))?.id;
+                }
+            }
+            if (!matchedVideoId) continue;
+            const current = result.get(matchedVideoId);
+            if (!current || item.status === 'completed' || current === 'failed') {
+                result.set(matchedVideoId, item.status);
+            }
+        }
+        return result;
+    }, [downloads, metaItem, videos]);
     const searchInputOnChange = React.useCallback((event) => {
         setSearch(event.currentTarget.value);
     }, []);
@@ -208,6 +246,10 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                                                 scheduled={video.scheduled}
                                                 seasonWatched={seasonWatched}
                                                 selected={video.id === selectedVideoId}
+                                                downloadStatus={downloadStatusByVideo.get(video.id) ?? null}
+                                                downloadBusy={resolvingVideoId === video.id}
+                                                downloadDisabled={resolvingVideoId !== null && resolvingVideoId !== video.id}
+                                                onDownload={typeof onDownloadVideo === 'function' ? () => onDownloadVideo(video) : null}
                                                 onSelect={saveScrollPosition}
                                                 onMarkVideoAsWatched={onMarkVideoAsWatched}
                                                 onMarkSeasonAsWatched={onMarkSeasonAsWatched}
@@ -229,6 +271,8 @@ VideosList.propTypes = {
     selectedVideoId: PropTypes.string,
     seasonOnSelect: PropTypes.func,
     toggleNotifications: PropTypes.func,
+    resolvingVideoId: PropTypes.string,
+    onDownloadVideo: PropTypes.func,
 };
 
 module.exports = VideosList;

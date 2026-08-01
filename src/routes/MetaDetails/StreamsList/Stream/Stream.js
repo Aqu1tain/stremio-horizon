@@ -10,10 +10,11 @@ const { useProfile, usePlatform, useToast, useBinaryState } = require('stremio/c
 const { Button, Image, Popup } = require('stremio/components');
 const { default: useRouteFocused } = require('stremio/common/useRouteFocused');
 const { default: parseStreamBadges } = require('stremio/common/parseStreamBadges');
+const { downloadsAvailable, startDownload } = require('stremio/lib/downloads');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 
-const Stream = ({ className, videoId, videoReleased, addonName, name, description, thumbnail, progress, deepLinks, ...props }) => {
+const Stream = ({ className, videoId, videoReleased, videoTitle, videoSeason, videoEpisode, contentId, contentType, contentTitle, contentDescription, contentThumbnail, addonName, name, description, thumbnail, progress, deepLinks, ...props }) => {
     const profile = useProfile();
     const toast = useToast();
     const platform = usePlatform();
@@ -187,6 +188,47 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
         }
     }, [downloadLink]);
 
+    const downloadForOffline = React.useCallback((event) => {
+        event.preventDefault();
+        event.nativeEvent.buttonClickPrevented = true;
+        closeMenu();
+
+        if (!downloadLink) {
+            return;
+        }
+
+        startDownload({
+            url: downloadLink,
+            title: contentTitle || videoTitle || name || t('HORIZON_DOWNLOADED_VIDEO'),
+            subtitle: videoTitle ? [typeof videoSeason === 'number' && typeof videoEpisode === 'number' ? `S${videoSeason} E${videoEpisode}` : null, videoTitle].filter(Boolean).join(' · ') : null,
+            contentType: contentType || null,
+            contentId: contentId || null,
+            videoId: videoId || null,
+            season: typeof videoSeason === 'number' ? videoSeason : null,
+            episode: typeof videoEpisode === 'number' ? videoEpisode : null,
+            description: contentDescription || null,
+            sourceName: [addonName, name].filter(Boolean).join(' · ') || null,
+            thumbnailUrl: contentThumbnail || null,
+            fileName: deepLinks?.externalPlayer?.fileName || null,
+        })
+            .then(() => {
+                toast.show({
+                    type: 'success',
+                    title: t('DOWNLOADS_IN_PROGRESS'),
+                    message: t('HORIZON_DOWNLOADS_DESCRIPTION'),
+                    timeout: 4000,
+                });
+            })
+            .catch(() => {
+                toast.show({
+                    type: 'error',
+                    title: t('DOWNLOADER_NOT_AVAILABLE'),
+                    message: t('HORIZON_DOWNLOAD_GENERIC_ERROR'),
+                    timeout: 5000,
+                });
+            });
+    }, [addonName, contentDescription, contentId, contentThumbnail, contentTitle, contentType, deepLinks, downloadLink, name, videoEpisode, videoId, videoSeason, videoTitle]);
+
     const copyStreamLink = React.useCallback((event) => {
         event.preventDefault();
         closeMenu();
@@ -289,6 +331,13 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
                         </Button>
                 }
                 {
+                    downloadLink && downloadsAvailable() &&
+                        <Button className={styles['context-menu-option-container']} title={t('CTX_DOWNLOAD_VIDEO')} onClick={downloadForOffline}>
+                            <Icon className={styles['menu-icon']} name={'download'} />
+                            <div className={styles['context-menu-option-label']}>{t('CTX_DOWNLOAD_VIDEO')}</div>
+                        </Button>
+                }
+                {
                     downloadLink &&
                         <Button className={styles['context-menu-option-container']} title={t('CTX_DOWNLOAD_VIDEO')} onClick={copyDownloadLink}>
                             <Icon className={styles['menu-icon']} name={'download'} />
@@ -297,7 +346,7 @@ const Stream = ({ className, videoId, videoReleased, addonName, name, descriptio
                 }
             </div>
         );
-    }, [copyStreamLink, onClick]);
+    }, [copyDownloadLink, copyMagnetLink, copyStreamLink, description, downloadForOffline, downloadLink, magnetLink, streamLink]);
 
     React.useEffect(() => {
         if (!routeFocused) {
@@ -325,6 +374,14 @@ Stream.propTypes = {
     className: PropTypes.string,
     videoId: PropTypes.string,
     videoReleased: PropTypes.instanceOf(Date),
+    videoTitle: PropTypes.string,
+    videoSeason: PropTypes.number,
+    videoEpisode: PropTypes.number,
+    contentId: PropTypes.string,
+    contentType: PropTypes.string,
+    contentTitle: PropTypes.string,
+    contentDescription: PropTypes.string,
+    contentThumbnail: PropTypes.string,
     addonName: PropTypes.string,
     name: PropTypes.string,
     description: PropTypes.string,

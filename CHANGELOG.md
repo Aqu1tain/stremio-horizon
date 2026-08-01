@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Added
+
+- Native-only Downloads page with content-first cards, local artwork, progress, pause, resume,
+  deletion and offline playback through the existing Horizon player
+- Download actions in stream context menus and player options
+- One-click episode downloads that resolve addon streams in place and save the first downloadable source
+
+### Changed
+
+- Redesigned download cards around artwork and content, with compact status, source, progress and actions
+- Group series downloads by season and episode, and group multiple sources as versions of the same title
+- Replace the old technical segmented-HLS failure with a localized retry prompt
+
+### Fixed
+
+- Hide the web-only streaming service installation warning in Horizon Desktop, where the bundled service is managed by the native shell
+- Route offline files through the bundled streaming service so unsupported containers and codecs are transcoded for the WebView, even when the core reports a stale server error
+- Ask the desktop shell for a direct offline file URL before playback so MP4 seeks do not pass through the local HTTP bridge
+- Avoid sending an offline HLS stream through the streaming server a second time before handing it to the player
+
 ## [0.1.6] - 2026-07-31
 
 ### Added

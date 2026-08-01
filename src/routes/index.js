@@ -6,6 +6,7 @@ const Addons = React.lazy(() => import(/* webpackChunkName: "addons" */ './Addon
 const Board = React.lazy(() => import(/* webpackChunkName: "board" */ './Board'));
 const Calendar = React.lazy(() => import(/* webpackChunkName: "calendar" */ './Calendar'));
 const Discover = React.lazy(() => import(/* webpackChunkName: "discover" */ './Discover'));
+const Downloads = React.lazy(() => import(/* webpackChunkName: "downloads" */ './Downloads'));
 const Intro = React.lazy(() => import(/* webpackChunkName: "intro" */ './Intro'));
 const Library = React.lazy(() => import(/* webpackChunkName: "library" */ './Library'));
 const MetaDetails = React.lazy(() => import(/* webpackChunkName: "metadetails" */ './MetaDetails'));
@@ -19,6 +20,7 @@ module.exports = {
     Board,
     Calendar,
     Discover,
+    Downloads,
     Intro,
     Library,
     MetaDetails,

@@ -8,6 +8,7 @@ const { useCore } = require('stremio/core');
 const { Routes } = require('stremio-router');
 const { Chromecast, ServicesProvider, GamepadProvider } = require('stremio/services');
 const { FullscreenProvider, ToastProvider, TooltipProvider, ShortcutsProvider, DiscordProvider, CONSTANTS, useBinaryState, useProfile, withCoreSuspender, onFileDrop, usePlatform } = require('stremio/common');
+const canonicalInterfaceLanguage = require('stremio/common/canonicalInterfaceLanguage');
 const ServicesToaster = require('./ServicesToaster');
 const SearchParamsHandler = require('./SearchParamsHandler');
 const DeepLinkHandler = require('./DeepLinkHandler');
@@ -131,7 +132,7 @@ const App = () => {
 
     React.useEffect(() => {
         if (typeof profile.settings?.interfaceLanguage === 'string') {
-            i18n.changeLanguage(profile.settings.interfaceLanguage);
+            i18n.changeLanguage(canonicalInterfaceLanguage(profile.settings.interfaceLanguage));
         }
 
         if (typeof profile.settings?.gamepadSupport === 'boolean') {

@@ -5,19 +5,19 @@ import classnames from 'classnames';
 import { VerticalNavBar, HorizontalNavBar } from 'stremio/components/NavBar';
 import useNavbarScroll from 'stremio/common/useNavbarScroll';
 import { useContentGamepadNavigation, useVerticalNavGamepadNavigation } from 'stremio/services/GamepadNavigation';
+import { isTauri } from 'stremio/lib/tauri-events';
 const SearchBar = require('stremio/components/NavBar/HorizontalNavBar/SearchBar');
 import styles from './MainNavBars.less';
 
 const TABS = [
-    { id: 'board', label: 'Home', icon: 'home', href: '/' },
+    { id: 'board', label: 'WEBSITE_PAGE_HOME', icon: 'home', href: '/' },
     { id: 'discover', label: 'Discover', icon: 'discover', href: '/discover' },
     { id: 'library', label: 'Library', icon: 'library', href: '/library' },
+    { id: 'downloads', label: 'DOWNLOADS', icon: 'download', href: '/downloads', desktopOnly: true },
     { id: 'calendar', label: 'Calendar', icon: 'calendar', href: '/calendar' },
-    { id: 'addons', label: 'ADDONS', icon: 'addons', href: '/addons' },
+    { id: 'addons', label: 'WEBSITE_PAGE_ADDONS', icon: 'addons', href: '/addons' },
     { id: 'settings', label: 'SETTINGS', icon: 'settings', href: '/settings' },
 ];
-
-const TOP_NAV_TABS = TABS.filter((tab) => tab.id !== 'settings');
 
 type Props = {
     className: string,
@@ -32,6 +32,8 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
     const contentRef = useRef<HTMLDivElement>(null);
     const autoHide = route === 'board' || route === 'metadetails';
     const { visible, scrolled } = useNavbarScroll(contentRef, autoHide);
+    const tabs = TABS.filter((tab) => !tab.desktopOnly || isTauri());
+    const topNavTabs = tabs.filter((tab) => tab.id !== 'settings');
 
     const navRoute = route === 'continue_watching' ? 'library' : (route ?? '');
     useContentGamepadNavigation(contentRef, navRoute);
@@ -46,7 +48,7 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 backButton={false}
                 searchBar={true}
                 navMenu={true}
-                tabs={TOP_NAV_TABS}
+                tabs={topNavTabs}
                 selected={route}
                 navbarHidden={autoHide && !visible}
                 navbarScrolled={scrolled || route === 'search'}
@@ -60,7 +62,7 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
                 ref={navRef}
                 className={styles['vertical-nav-bar']}
                 selected={route}
-                tabs={TABS}
+                tabs={tabs}
             />
             <div ref={contentRef} className={classnames(styles['nav-content-container'], { [styles['search-active']]: route === 'search' })}>{children}</div>
         </div>
@@ -68,4 +70,3 @@ const MainNavBars = memo(({ className, route, query, overlay, children }: Props)
 });
 
 export default MainNavBars;
-

@@ -17,12 +17,16 @@ const { HashRouter } = require('react-router-dom');
 const i18n = require('i18next');
 const { initReactI18next } = require('react-i18next');
 const stremioTranslations = require('stremio-translations');
+const horizonTranslations = require('./horizon-translations');
 const App = require('./App');
 const { CoreProvider } = require('./core');
 const { FileDropProvider, PlatformProvider } = require('./common');
 
 const translations = Object.fromEntries(Object.entries(stremioTranslations()).map(([key, value]) => [key, {
-    translation: value
+    translation: {
+        ...value,
+        ...(horizonTranslations[key] || {})
+    }
 }]));
 
 i18n

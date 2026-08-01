@@ -11,9 +11,11 @@ const { DelayedRenderer } = require('stremio/components');
 const { RouteLoading } = require('stremio/components/RouteLoading');
 const { useCore } = require('stremio/core');
 const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
-const { withCoreSuspender } = require('stremio/common');
+const { withCoreSuspender, useToast } = require('stremio/common');
 const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const CONSTANTS = require('stremio/common/CONSTANTS');
+const { downloadsAvailable, startDownload } = require('stremio/lib/downloads');
+const { createMetaDetailsLoadAction, waitForResolvedStream, waitForSelection } = require('stremio/lib/episode-download');
 const useLinksGroups = require('stremio/components/MetaPreview/useLinksGroups');
 const ActionButton = require('stremio/components/MetaPreview/ActionButton');
 const { Ratings } = require('stremio/components/MetaPreview/Ratings');
@@ -35,6 +37,7 @@ const MetaDetails = () => {
     const contentRef = React.useRef(null);
     const { t } = useTranslation();
     const core = useCore();
+    const toast = useToast();
     const urlParams = React.useMemo(() => ({
         type,
         id,
@@ -45,6 +48,7 @@ const MetaDetails = () => {
     const [, metaExtension, clearMetaExtension] = useMetaExtensionTabs(metaDetails.metaExtensions);
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
     const [activeTab, setActiveTab] = React.useState('streams');
+    const [resolvingVideoId, setResolvingVideoId] = React.useState(null);
 
     const [metaPath, streamPath] = React.useMemo(() => {
         return metaDetails.selected !== null
@@ -170,6 +174,66 @@ const MetaDetails = () => {
             : url.replace(encodeURIComponent(urlParams.videoId), searchVideoHash);
         navigate(searchVideoPath, { replace: true });
     }, [urlParams, location, navigate]);
+
+    const downloadEpisode = React.useCallback(async (targetVideo) => {
+        if (!downloadsAvailable() || !isReady || resolvingVideoId !== null) return;
+
+        const originalVideoId = typeof urlParams.videoId === 'string' && urlParams.videoId.length > 0
+            ? urlParams.videoId
+            : null;
+        setResolvingVideoId(targetVideo.id);
+
+        try {
+            await core.transport.dispatch(createMetaDetailsLoadAction({
+                type: meta.type,
+                contentId: meta.id,
+                videoId: targetVideo.id,
+            }), 'meta_details');
+            const { addon, stream, url: downloadUrl } = await waitForResolvedStream(core.transport, targetVideo.id);
+            await startDownload({
+                url: downloadUrl,
+                title: meta.name,
+                subtitle: [
+                    typeof targetVideo.season === 'number' && typeof targetVideo.episode === 'number'
+                        ? `S${targetVideo.season} E${targetVideo.episode}`
+                        : null,
+                    targetVideo.title,
+                ].filter(Boolean).join(' · '),
+                contentType: meta.type,
+                contentId: meta.id,
+                videoId: targetVideo.id,
+                season: typeof targetVideo.season === 'number' ? targetVideo.season : null,
+                episode: typeof targetVideo.episode === 'number' ? targetVideo.episode : null,
+                description: targetVideo.overview || meta.description || null,
+                sourceName: [addon?.manifest?.name, stream.name].filter(Boolean).join(' · ') || null,
+                thumbnailUrl: targetVideo.thumbnail || meta.poster || meta.background || null,
+                fileName: stream.deepLinks?.externalPlayer?.fileName || null,
+            });
+            toast.show({
+                type: 'success',
+                title: t('DOWNLOADS_IN_PROGRESS'),
+                message: t('HORIZON_EPISODE_DOWNLOAD_STARTED'),
+                timeout: 4000,
+            });
+        } catch (downloadError) {
+            toast.show({
+                type: 'error',
+                title: t('HORIZON_DOWNLOAD_FAILED'),
+                message: downloadError instanceof Error && downloadError.message.startsWith('HORIZON_')
+                    ? t(downloadError.message)
+                    : t('HORIZON_DOWNLOAD_GENERIC_ERROR'),
+                timeout: 6000,
+            });
+        } finally {
+            await core.transport.dispatch(createMetaDetailsLoadAction({
+                type: meta.type,
+                contentId: meta.id,
+                videoId: originalVideoId,
+            }), 'meta_details').catch(() => undefined);
+            await waitForSelection(core.transport, originalVideoId).catch(() => undefined);
+            setResolvingVideoId(null);
+        }
+    }, [core, isReady, meta, resolvingVideoId, t, toast, urlParams.videoId]);
 
     const [descriptionTruncated, setDescriptionTruncated] = React.useState(false);
 
@@ -351,16 +415,24 @@ const MetaDetails = () => {
                             className={styles['streams-list']}
                             streams={metaDetails.streams}
                             video={video}
+                            contentId={meta.id}
+                            contentTitle={meta.name}
+                            contentDescription={description}
+                            contentThumbnail={video?.thumbnail || meta.poster || meta.background}
                             type={streamPath.type}
                             onEpisodeSearch={handleEpisodeSearch}
                         />
                     }
                     {activeTab === 'episodes' && metaPath !== null && (
-                        streamPath !== null ?
+                        streamPath !== null && resolvingVideoId === null ?
                             <StreamsList
                                 className={styles['streams-list']}
                                 streams={metaDetails.streams}
                                 video={video}
+                                contentId={meta.id}
+                                contentTitle={meta.name}
+                                contentDescription={description}
+                                contentThumbnail={video?.thumbnail || meta.poster || meta.background}
                                 type={streamPath.type}
                                 onEpisodeSearch={handleEpisodeSearch}
                             />
@@ -373,6 +445,8 @@ const MetaDetails = () => {
                                 selectedVideoId={null}
                                 seasonOnSelect={seasonOnSelect}
                                 toggleNotifications={toggleNotifications}
+                                resolvingVideoId={resolvingVideoId}
+                                onDownloadVideo={downloadsAvailable() ? downloadEpisode : null}
                             />
                     )}
                     {activeTab === 'details' &&

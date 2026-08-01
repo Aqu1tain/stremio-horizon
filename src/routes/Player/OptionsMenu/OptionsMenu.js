@@ -5,11 +5,12 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
 const { usePlatform, useToast } = require('stremio/common');
+const { downloadsAvailable, startDownload } = require('stremio/lib/downloads');
 const { default: usePlayOnDevice } = require('../usePlayOnDevice');
 const Option = require('./Option');
 const styles = require('./styles');
 
-const OptionsMenu = React.memo(React.forwardRef(({ className, stream, playbackDevices, extraSubtitlesTracks, selectedExtraSubtitlesTrackId }, ref) => {
+const OptionsMenu = React.memo(React.forwardRef(({ className, stream, downloadContext, playbackDevices, extraSubtitlesTracks, selectedExtraSubtitlesTrackId }, ref) => {
     const { t } = useTranslation();
     const platform = usePlatform();
     const toast = useToast();
@@ -80,9 +81,43 @@ const OptionsMenu = React.memo(React.forwardRef(({ className, stream, playbackDe
     }, [magnetUrl]);
     const onDownloadVideoButtonClick = React.useCallback(() => {
         if (downloadUrl) {
-            platform.openExternal(downloadUrl);
+            if (!downloadsAvailable()) {
+                platform.openExternal(downloadUrl);
+                return;
+            }
+
+            startDownload({
+                url: downloadUrl,
+                title: downloadContext?.title || stream?.name || 'Downloaded video',
+                subtitle: downloadContext?.subtitle || stream?.description || null,
+                contentType: downloadContext?.contentType || null,
+                contentId: downloadContext?.contentId || null,
+                videoId: downloadContext?.videoId || null,
+                season: downloadContext?.season ?? null,
+                episode: downloadContext?.episode ?? null,
+                description: downloadContext?.description || null,
+                sourceName: stream?.addonName || null,
+                thumbnailUrl: downloadContext?.thumbnailUrl || stream?.thumbnail || null,
+                fileName: stream?.deepLinks?.externalPlayer?.fileName || null,
+            })
+                .then(() => {
+                    toast.show({
+                        type: 'success',
+                        title: t('DOWNLOADS_IN_PROGRESS'),
+                        message: t('HORIZON_DOWNLOADS_DESCRIPTION'),
+                        timeout: 4000,
+                    });
+                })
+                .catch((downloadError) => {
+                    toast.show({
+                        type: 'error',
+                        title: t('DOWNLOADER_NOT_AVAILABLE'),
+                        message: downloadError instanceof Error ? downloadError.message : String(downloadError),
+                        timeout: 5000,
+                    });
+                });
         }
-    }, [downloadUrl]);
+    }, [downloadContext, downloadUrl, platform, stream, toast]);
 
     const onDownloadSubtitlesClick = React.useCallback(() => {
         subtitlesTrackUrl && platform.openExternal(subtitlesTrackUrl);
@@ -157,6 +192,7 @@ const OptionsMenu = React.memo(React.forwardRef(({ className, stream, playbackDe
 OptionsMenu.propTypes = {
     className: PropTypes.string,
     stream: PropTypes.object,
+    downloadContext: PropTypes.object,
     playbackDevices: PropTypes.array,
     extraSubtitlesTracks: PropTypes.array,
     selectedExtraSubtitlesTrackId: PropTypes.string,
