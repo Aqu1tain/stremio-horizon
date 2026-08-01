@@ -33,6 +33,8 @@ module.exports = {
         HORIZON_PLAYBACK_GENERIC_ERROR: 'Playback could not start. Open the title to choose a source manually.',
         HORIZON_SCROLL_PREVIOUS: 'Previous titles',
         HORIZON_SCROLL_NEXT: 'More titles',
+        HORIZON_UPDATES: 'Updates',
+        HORIZON_AUTOMATIC_UPDATE_CHECKS: 'Automatic update checks',
     },
     'fr-FR': {
         DOWNLOADS: 'Téléchargements',
@@ -82,5 +84,8 @@ module.exports = {
         HORIZON_PLAYBACK_GENERIC_ERROR: 'La lecture n’a pas pu démarrer. Ouvrez la fiche pour choisir une source manuellement.',
         HORIZON_SCROLL_PREVIOUS: 'Titres précédents',
         HORIZON_SCROLL_NEXT: 'Plus de titres',
+        HORIZON_UPDATES: 'Mises à jour',
+        HORIZON_AUTOMATIC_UPDATE_CHECKS: 'Recherche automatique des mises à jour',
+        SETTINGS_DISCORD: 'Afficher l’activité de visionnage sur Discord',
     },
 };
