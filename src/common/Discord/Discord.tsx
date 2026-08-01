@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { usePlatform } from '../Platform';
+import { invokeTauri, isTauri } from '../tauri';
 import useProfile from '../useProfile';
 import type { DiscordActivity as Activity } from './activity';
 
@@ -30,7 +31,8 @@ const DiscordProvider = ({ children }: Props) => {
     const { shell } = usePlatform();
     const profile = useProfile();
     const enabled = profile.settings?.discordRpcEnabled === true;
-    const available = shell.active === true;
+    const tauriAvailable = isTauri();
+    const available = shell.active === true || tauriAvailable;
     const [connected, setConnected] = useState(false);
     const [activity, setActivityState] = useState<Activity | null>(null);
     const sentActivity = useRef<Activity | null>(null);
@@ -39,7 +41,7 @@ const DiscordProvider = ({ children }: Props) => {
     shellRef.current = shell;
 
     useEffect(() => {
-        if (!available) return;
+        if (!shell.active) return;
 
         const onStatus = (data: { connected: boolean }) => {
             connectRequested.current = false;
@@ -51,7 +53,7 @@ const DiscordProvider = ({ children }: Props) => {
         return () => {
             shellRef.current.off('discord-status', onStatus);
         };
-    }, [available]);
+    }, [shell.active]);
 
     useEffect(() => {
         if (!available) {
@@ -64,7 +66,13 @@ const DiscordProvider = ({ children }: Props) => {
         if (!enabled) {
             connectRequested.current = false;
             if (connected) {
-                shellRef.current.send('discord-disconnect', {});
+                if (tauriAvailable) {
+                    invokeTauri('discord_disconnect')
+                        .catch(() => undefined)
+                        .finally(() => setConnected(false));
+                } else {
+                    shellRef.current.send('discord-disconnect', {});
+                }
             }
             sentActivity.current = null;
             return;
@@ -75,7 +83,16 @@ const DiscordProvider = ({ children }: Props) => {
         const requestConnect = () => {
             if (!connectRequested.current) {
                 connectRequested.current = true;
-                shellRef.current.send('discord-connect', {});
+                if (tauriAvailable) {
+                    invokeTauri<boolean>('discord_connect')
+                        .then((isConnected) => setConnected(isConnected === true))
+                        .catch(() => setConnected(false))
+                        .finally(() => {
+                            connectRequested.current = false;
+                        });
+                } else {
+                    shellRef.current.send('discord-connect', {});
+                }
             }
         };
 
@@ -85,14 +102,18 @@ const DiscordProvider = ({ children }: Props) => {
         return () => {
             window.clearInterval(interval);
         };
-    }, [available, connected, enabled]);
+    }, [available, connected, enabled, tauriAvailable]);
 
     useEffect(() => {
         if (!available || !enabled || !connected) return;
 
         if (activity === null) {
             if (sentActivity.current !== null) {
-                shellRef.current.send('discord-clear-activity', {});
+                if (tauriAvailable) {
+                    invokeTauri('discord_clear_activity').catch(() => setConnected(false));
+                } else {
+                    shellRef.current.send('discord-clear-activity', {});
+                }
                 sentActivity.current = null;
             }
             return;
@@ -100,15 +121,24 @@ const DiscordProvider = ({ children }: Props) => {
 
         if (sameActivity(sentActivity.current, activity)) return;
 
-        shellRef.current.send('discord-set-activity', {
+        const payload = {
             state: activity.state,
             details: activity.details || '',
             image: activity.image || null,
             startTimestamp: activity.startTimestamp || null,
             endTimestamp: activity.endTimestamp || null,
-        });
+        };
+        if (tauriAvailable) {
+            invokeTauri('discord_set_activity', { activity: payload })
+                .catch(() => {
+                    sentActivity.current = null;
+                    setConnected(false);
+                });
+        } else {
+            shellRef.current.send('discord-set-activity', payload);
+        }
         sentActivity.current = activity;
-    }, [activity, available, connected, enabled]);
+    }, [activity, available, connected, enabled, tauriAvailable]);
 
     const setActivity = useCallback((nextActivity: Activity | null) => {
         setActivityState((currentActivity) => sameActivity(currentActivity, nextActivity) ? currentActivity : nextActivity);

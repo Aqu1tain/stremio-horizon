@@ -164,8 +164,8 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
             }
             {
                 isTauri() &&
-                    <Category icon={'download'} label={'Updates'}>
-                        <Option label={'Automatic update checks'}>
+                    <Category icon={'download'} label={t('HORIZON_UPDATES')}>
+                        <Option label={t('HORIZON_AUTOMATIC_UPDATE_CHECKS')}>
                             <Toggle
                                 tabIndex={-1}
                                 checked={autoUpdateEnabled === true}
