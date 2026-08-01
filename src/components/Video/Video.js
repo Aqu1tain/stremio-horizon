@@ -15,7 +15,7 @@ const { usePlatform } = require('stremio/common/Platform');
 const VideoPlaceholder = require('./VideoPlaceholder');
 const styles = require('./styles');
 
-const Video = ({ className, id, title, thumbnail, season, episode, released, upcoming, watched, progress, scheduled, seasonWatched, selected, deepLinks, onSelect, onMarkVideoAsWatched, onMarkSeasonAsWatched, ...props }) => {
+const Video = ({ className, id, title, thumbnail, season, episode, released, upcoming, watched, progress, scheduled, seasonWatched, selected, deepLinks, downloadStatus, downloadBusy, downloadDisabled, onDownload, onSelect, onMarkVideoAsWatched, onMarkSeasonAsWatched, ...props }) => {
     const routeFocused = useRouteFocused();
     const profile = useProfile();
     const navigate = useNavigate();
@@ -95,6 +95,17 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         }
     }, [notPlayable, deepLinks, navigate, selectVideo]);
     const playButtonOnKeyDown = React.useCallback((event) => {
+        event.stopPropagation();
+    }, []);
+    const downloadButtonOnClick = React.useCallback((event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const alreadyManaged = ['queued', 'downloading', 'paused', 'completed'].includes(downloadStatus);
+        if (!notPlayable && !downloadBusy && !downloadDisabled && !alreadyManaged && typeof onDownload === 'function') {
+            onDownload();
+        }
+    }, [downloadBusy, downloadDisabled, downloadStatus, notPlayable, onDownload]);
+    const downloadButtonOnKeyDown = React.useCallback((event) => {
         event.stopPropagation();
     }, []);
     const renderLabel = React.useMemo(() => function renderLabel({ className, id, title, thumbnail, episode, released, upcoming, watched, progress, scheduled, children, ref, ...props }) {
@@ -182,6 +193,26 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                     </div>
                 </div>
                 {
+                    typeof onDownload === 'function' ?
+                        <Button
+                            className={classnames(styles['download-button-container'], {
+                                [styles['busy']]: downloadBusy || downloadStatus === 'queued' || downloadStatus === 'downloading',
+                                [styles['downloaded']]: downloadStatus === 'completed',
+                            })}
+                            title={downloadStatus === 'completed' ? t('CTX_AVAILABLE_OFFLINE') : t('CTX_DOWNLOAD_VIDEO')}
+                            disabled={downloadBusy || downloadDisabled || ['queued', 'downloading', 'paused', 'completed'].includes(downloadStatus)}
+                            onClick={downloadButtonOnClick}
+                            onKeyDown={downloadButtonOnKeyDown}
+                        >
+                            <Icon
+                                className={styles['download-icon']}
+                                name={downloadStatus === 'completed' ? 'checkmark' : downloadBusy || downloadStatus === 'queued' || downloadStatus === 'downloading' ? 'reset' : downloadStatus === 'paused' ? 'pause' : 'download'}
+                            />
+                        </Button>
+                        :
+                        null
+                }
+                {
                     deepLinks && typeof deepLinks.player === 'string' ?
                         <Button
                             className={styles['play-button-container']}
@@ -197,7 +228,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                 {children}
             </Button>
         );
-    }, [deepLinks, playButtonOnClick, playButtonOnKeyDown, selected]);
+    }, [deepLinks, downloadBusy, downloadButtonOnClick, downloadButtonOnKeyDown, downloadDisabled, downloadStatus, onDownload, playButtonOnClick, playButtonOnKeyDown, selected]);
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (
             <div className={styles['context-menu-content']} onPointerDown={popupMenuOnPointerDown} onContextMenu={popupMenuOnContextMenu} onClick={popupMenuOnClick} onKeyDown={popupMenuOnKeyDown}>
@@ -259,6 +290,10 @@ Video.propTypes = {
     scheduled: PropTypes.bool,
     seasonWatched: PropTypes.bool,
     selected: PropTypes.bool,
+    downloadStatus: PropTypes.string,
+    downloadBusy: PropTypes.bool,
+    downloadDisabled: PropTypes.bool,
+    onDownload: PropTypes.func,
     deepLinks: PropTypes.shape({
         metaDetailsStreams: PropTypes.string,
         player: PropTypes.string

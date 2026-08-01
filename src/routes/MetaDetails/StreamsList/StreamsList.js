@@ -18,7 +18,7 @@ const { default: SeasonEpisodePicker } = require('../EpisodePicker');
 
 const ALL_ADDONS_KEY = 'ALL';
 
-const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
+const StreamsList = ({ className, video, contentId, contentTitle, contentDescription, contentThumbnail, type, onEpisodeSearch, ...props }) => {
     const { t } = useTranslation();
     const core = useCore();
     const platform = usePlatform();
@@ -238,6 +238,14 @@ const StreamsList = ({ className, video, type, onEpisodeSearch, ...props }) => {
                                             key={index}
                                             videoId={video?.id}
                                             videoReleased={video?.released}
+                                            videoTitle={video?.title}
+                                            videoSeason={video?.season}
+                                            videoEpisode={video?.episode}
+                                            contentId={contentId}
+                                            contentType={type}
+                                            contentTitle={contentTitle}
+                                            contentDescription={contentDescription}
+                                            contentThumbnail={contentThumbnail}
                                             addonName={stream.addonName}
                                             name={stream.name}
                                             description={stream.description}
@@ -281,6 +289,10 @@ StreamsList.propTypes = {
     className: PropTypes.string,
     streams: PropTypes.arrayOf(PropTypes.object).isRequired,
     video: PropTypes.object,
+    contentId: PropTypes.string,
+    contentTitle: PropTypes.string,
+    contentDescription: PropTypes.string,
+    contentThumbnail: PropTypes.string,
     type: PropTypes.string,
     onEpisodeSearch: PropTypes.func
 };

@@ -13,6 +13,8 @@ const { useServices, useGamepad } = require('stremio/services');
 const { useContentGamepadNavigation } = require('stremio/services/GamepadNavigation');
 const { useSettings, useProfile, useFullscreen, useBinaryState, useToast, useStreamingServer, withCoreSuspender, usePlatform, onShortcut, getKeyboardShortcutKey, getKeyboardShortcutKeys, useDiscord, EMPTY_DISCORD_TIMESTAMPS, getPlaybackDiscordActivity } = require('stremio/common');
 const { default: toPath } = require('stremio-router/toPath');
+const { isTauri } = require('stremio/common/tauri');
+const { DEFAULT_STREAMING_SERVER_URL } = require('stremio/common/CONSTANTS');
 const { HorizontalNavBar, Transition, ContextMenu } = require('stremio/components');
 const { RouteLoading } = require('stremio/components/RouteLoading');
 const { default: Buffering } = require('./Buffering');
@@ -69,6 +71,27 @@ const Player = () => {
     }, [queryParams]);
     const profile = useProfile();
     const [player, videoParamsChanged, streamStateChanged, timeChanged, seek, pausedChanged, ended, nextVideo] = usePlayer(urlParams);
+    const downloadContext = React.useMemo(() => {
+        const meta = player.metaItem?.type === 'Ready' ? player.metaItem.content : null;
+        const selectedVideoId = player.selected?.streamRequest?.path?.id ?? videoId ?? null;
+        const selectedVideo = meta?.videos?.find(({ id }) => id === selectedVideoId) ?? null;
+        return meta ? {
+            contentType: meta.type,
+            contentId: meta.id,
+            videoId: selectedVideoId,
+            season: selectedVideo?.season ?? null,
+            episode: selectedVideo?.episode ?? null,
+            title: meta.name,
+            subtitle: selectedVideo ? [
+                typeof selectedVideo.season === 'number' && typeof selectedVideo.episode === 'number'
+                    ? `S${selectedVideo.season} E${selectedVideo.episode}`
+                    : null,
+                selectedVideo.title,
+            ].filter(Boolean).join(' · ') : null,
+            description: selectedVideo?.overview || meta.description || null,
+            thumbnailUrl: selectedVideo?.thumbnail || meta.poster || meta.background || null,
+        } : null;
+    }, [player.metaItem, player.selected, videoId]);
     const [settings] = useSettings();
     const streamingServer = useStreamingServer();
     const statistics = useStatistics(player, streamingServer);
@@ -139,6 +162,15 @@ const Player = () => {
     const castDevicesLoading = platform.shell.active && (castDevicesSearching || (streamingServer.playbackDevices !== null && streamingServer.playbackDevices.type === 'Loading'));
     const { streamingUrl: castStreamingUrl, playOnDevice } = usePlayOnDevice(player.selected?.stream ?? null);
     const shellCastSupported = platform.shell.active && castStreamingUrl !== null;
+    const playerStreamingServerURL = React.useMemo(() => {
+        if (streamingServer.baseUrl) {
+            return casting ? streamingServer.baseUrl : streamingServer.selected.transportUrl;
+        }
+        return isTauri() && !casting ? DEFAULT_STREAMING_SERVER_URL : null;
+    }, [casting, streamingServer.baseUrl, streamingServer.selected]);
+    const isOfflineServiceStream = player.stream?.type === 'Ready' &&
+        typeof player.stream.content?.url === 'string' &&
+        player.stream.content.url.startsWith(`${DEFAULT_STREAMING_SERVER_URL}hlsv2/offline-`);
     const refreshCastDevices = React.useCallback(() => {
         if (platform.shell.active) {
             core.transport.dispatch({
@@ -527,20 +559,14 @@ const Player = () => {
                 gpuVideoProcessing: settings.gpuVideoProcessing && platform.shell.capabilities.gpuVideoProcessing,
                 videoMode: settings.videoMode,
                 platform: platform.name,
-                streamingServerURL: streamingServer.baseUrl ?
-                    casting ?
-                        streamingServer.baseUrl
-                        :
-                        streamingServer.selected.transportUrl
-                    :
-                    null,
+                streamingServerURL: isOfflineServiceStream ? null : playerStreamingServerURL,
                 seriesInfo: player.seriesInfo,
             }, {
                 chromecastTransport: services.chromecast.active ? services.chromecast.transport : null,
                 shellTransport: platform.shell.active ? platform.shell : null,
             });
         }
-    }, [streamingServer.baseUrl, player.selected, player.stream, streamSubtitles, forceTranscoding, casting, cancelKeyboardSeek]);
+    }, [playerStreamingServerURL, player.selected, player.stream, streamSubtitles, forceTranscoding, casting, cancelKeyboardSeek, isOfflineServiceStream]);
 
     React.useEffect(() => {
         !seeking && timeChanged(video.state.time, video.state.duration, video.state.manifest?.name);
@@ -1037,6 +1063,7 @@ const Player = () => {
                 <OptionsMenu
                     className={classnames(styles['layer'], styles['menu-layer'])}
                     stream={player?.selected?.stream}
+                    downloadContext={downloadContext}
                     playbackDevices={playbackDevices}
                     extraSubtitlesTracks={extraSubtitleTracks}
                     selectedExtraSubtitlesTrackId={selectedExtraSubtitleTrackId}
@@ -1166,6 +1193,7 @@ const Player = () => {
                 <OptionsMenu
                     className={classnames(styles['layer'], styles['menu-layer'])}
                     stream={player.selected?.stream}
+                    downloadContext={downloadContext}
                     playbackDevices={playbackDevices}
                     extraSubtitlesTracks={extraSubtitleTracks}
                     selectedExtraSubtitlesTrackId={selectedExtraSubtitleTrackId}

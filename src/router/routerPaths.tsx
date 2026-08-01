@@ -20,6 +20,11 @@ export default [
         element: <routes.Library />,
     },
     {
+        path: '/downloads',
+        view: 1,
+        element: <routes.Downloads />,
+    },
+    {
         path: '/calendar/:year?/:month?',
         view: 1,
         element: <routes.Calendar />,

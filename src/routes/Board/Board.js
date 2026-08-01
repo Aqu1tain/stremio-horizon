@@ -5,6 +5,7 @@ const classnames = require('classnames');
 const debounce = require('lodash.debounce');
 const { default: useTranslate } = require('stremio/common/useTranslate');
 const { useStreamingServer, useNotifications, withCoreSuspender, getVisibleChildrenRange, useProfile } = require('stremio/common');
+const { isTauri } = require('stremio/common/tauri');
 const { ContinueWatchingItem, EventModal, HeroBanner, MainNavBars, MetaItem, MetaRow } = require('stremio/components');
 const { RouteLoading } = require('stremio/components/RouteLoading');
 const useBoard = require('./useBoard');
@@ -29,7 +30,7 @@ const Board = () => {
     const boardCatalogsOffset = (continueWatchingPreview.items.length > 0 ? 1 : 0) + 1;
     const scrollContainerRef = React.useRef();
     const showStreamingServerWarning = React.useMemo(() => {
-        return streamingServer.settings !== null && streamingServer.settings.type === 'Err' && (
+        return !isTauri() && streamingServer.settings !== null && streamingServer.settings.type === 'Err' && (
             isNaN(profile.settings.streamingServerWarningDismissed.getTime()) ||
             profile.settings.streamingServerWarningDismissed.getTime() < Date.now());
     }, [profile.settings, streamingServer.settings]);

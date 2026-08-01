@@ -12,6 +12,7 @@ const getLoadingPresentation = (pathname = '/') => {
     if (pathname.startsWith('/player')) return { kind: 'player', route: null };
     if (pathname.startsWith('/discover')) return { kind: 'grid', route: 'discover' };
     if (pathname.startsWith('/library')) return { kind: 'grid', route: 'library' };
+    if (pathname.startsWith('/downloads')) return { kind: 'grid', route: 'downloads' };
     if (pathname.startsWith('/continuewatching')) return { kind: 'grid', route: 'continue_watching' };
     if (pathname.startsWith('/calendar')) return { kind: 'calendar', route: 'calendar' };
     if (pathname.startsWith('/addons')) return { kind: 'addons', route: 'addons' };
