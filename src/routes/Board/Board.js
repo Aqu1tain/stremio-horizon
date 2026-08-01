@@ -14,6 +14,10 @@ const styles = require('./styles');
 const { default: StreamingServerWarning } = require('./StreamingServerWarning');
 
 const THRESHOLD = 5;
+const CONTINUE_WATCHING_ITEM_PROPS = {
+    posterShape: 'landscape',
+    variant: 'continue-watching',
+};
 
 const Board = () => {
     const t = useTranslate();
@@ -73,6 +77,7 @@ const Board = () => {
                                 title={t.string('BOARD_CONTINUE_WATCHING')}
                                 catalog={continueWatchingPreview}
                                 itemComponent={ContinueWatchingItem}
+                                itemProps={CONTINUE_WATCHING_ITEM_PROPS}
                                 notifications={notifications}
                             />
                             :

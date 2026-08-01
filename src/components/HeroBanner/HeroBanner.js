@@ -64,6 +64,7 @@ const HeroBanner = ({ className, items }) => {
                     key={index}
                     active={index === activeIndex}
                     id={item.id}
+                    type={item.type}
                     name={item.name}
                     description={item.description}
                     releaseInfo={item.releaseInfo}
