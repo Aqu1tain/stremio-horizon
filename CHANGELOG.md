@@ -7,18 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-08-01
+
 ### Added
 
 - Native-only Downloads page with content-first cards, local artwork, progress, pause, resume,
   deletion and offline playback through the existing Horizon player
 - Download actions in stream context menus and player options
 - One-click episode downloads that resolve addon streams in place and save the first downloadable source
+- Netflix-style Continue Watching tiles with landscape movie artwork, current episode thumbnails and
+  season/episode labels
+- Direct playback of the first available stream from the home hero, with a separate action for details
+- Mouse controls for horizontal catalogue rows, hidden automatically at either scroll boundary
+- Opt-in Discord Rich Presence in Horizon Desktop with title, artwork, playback state and timeline
 
 ### Changed
 
 - Redesigned download cards around artwork and content, with compact status, source, progress and actions
 - Group series downloads by season and episode, and group multiple sources as versions of the same title
 - Replace the old technical segmented-HLS failure with a localized retry prompt
+- Redesigned the home browsing experience around landscape Continue Watching cards and clearer hero actions
+- Apply the external hover zoom and white focus border consistently without clipping menus or changing
+  corner radii
+- Translate the Discord and automatic-update settings in French
 
 ### Fixed
 
@@ -26,6 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Route offline files through the bundled streaming service so unsupported containers and codecs are transcoded for the WebView, even when the core reports a stale server error
 - Ask the desktop shell for a direct offline file URL before playback so MP4 seeks do not pass through the local HTTP bridge
 - Avoid sending an offline HLS stream through the streaming server a second time before handing it to the player
+- Keep simultaneous downloads stable through a queue instead of allowing concurrent transfers to fail or
+  reorder continuously
+- Align episode watched badges with their download and playback actions
+- Keep classic poster borders around the artwork only, while Continue Watching borders remain above the
+  title gradient
 
 ## [0.1.6] - 2026-07-31
 
@@ -148,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.3...v0.1.4
