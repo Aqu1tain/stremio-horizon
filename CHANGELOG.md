@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-08-01
+
+### Fixed
+
+- Fade hero artwork and its readability overlay into the actual page background instead of a fixed
+  near-black color, removing the visible seam above the first catalogue row
+  (Aqu1tain/stremio-horizon-app#26)
+
 ## [0.1.7] - 2026-08-01
 
 ### Added
@@ -164,7 +172,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.4...v0.1.5
