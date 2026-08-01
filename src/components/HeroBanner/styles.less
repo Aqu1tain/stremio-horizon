@@ -30,6 +30,11 @@
         position: absolute;
         inset: 0;
         z-index: 0;
+        // Reveal the page's real diagonal background at the bottom. Using a
+        // solid color here creates a visible seam because the page background
+        // changes with both the viewport position and horizontal coordinate.
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
 
         .background-image {
             display: block;
@@ -44,9 +49,9 @@
         position: absolute;
         inset: 0;
         z-index: 1;
-        background:
-            linear-gradient(to top, var(--primary-background-color) 0%, transparent 60%),
-            linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
     }
 
     .content-layer {
