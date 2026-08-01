@@ -24,15 +24,15 @@
 
         .visual-container {
             transform: scale(1.03);
-
-            &::after {
-                border-color: rgba(255, 255, 255, 0.7);
-            }
         }
 
         .poster-container {
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             transform: none;
+
+            &::after {
+                border-color: rgba(255, 255, 255, 0.7);
+            }
 
             .dismiss-icon-layer {
                 opacity: 1;
@@ -102,6 +102,23 @@
             .poster-container {
                 transform: none;
                 box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.55);
+
+                &::after {
+                    border-color: transparent;
+                }
+            }
+        }
+
+        .visual-container {
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                z-index: 3;
+                border: 2px solid transparent;
+                border-radius: var(--border-radius);
+                pointer-events: none;
+                transition: border-color 0.2s ease;
             }
         }
 
@@ -160,6 +177,14 @@
         width: 100%;
         transform-origin: center;
         transition: transform 0.2s ease;
+    }
+
+    .poster-container {
+        position: relative;
+        z-index: 0;
+        background-color: var(--overlay-color);
+        border-radius: var(--border-radius);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
 
         &::after {
             content: '';
@@ -171,14 +196,6 @@
             pointer-events: none;
             transition: border-color 0.2s ease;
         }
-    }
-
-    .poster-container {
-        position: relative;
-        z-index: 0;
-        background-color: var(--overlay-color);
-        border-radius: var(--border-radius);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
 
         &:global(.poster-change-cursor) {
             .poster-image-layer {
