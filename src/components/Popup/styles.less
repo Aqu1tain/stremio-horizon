@@ -10,15 +10,9 @@
     position: relative;
     overflow: visible;
 
-    .menu-container {
+    >.menu-container {
         position: absolute;
-        z-index: 1;
-        overflow: hidden;
         visibility: hidden;
-        border-radius: var(--border-radius);
-        background-color: var(--modal-background-color);
-        border: var(--overlay-border);
-        cursor: auto;
 
         &.menu-direction-top-left {
             top: initial;
@@ -52,4 +46,18 @@
             visibility: visible;
         }
     }
+}
+
+.menu-container {
+    z-index: 1;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    background-color: var(--modal-background-color);
+    border: var(--overlay-border);
+    cursor: auto;
+}
+
+.portal-menu-container {
+    position: fixed;
+    z-index: 1000;
 }

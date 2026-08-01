@@ -11,7 +11,7 @@ const { default: useTranslate } = require('stremio/common/useTranslate');
 const MetaRowPlaceholder = require('./MetaRowPlaceholder');
 const styles = require('./styles');
 
-const MetaRow = ({ className, title, catalog, message, itemComponent, notifications }) => {
+const MetaRow = ({ className, title, catalog, message, itemComponent, itemProps, notifications }) => {
     const t = useTranslate();
 
     const catalogTitle = React.useMemo(() => {
@@ -49,14 +49,22 @@ const MetaRow = ({ className, title, catalog, message, itemComponent, notificati
                 typeof message === 'string' && message.length > 0 ?
                     <div className={styles['message-container']} title={message}>{message}</div>
                     :
-                    <HorizontalScroll className={styles['meta-items-container']}>
+                    <HorizontalScroll
+                        className={classnames(
+                            styles['meta-items-container'],
+                            styles[`variant-${itemProps?.variant}`]
+                        )}
+                        controls
+                    >
                         {
                             ReactIs.isValidElementType(itemComponent) ?
                                 items.map((item, index) => {
+                                    const posterShape = itemProps?.posterShape ?? item.posterShape;
                                     return React.createElement(itemComponent, {
                                         ...item,
+                                        ...itemProps,
                                         key: index,
-                                        className: classnames(styles['meta-item'], styles['poster-shape-poster'], styles[`poster-shape-${item.posterShape}`]),
+                                        className: classnames(styles['meta-item'], styles['poster-shape-poster'], styles[`poster-shape-${posterShape}`]),
                                         notifications,
                                     });
                                 })
@@ -102,6 +110,7 @@ MetaRow.propTypes = {
         }),
     }),
     itemComponent: PropTypes.elementType,
+    itemProps: PropTypes.object,
     notifications: PropTypes.object,
 };
 

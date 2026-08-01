@@ -11,7 +11,7 @@ const ModalDialog = require('stremio/components/ModalDialog');
 const { default: useBinaryState } = require('stremio/common/useBinaryState');
 const styles = require('./styles');
 
-const Multiselect = ({ className, mode, direction, title, disabled, dataset, options, renderLabelContent, renderLabelText, onOpen, onClose, onSelect, ...props }) => {
+const Multiselect = ({ className, menuClassName, mode, direction, portal, title, disabled, dataset, options, renderLabelContent, renderLabelText, onOpen, onClose, onSelect, ...props }) => {
     const { t } = useTranslation();
     const [menuOpen, , closeMenu, toggleMenu] = useBinaryState(false);
     const filteredOptions = React.useMemo(() => {
@@ -151,6 +151,8 @@ const Multiselect = ({ className, mode, direction, title, disabled, dataset, opt
         <Popup
             open={menuOpen}
             direction={direction}
+            portal={portal}
+            menuClassName={menuClassName}
             onCloseRequest={closeMenu}
             renderLabel={renderPopupLabel}
             renderMenu={renderMenu}
@@ -159,8 +161,10 @@ const Multiselect = ({ className, mode, direction, title, disabled, dataset, opt
 
 Multiselect.propTypes = {
     className: PropTypes.string,
+    menuClassName: PropTypes.string,
     mode: PropTypes.oneOf(['popup', 'modal']),
     direction: PropTypes.any,
+    portal: PropTypes.bool,
     title: PropTypes.string,
     options: PropTypes.arrayOf(PropTypes.shape({
         value: PropTypes.string,

@@ -22,9 +22,17 @@
     &:hover, &:focus, &:global(.active), &:global(.selected) {
         outline-style: none;
 
-        .poster-container {
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7), 0 4px 20px rgba(0, 0, 0, 0.5);
+        .visual-container {
             transform: scale(1.03);
+
+            &::after {
+                border-color: rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        .poster-container {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transform: none;
 
             .dismiss-icon-layer {
                 opacity: 1;
@@ -72,6 +80,96 @@
     &.poster-shape-landscape {
         .poster-container {
             padding-top: calc(100% * var(--landscape-shape-ratio));
+        }
+    }
+
+    &.variant-continue-watching {
+        position: relative;
+        z-index: 0;
+        padding: 0.5rem;
+
+        &:hover, &:focus, &:global(.active), &:global(.selected) {
+            z-index: 2;
+
+            .visual-container {
+                transform: scale(1.04);
+
+                &::after {
+                    border-color: rgba(255, 255, 255, 0.78);
+                }
+            }
+
+            .poster-container {
+                transform: none;
+                box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.55);
+            }
+        }
+
+        .poster-container {
+            padding-top: 56.25%;
+            overflow: hidden;
+
+            .poster-image-layer .poster-image {
+                opacity: 1;
+            }
+
+            .progress-bar-layer {
+                bottom: 0.65rem;
+                left: 0.75rem;
+                right: 0.75rem;
+                height: 0.3rem;
+                z-index: 1;
+
+                .progress-bar {
+                    background-color: var(--primary-accent-color);
+                }
+            }
+        }
+
+        .title-bar-container {
+            position: absolute;
+            z-index: 1;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 5rem;
+            padding: 2.3rem 0.75rem 1.15rem;
+            align-items: flex-end;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.58) 55%, transparent 100%);
+
+            .title-label {
+                padding: 0;
+                font-size: 0.95rem;
+                font-weight: 650;
+                line-height: 1.2;
+                -webkit-line-clamp: 1;
+            }
+
+            .menu-label-container {
+                width: 1.75rem;
+                height: 1.75rem;
+                padding: 0.25rem;
+                transform: none;
+            }
+        }
+    }
+
+    .visual-container {
+        position: relative;
+        width: 100%;
+        transform-origin: center;
+        transition: transform 0.2s ease;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            pointer-events: none;
+            transition: border-color 0.2s ease;
         }
     }
 
@@ -347,28 +445,29 @@
                 opacity: 0.6;
             }
 
-            .popup-menu-container {
-                width: auto;
+        }
+    }
+}
 
-                .multiselect-menu-container {
-                    min-width: 9rem;
-                    max-width: 14rem;
+.meta-item-menu-container {
+    width: auto;
 
-                    .multiselect-option-container {
-                        padding: 1rem 1.5rem;
+    .multiselect-menu-container {
+        min-width: 9rem;
+        max-width: 14rem;
 
-                        &:hover, &:focus {
-                            outline: none;
-                            background-color: var(--overlay-color);
-                        }
+        .multiselect-option-container {
+            padding: 1rem 1.5rem;
 
-                        .multiselect-option-label {
-                            font-weight: 500;
-                            color: var(--primary-foreground-color);
-                            opacity: 0.8;
-                        }
-                    }
-                }
+            &:hover, &:focus {
+                outline: none;
+                background-color: var(--overlay-color);
+            }
+
+            .multiselect-option-label {
+                font-weight: 500;
+                color: var(--primary-foreground-color);
+                opacity: 0.8;
             }
         }
     }

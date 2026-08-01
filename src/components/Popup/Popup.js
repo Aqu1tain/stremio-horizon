@@ -1,11 +1,14 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
+const { createPortal } = require('react-dom');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const FocusLock = require('react-focus-lock').default;
 const { default: useRouteFocused } = require('stremio/common/useRouteFocused');
 const styles = require('./styles');
+
+const VIEWPORT_PADDING = 8;
 
 const getAnchorElement = (element) => {
     if (element === document.documentElement) {
@@ -20,11 +23,12 @@ const getAnchorElement = (element) => {
     return getAnchorElement(element.parentElement);
 };
 
-const Popup = ({ open, direction, renderLabel, renderMenu, dataset, onCloseRequest, ...props }) => {
+const Popup = ({ open, direction, portal, menuClassName, renderLabel, renderMenu, dataset, onCloseRequest, ...props }) => {
     const routeFocused = useRouteFocused();
     const labelRef = React.useRef(null);
     const menuRef = React.useRef(null);
     const [autoDirection, setAutoDirection] = React.useState(null);
+    const [portalPosition, setPortalPosition] = React.useState(null);
     const menuOnMouseDown = React.useCallback((event) => {
         event.nativeEvent.closePopupPrevented = true;
     }, []);
@@ -66,8 +70,42 @@ const Popup = ({ open, direction, renderLabel, renderMenu, dataset, onCloseReque
             window.removeEventListener('pointerdown', onCloseEvent);
         };
     }, [routeFocused, open, onCloseRequest, dataset]);
+    const updatePortalPosition = React.useCallback(() => {
+        if (!labelRef.current || !menuRef.current) {
+            return;
+        }
+
+        const labelRect = labelRef.current.getBoundingClientRect();
+        const menuRect = menuRef.current.getBoundingClientRect();
+        const [requestedVertical, requestedHorizontal] = typeof direction === 'string' ? direction.split('-') : [];
+        const availableTop = labelRect.top - VIEWPORT_PADDING;
+        const availableBottom = window.innerHeight - labelRect.bottom - VIEWPORT_PADDING;
+        const vertical = requestedVertical || (menuRect.height <= availableBottom || availableBottom >= availableTop ? 'bottom' : 'top');
+        const horizontal = requestedHorizontal || (menuRect.width <= labelRect.right - VIEWPORT_PADDING ? 'left' : 'right');
+        const preferredTop = vertical === 'top' ? labelRect.top - menuRect.height : labelRect.bottom;
+        const preferredLeft = horizontal === 'left' ? labelRect.right - menuRect.width : labelRect.left;
+
+        setPortalPosition({
+            top: Math.max(VIEWPORT_PADDING, Math.min(preferredTop, window.innerHeight - menuRect.height - VIEWPORT_PADDING)),
+            left: Math.max(VIEWPORT_PADDING, Math.min(preferredLeft, window.innerWidth - menuRect.width - VIEWPORT_PADDING))
+        });
+    }, [direction]);
     React.useLayoutEffect(() => {
-        if (open) {
+        if (open && portal) {
+            updatePortalPosition();
+            window.addEventListener('resize', updatePortalPosition);
+            window.addEventListener('scroll', updatePortalPosition, true);
+            return () => {
+                window.removeEventListener('resize', updatePortalPosition);
+                window.removeEventListener('scroll', updatePortalPosition, true);
+            };
+        }
+
+        setPortalPosition(null);
+        return undefined;
+    }, [open, portal, updatePortalPosition]);
+    React.useLayoutEffect(() => {
+        if (open && !portal) {
             const autoDirection = [];
             const anchor = getAnchorElement(labelRef.current);
             const anchorRect = anchor.getBoundingClientRect();
@@ -102,26 +140,51 @@ const Popup = ({ open, direction, renderLabel, renderMenu, dataset, onCloseReque
             }
 
             setAutoDirection(autoDirection.join('-'));
-        } else {
+        } else if (!portal) {
             setAutoDirection(null);
         }
-    }, [open]);
-    return renderLabel({
+    }, [open, portal]);
+    const menu = open ?
+        <FocusLock
+            ref={menuRef}
+            className={classnames(
+                styles['menu-container'],
+                menuClassName,
+                { [styles['portal-menu-container']]: portal },
+                { [styles[`menu-direction-${autoDirection}`]]: !portal && !direction },
+                { [styles[`menu-direction-${direction}`]]: !portal && direction }
+            )}
+            autoFocus={false}
+            lockProps={{
+                onMouseDown: menuOnMouseDown,
+                style: portal ? { ...portalPosition, visibility: portalPosition ? 'visible' : 'hidden' } : undefined
+            }}
+        >
+            {renderMenu()}
+        </FocusLock>
+        :
+        null;
+    const label = renderLabel({
         ...props,
         ref: labelRef,
         className: classnames(styles['label-container'], props.className, { 'active': open }),
-        children: open ?
-            <FocusLock ref={menuRef} className={classnames(styles['menu-container'], { [styles[`menu-direction-${autoDirection}`]]: !direction }, { [styles[`menu-direction-${direction}`]]: direction })} autoFocus={false} lockProps={{ onMouseDown: menuOnMouseDown }}>
-                {renderMenu()}
-            </FocusLock>
-            :
-            null
+        children: portal ? null : menu
     });
+    return portal && menu ?
+        <React.Fragment>
+            {label}
+            {createPortal(menu, document.body)}
+        </React.Fragment>
+        :
+        label;
 };
 
 Popup.propTypes = {
+    className: PropTypes.string,
     open: PropTypes.bool,
     direction: PropTypes.oneOf(['top-left', 'bottom-left', 'top-right', 'bottom-right']),
+    portal: PropTypes.bool,
+    menuClassName: PropTypes.string,
     renderLabel: PropTypes.func.isRequired,
     renderMenu: PropTypes.func.isRequired,
     dataset: PropTypes.object,
