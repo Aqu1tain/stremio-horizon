@@ -1,0 +1,13 @@
+{
+    "initialJavaScript": {
+        "raw": 1200000,
+        "gzip": 350000,
+        "brotli": 300000
+    },
+    "requiredLazyRoutes": [
+        "addons",
+        "metadetails",
+        "player",
+        "settings"
+    ]
+}

@@ -1,19 +1,60 @@
 import React, { forwardRef } from 'react';
-import {
-    Play, Pause, X, Search, Settings, Download, Share2, Link,
-    ChevronLeft, ChevronRight, ChevronDown, Check,
-    MoreHorizontal, MoreVertical, Plus, Minus, Trash2,
-    Eye, Info, HelpCircle, User, UserRound,
-    RotateCcw, SkipForward, Maximize, Minimize,
-    VolumeOff, VolumeX, Volume, Volume1, Volume2,
-    Calendar, Cast, Globe, Gauge,
-    Heart, ThumbsUp, CircleAlert,
-    Captions, AudioLines, ListVideo, SlidersHorizontal,
-    Clapperboard, Users, Megaphone, Glasses, Smartphone, Keyboard, Copy,
-    PictureInPicture2,
-} from 'lucide-react';
+import Play from 'lucide-react/dist/esm/icons/play.js';
+import Pause from 'lucide-react/dist/esm/icons/pause.js';
+import X from 'lucide-react/dist/esm/icons/x.js';
+import Search from 'lucide-react/dist/esm/icons/search.js';
+import Settings from 'lucide-react/dist/esm/icons/settings.js';
+import Download from 'lucide-react/dist/esm/icons/download.js';
+import Share2 from 'lucide-react/dist/esm/icons/share-2.js';
+import Link from 'lucide-react/dist/esm/icons/link.js';
+import ChevronLeft from 'lucide-react/dist/esm/icons/chevron-left.js';
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right.js';
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down.js';
+import Check from 'lucide-react/dist/esm/icons/check.js';
+import MoreHorizontal from 'lucide-react/dist/esm/icons/ellipsis.js';
+import MoreVertical from 'lucide-react/dist/esm/icons/ellipsis-vertical.js';
+import Plus from 'lucide-react/dist/esm/icons/plus.js';
+import Minus from 'lucide-react/dist/esm/icons/minus.js';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2.js';
+import Eye from 'lucide-react/dist/esm/icons/eye.js';
+import Info from 'lucide-react/dist/esm/icons/info.js';
+import HelpCircle from 'lucide-react/dist/esm/icons/circle-question-mark.js';
+import User from 'lucide-react/dist/esm/icons/user.js';
+import UserRound from 'lucide-react/dist/esm/icons/circle-user-round.js';
+import RotateCcw from 'lucide-react/dist/esm/icons/rotate-ccw.js';
+import SkipForward from 'lucide-react/dist/esm/icons/skip-forward.js';
+import Maximize from 'lucide-react/dist/esm/icons/maximize.js';
+import Minimize from 'lucide-react/dist/esm/icons/minimize.js';
+import VolumeOff from 'lucide-react/dist/esm/icons/volume-off.js';
+import VolumeX from 'lucide-react/dist/esm/icons/volume-x.js';
+import Volume from 'lucide-react/dist/esm/icons/volume.js';
+import Volume1 from 'lucide-react/dist/esm/icons/volume-1.js';
+import Volume2 from 'lucide-react/dist/esm/icons/volume-2.js';
+import Calendar from 'lucide-react/dist/esm/icons/calendar.js';
+import Cast from 'lucide-react/dist/esm/icons/cast.js';
+import Globe from 'lucide-react/dist/esm/icons/globe.js';
+import Gauge from 'lucide-react/dist/esm/icons/gauge.js';
+import Heart from 'lucide-react/dist/esm/icons/heart.js';
+import ThumbsUp from 'lucide-react/dist/esm/icons/thumbs-up.js';
+import CircleAlert from 'lucide-react/dist/esm/icons/circle-alert.js';
+import Captions from 'lucide-react/dist/esm/icons/captions.js';
+import AudioLines from 'lucide-react/dist/esm/icons/audio-lines.js';
+import ListVideo from 'lucide-react/dist/esm/icons/list-video.js';
+import SlidersHorizontal from 'lucide-react/dist/esm/icons/sliders-horizontal.js';
+import Clapperboard from 'lucide-react/dist/esm/icons/clapperboard.js';
+import Users from 'lucide-react/dist/esm/icons/users.js';
+import Megaphone from 'lucide-react/dist/esm/icons/megaphone.js';
+import Glasses from 'lucide-react/dist/esm/icons/glasses.js';
+import Smartphone from 'lucide-react/dist/esm/icons/smartphone.js';
+import Keyboard from 'lucide-react/dist/esm/icons/keyboard.js';
+import Copy from 'lucide-react/dist/esm/icons/copy.js';
+import PictureInPicture2 from 'lucide-react/dist/esm/icons/picture-in-picture-2.js';
 import type { LucideIcon } from 'lucide-react';
-import StremioIcon from '@stremio/stremio-icons/react';
+
+const StremioIcon = React.lazy(() => import(
+    /* webpackChunkName: "legacy-icons" */
+    '@stremio/stremio-icons/react'
+).then((module) => ({ default: module.default })));
 
 const LUCIDE_MAP: Record<string, LucideIcon> = {
     'play': Play,
@@ -95,7 +136,11 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(({ name, className }, ref) => 
         );
     }
 
-    return <StremioIcon ref={ref} name={name} className={className} />;
+    return (
+        <React.Suspense fallback={null}>
+            <StremioIcon ref={ref} name={name} className={className} />
+        </React.Suspense>
+    );
 });
 
 Icon.displayName = 'Icon';

@@ -1,5 +1,7 @@
 /node_modules
 /build
+/*-stats.json
+/.bundle-stats.json
 /yarn.lock
 /npm-debug.log
 .DS_Store
