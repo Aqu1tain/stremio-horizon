@@ -9,7 +9,7 @@ const MAX_TRIES = 25;
 
 const getCredentials = async (state: string) => {
     try {
-        const response = await fetch(`${STREMIO_URL}/login-fb-get-acc/${state}`);
+        const response = await fetch(`${STREMIO_URL}/login-fb-get-acc/${encodeURIComponent(state)}`);
         const { user } = await response.json();
 
         return Promise.resolve({
