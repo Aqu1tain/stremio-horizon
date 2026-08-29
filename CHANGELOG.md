@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-08-30
+
+### Fixed
+
+- Explicitly mark VLC playback as watched when it reaches completion so the state is preserved
+  before advancing to the next episode or leaving the player
+
 ## [0.1.9] - 2026-08-29
 
 ### Added
@@ -184,7 +191,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.9...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.10...HEAD
+[0.1.10]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.6...v0.1.7

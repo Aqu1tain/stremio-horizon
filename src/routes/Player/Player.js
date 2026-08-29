@@ -73,7 +73,7 @@ const Player = () => {
     }, [queryParams]);
     const profile = useProfile();
     const nativeVlc = isTauri() && profile.settings.playerType === 'vlc';
-    const [player, videoParamsChanged, streamStateChanged, timeChanged, seek, pausedChanged, ended, nextVideo] = usePlayer(urlParams);
+    const [player, videoParamsChanged, streamStateChanged, timeChanged, seek, pausedChanged, ended, nextVideo, markVideoAsWatched] = usePlayer(urlParams);
     const downloadContext = React.useMemo(() => {
         const meta = player.metaItem?.type === 'Ready' ? player.metaItem.content : null;
         const selectedVideoId = player.selected?.streamRequest?.path?.id ?? videoId ?? null;
@@ -299,6 +299,18 @@ const Player = () => {
         streamSubtitles,
     ]);
     const onVlcStopped = React.useCallback(() => navigate(-1), [navigate]);
+    const onVlcCompleted = React.useCallback(() => {
+        const selectedVideoId = player.selected?.streamRequest?.path?.id ?? videoId ?? null;
+        const selectedVideo = player.metaItem?.type === 'Ready' ?
+            player.metaItem.content.videos.find(({ id }) => id === selectedVideoId)
+            :
+            null;
+
+        if (selectedVideo) {
+            markVideoAsWatched(selectedVideo, true);
+        }
+        onEnded();
+    }, [markVideoAsWatched, onEnded, player.metaItem, player.selected, videoId]);
     const onVlcError = React.useCallback((vlcError) => {
         toast.show({
             type: 'error',
@@ -315,7 +327,7 @@ const Player = () => {
         startTimeMs: vlcStartTime,
         ...vlcPlaybackPreferences,
         onProgress: timeChanged,
-        onCompleted: onEnded,
+        onCompleted: onVlcCompleted,
         onStopped: onVlcStopped,
         onError: onVlcError,
     });

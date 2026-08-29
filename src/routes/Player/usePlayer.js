@@ -155,6 +155,15 @@ const usePlayer = (urlParams) => {
             }
         }, 'player');
     }, []);
+    const markVideoAsWatched = React.useCallback((video, watched) => {
+        core.transport.dispatch({
+            action: 'Player',
+            args: {
+                action: 'MarkVideoAsWatched',
+                args: [video, watched]
+            }
+        }, 'player');
+    }, []);
 
     const streamStateChanged = React.useCallback((partialStreamState) => {
         return core.transport.dispatch({
@@ -171,7 +180,7 @@ const usePlayer = (urlParams) => {
         }, 'player');
     }, [player.streamState]);
 
-    return [player, videoParamsChanged, streamStateChanged, timeChanged, seek, pausedChanged, ended, nextVideo];
+    return [player, videoParamsChanged, streamStateChanged, timeChanged, seek, pausedChanged, ended, nextVideo, markVideoAsWatched];
 };
 
 module.exports = usePlayer;
