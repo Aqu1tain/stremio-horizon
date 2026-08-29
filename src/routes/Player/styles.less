@@ -33,6 +33,38 @@ html:not(.active-slider-within) {
     height: 100%;
     background-color: @background-color;
 
+    .external-player-status {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.55);
+
+        .external-player-icon {
+            width: 5rem;
+            height: 5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .external-player-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-foreground-color);
+        }
+
+        .external-player-description {
+            max-width: 32rem;
+            font-size: 1rem;
+            color: @color-surface-light5-80;
+        }
+    }
+
     .layer {
         position: absolute;
         top: 0;

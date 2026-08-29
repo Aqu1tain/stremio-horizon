@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-08-29
+
+### Added
+
+- Open a series on the season containing its first released unwatched episode and scroll that
+  episode into view automatically
+- Add VLC as a native desktop player option and make it the default when selected
+- Keep Stremio playback progress, resume position and watched completion synchronized while VLC is
+  playing
+- Start VLC with the primary and secondary audio/subtitle language preferences from Stremio, reuse
+  the previously selected external subtitle when available, and respect disabled subtitles
+
 ## [0.1.8] - 2026-08-01
 
 ### Fixed
@@ -172,7 +184,8 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Lucide icons with stremio-icons fallback
 - Chromecast support (Chrome + Tauri native)
 
-[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.8...HEAD
+[Unreleased]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.9...HEAD
+[0.1.9]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/Aqu1tain/stremio-horizon/compare/v0.1.5...v0.1.6

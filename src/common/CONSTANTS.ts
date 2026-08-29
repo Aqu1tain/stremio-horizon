@@ -72,7 +72,7 @@ export const EXTERNAL_PLAYERS: ExternalPlayer[] = [
     {
         label: 'VLC',
         value: 'vlc',
-        platforms: ['ios', 'visionos', 'android'],
+        platforms: ['ios', 'visionos', 'android', 'windows', 'linux', 'macos'],
     },
     {
         label: 'MPV',

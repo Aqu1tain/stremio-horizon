@@ -40,6 +40,7 @@ type SubtitlesTrackState = {
 
 type AudioTrackState = {
     id: string,
+    lang?: string,
 };
 
 type StreamState = {

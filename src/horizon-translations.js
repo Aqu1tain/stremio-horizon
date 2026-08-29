@@ -35,6 +35,10 @@ module.exports = {
         HORIZON_SCROLL_NEXT: 'More titles',
         HORIZON_UPDATES: 'Updates',
         HORIZON_AUTOMATIC_UPDATE_CHECKS: 'Automatic update checks',
+        HORIZON_PLAYING_IN_VLC: 'Playing in VLC',
+        HORIZON_OPENING_VLC: 'Opening VLC…',
+        HORIZON_CLOSE_VLC_TO_RETURN: 'Close VLC when you are done to return to Stremio Horizon. Your progress will be saved automatically.',
+        HORIZON_VLC_FAILED: 'VLC could not start',
     },
     'fr-FR': {
         DOWNLOADS: 'Téléchargements',
@@ -86,6 +90,10 @@ module.exports = {
         HORIZON_SCROLL_NEXT: 'Plus de titres',
         HORIZON_UPDATES: 'Mises à jour',
         HORIZON_AUTOMATIC_UPDATE_CHECKS: 'Recherche automatique des mises à jour',
+        HORIZON_PLAYING_IN_VLC: 'Lecture dans VLC',
+        HORIZON_OPENING_VLC: 'Ouverture de VLC…',
+        HORIZON_CLOSE_VLC_TO_RETURN: 'Fermez VLC lorsque vous avez terminé pour revenir à Stremio Horizon. Votre progression sera enregistrée automatiquement.',
+        HORIZON_VLC_FAILED: 'VLC n’a pas pu démarrer',
         SETTINGS_DISCORD: 'Afficher l’activité de visionnage sur Discord',
     },
 };

@@ -15,7 +15,7 @@ const { useSettings, useProfile, useFullscreen, useBinaryState, useToast, useStr
 const { default: toPath } = require('stremio-router/toPath');
 const { isTauri } = require('stremio/common/tauri');
 const { DEFAULT_STREAMING_SERVER_URL } = require('stremio/common/CONSTANTS');
-const { HorizontalNavBar, Transition, ContextMenu } = require('stremio/components');
+const { HorizontalNavBar, Transition, ContextMenu, Icon } = require('stremio/components');
 const { RouteLoading } = require('stremio/components/RouteLoading');
 const { default: Buffering } = require('./Buffering');
 const VolumeChangeIndicator = require('./VolumeChangeIndicator');
@@ -42,6 +42,8 @@ const styles = require('./styles');
 const Video = require('./Video');
 const { default: Indicator } = require('./Indicator/Indicator');
 const { default: useMediaSession } = require('./useMediaSession');
+const { default: useVlcPlayback } = require('./useVlcPlayback');
+const { default: buildVlcPlaybackPreferences } = require('./vlcPlaybackPreferences');
 
 const findTrackByLang = (tracks, lang) => tracks.find((track) => track.lang === lang || langs.where('1', track.lang)?.[2] === lang);
 const findTrackById = (tracks, id) => tracks.find((track) => track.id === id);
@@ -70,6 +72,7 @@ const Player = () => {
         return queryParams.has('forceTranscoding');
     }, [queryParams]);
     const profile = useProfile();
+    const nativeVlc = isTauri() && profile.settings.playerType === 'vlc';
     const [player, videoParamsChanged, streamStateChanged, timeChanged, seek, pausedChanged, ended, nextVideo] = usePlayer(urlParams);
     const downloadContext = React.useMemo(() => {
         const meta = player.metaItem?.type === 'Ready' ? player.metaItem.content : null;
@@ -267,6 +270,56 @@ const Player = () => {
         }
     }, [player.nextVideo, profile.settings.bingeWatching, handleNextVideoNavigation]);
 
+    const vlcStreamUrl = React.useMemo(() => {
+        if (!nativeVlc || player.stream?.type !== 'Ready') return null;
+        return player.stream.content?.url ?? player.selected?.stream?.deepLinks?.externalPlayer?.streaming ?? null;
+    }, [nativeVlc, player.selected, player.stream]);
+    const vlcStartTime = React.useMemo(() => {
+        const selectedVideoId = player.selected?.streamRequest?.path?.id;
+        return player.libraryItem !== null && selectedVideoId && player.libraryItem.state.video_id === selectedVideoId ?
+            player.libraryItem.state.timeOffset
+            :
+            0;
+    }, [player.libraryItem, player.selected]);
+    const vlcPlaybackPreferences = React.useMemo(() => buildVlcPlaybackPreferences({
+        audioLanguage: settings.audioLanguage,
+        secondaryAudioLanguage: settings.secondaryAudioLanguage,
+        subtitlesLanguage: settings.subtitlesLanguage,
+        secondarySubtitlesLanguage: settings.secondarySubtitlesLanguage,
+        savedAudioLanguage: player.streamState?.audioTrack?.lang,
+        savedSubtitle: player.streamState?.subtitleTrack,
+        subtitles: streamSubtitles.concat(Array.isArray(player.subtitles) ? player.subtitles : []),
+    }), [
+        player.streamState,
+        player.subtitles,
+        settings.audioLanguage,
+        settings.secondaryAudioLanguage,
+        settings.secondarySubtitlesLanguage,
+        settings.subtitlesLanguage,
+        streamSubtitles,
+    ]);
+    const onVlcStopped = React.useCallback(() => navigate(-1), [navigate]);
+    const onVlcError = React.useCallback((vlcError) => {
+        toast.show({
+            type: 'error',
+            title: t('HORIZON_VLC_FAILED'),
+            message: vlcError.message,
+            timeout: 6000,
+        });
+        navigate(-1);
+    }, [navigate, t, toast]);
+    const vlcStatus = useVlcPlayback({
+        enabled: nativeVlc && routeFocused,
+        url: vlcStreamUrl,
+        sessionKey: player.selected?.streamRequest?.path?.id ?? stream ?? null,
+        startTimeMs: vlcStartTime,
+        ...vlcPlaybackPreferences,
+        onProgress: timeChanged,
+        onCompleted: onEnded,
+        onStopped: onVlcStopped,
+        onError: onVlcError,
+    });
+
     const onError = React.useCallback((error) => {
         console.error('Player', error);
         if (error.critical) {
@@ -381,12 +434,14 @@ const Player = () => {
 
     const onAudioTrackSelected = React.useCallback((id) => {
         video.setAudioTrack(id);
+        const audioTrack = findTrackById(video.state.audioTracks, id);
         streamStateChanged({
             audioTrack: {
                 id,
+                lang: audioTrack?.lang,
             },
         });
-    }, [streamStateChanged]);
+    }, [streamStateChanged, video.state.audioTracks]);
 
     const onDismissNextVideoPopup = React.useCallback(() => {
         closeNextVideoPopup();
@@ -538,7 +593,7 @@ const Player = () => {
         cancelKeyboardSeek();
         video.unload();
 
-        if (player.selected && player.stream?.type === 'Ready' && streamingServer.settings?.type !== 'Loading') {
+        if (!nativeVlc && player.selected && player.stream?.type === 'Ready' && streamingServer.settings?.type !== 'Loading') {
             video.load({
                 stream: {
                     ...player.stream.content,
@@ -566,7 +621,7 @@ const Player = () => {
                 shellTransport: platform.shell.active ? platform.shell : null,
             });
         }
-    }, [playerStreamingServerURL, player.selected, player.stream, streamSubtitles, forceTranscoding, casting, cancelKeyboardSeek, isOfflineServiceStream]);
+    }, [playerStreamingServerURL, player.selected, player.stream, streamSubtitles, forceTranscoding, casting, cancelKeyboardSeek, isOfflineServiceStream, nativeVlc]);
 
     React.useEffect(() => {
         !seeking && timeChanged(video.state.time, video.state.duration, video.state.manifest?.name);
@@ -1000,6 +1055,23 @@ const Player = () => {
             onPauseRequestedDebounced.cancel();
         };
     }, []);
+
+    if (nativeVlc) {
+        return (
+            <div className={styles['player-container']}>
+                <div className={classnames(styles['layer'], styles['background-layer'])}>
+                    <img className={styles['image']} src={player?.metaItem?.content?.background} />
+                </div>
+                <div className={styles['external-player-status']}>
+                    <Icon className={styles['external-player-icon']} name={'vlc'} />
+                    <div className={styles['external-player-title']}>{t('HORIZON_PLAYING_IN_VLC')}</div>
+                    <div className={styles['external-player-description']}>
+                        {vlcStatus === 'playing' ? t('HORIZON_CLOSE_VLC_TO_RETURN') : t('HORIZON_OPENING_VLC')}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div ref={playerRef} className={classnames(styles['player-container'], { [styles['overlayHidden']]: overlayHidden })}

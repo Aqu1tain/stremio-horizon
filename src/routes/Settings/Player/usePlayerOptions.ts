@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCore } from 'stremio/core';
 import { CONSTANTS, languageNames, useLanguageSorting, usePlatform } from 'stremio/common';
+import { isTauri } from 'stremio/common/tauri';
 
 const LANGUAGES_NAMES: Record<string, string> = languageNames;
 
@@ -205,7 +206,11 @@ const usePlayerOptions = (profile: Profile) => {
 
     const playInExternalPlayerSelect = useMemo(() => ({
         options: CONSTANTS.EXTERNAL_PLAYERS
-            .filter(({ platforms }) => platforms.includes(platform.name))
+            .filter(({ platforms, value }) => {
+                if (!platforms.includes(platform.name)) return false;
+                const desktopVlc = value === 'vlc' && ['windows', 'linux', 'macos'].includes(platform.name);
+                return !desktopVlc || isTauri();
+            })
             .map(({ label, value }) => ({
                 value,
                 label: t(label),

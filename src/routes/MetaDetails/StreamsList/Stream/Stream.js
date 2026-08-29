@@ -11,6 +11,7 @@ const { Button, Image, Popup } = require('stremio/components');
 const { default: useRouteFocused } = require('stremio/common/useRouteFocused');
 const { default: parseStreamBadges } = require('stremio/common/parseStreamBadges');
 const { downloadsAvailable, startDownload } = require('stremio/lib/downloads');
+const { isTauri } = require('stremio/common/tauri');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 
@@ -20,6 +21,7 @@ const Stream = ({ className, videoId, videoReleased, videoTitle, videoSeason, vi
     const platform = usePlatform();
     const core = useCore();
     const routeFocused = useRouteFocused();
+    const nativeVlc = isTauri() && profile.settings.playerType === 'vlc';
 
     const [menuOpen, openMenu, closeMenu, toggleMenu] = useBinaryState(false);
     const [expanded, setExpanded] = React.useState(false);
@@ -69,6 +71,7 @@ const Stream = ({ className, videoId, videoReleased, videoTitle, videoSeason, vi
     }, []);
 
     const href = React.useMemo(() => {
+        if (nativeVlc) return deepLinks?.player ?? null;
         return deepLinks ?
             deepLinks.externalPlayer ?
                 deepLinks.externalPlayer.web ?
@@ -85,7 +88,7 @@ const Stream = ({ className, videoId, videoReleased, videoTitle, videoSeason, vi
                 deepLinks.player
             :
             null;
-    }, [deepLinks]);
+    }, [deepLinks, nativeVlc]);
 
     const download = React.useMemo(() => {
         return href === deepLinks?.externalPlayer?.playlist ?
@@ -130,7 +133,7 @@ const Stream = ({ className, videoId, videoReleased, videoTitle, videoSeason, vi
             return;
         }
 
-        if (profile.settings.playerType !== null) {
+        if (profile.settings.playerType !== null && !nativeVlc) {
             markVideoAsWatched();
             toast.show({
                 type: 'success',
@@ -142,7 +145,7 @@ const Stream = ({ className, videoId, videoReleased, videoTitle, videoSeason, vi
         if (typeof props.onClick === 'function') {
             props.onClick(event);
         }
-    }, [props.onClick, profile.settings, markVideoAsWatched]);
+    }, [props.onClick, profile.settings, markVideoAsWatched, nativeVlc]);
 
     const copyMagnetLink = React.useCallback((event) => {
         event.preventDefault();

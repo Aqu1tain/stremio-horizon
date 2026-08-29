@@ -11,6 +11,7 @@ const { downloadsAvailable, listDownloads, listenDownloadChanged, listenDownload
 const { mergeDownload } = require('stremio/routes/Downloads/utils');
 const SeasonsBar = require('./SeasonsBar');
 const { default: EpisodePicker } = require('../EpisodePicker');
+const getFirstUnwatchedVideo = require('./getFirstUnwatchedVideo');
 const styles = require('./styles');
 
 let savedScrollTop = 0;
@@ -43,6 +44,11 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
             return season;
         }
 
+        const firstUnwatchedVideo = getFirstUnwatchedVideo(videos);
+        if (firstUnwatchedVideo && seasons.includes(firstUnwatchedVideo.season)) {
+            return firstUnwatchedVideo.season;
+        }
+
         const video = videos?.find((video) => video.id === libraryItem?.state.video_id);
 
         if (video && video.season && seasons.includes(video.season)) {
@@ -73,6 +79,14 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
     const seasonWatched = React.useMemo(() => {
         return videosForSeason.every((video) => video.watched);
     }, [videosForSeason]);
+    const firstUnwatchedVideo = React.useMemo(() => {
+        return getFirstUnwatchedVideo(videosForSeason, selectedSeason);
+    }, [videosForSeason, selectedSeason]);
+    const contentId = metaItem?.content?.type === 'Ready' ? metaItem.content.content.id : null;
+    const [autoScrollVideoId, setAutoScrollVideoId] = React.useState(null);
+    React.useEffect(() => {
+        setAutoScrollVideoId(firstUnwatchedVideo?.id ?? null);
+    }, [contentId, selectedSeason]);
 
     const videosContainerRef = React.useRef(null);
     const isMountedRef = React.useRef(false);
@@ -246,6 +260,7 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                                                 scheduled={video.scheduled}
                                                 seasonWatched={seasonWatched}
                                                 selected={video.id === selectedVideoId}
+                                                autoScrollIntoView={video.id === autoScrollVideoId}
                                                 downloadStatus={downloadStatusByVideo.get(video.id) ?? null}
                                                 downloadBusy={resolvingVideoId === video.id}
                                                 downloadDisabled={resolvingVideoId !== null && resolvingVideoId !== video.id}
