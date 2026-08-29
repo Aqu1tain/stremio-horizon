@@ -15,7 +15,7 @@ const { usePlatform } = require('stremio/common/Platform');
 const VideoPlaceholder = require('./VideoPlaceholder');
 const styles = require('./styles');
 
-const Video = ({ className, id, title, thumbnail, season, episode, released, upcoming, watched, progress, scheduled, seasonWatched, selected, deepLinks, downloadStatus, downloadBusy, downloadDisabled, onDownload, onSelect, onMarkVideoAsWatched, onMarkSeasonAsWatched, ...props }) => {
+const Video = ({ className, id, title, thumbnail, season, episode, released, upcoming, watched, progress, scheduled, seasonWatched, selected, autoScrollIntoView, deepLinks, downloadStatus, downloadBusy, downloadDisabled, onDownload, onSelect, onMarkVideoAsWatched, onMarkSeasonAsWatched, ...props }) => {
     const routeFocused = useRouteFocused();
     const profile = useProfile();
     const navigate = useNavigate();
@@ -112,7 +112,13 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
         const blurThumbnail = profile.settings.hideSpoilers && season && episode && !watched;
 
         React.useEffect(() => {
-            if (selected && ref.current) {
+            if (autoScrollIntoView && ref.current) {
+                ref.current.scrollIntoView({
+                    behavior: 'auto',
+                    block: 'start',
+                    inline: 'nearest'
+                });
+            } else if (selected && ref.current) {
                 if ((progress && watched) || !watched) {
                     ref.current.scrollIntoView({
                         behavior: 'smooth',
@@ -121,7 +127,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                     });
                 }
             }
-        }, [selected]);
+        }, [autoScrollIntoView, selected]);
 
         return (
             <Button {...props} ref={ref} className={classnames(className, styles['video-container'], { [styles['selected']]: selected, [styles['disabled']]: notPlayable })} title={title}>
@@ -233,7 +239,7 @@ const Video = ({ className, id, title, thumbnail, season, episode, released, upc
                 {children}
             </Button>
         );
-    }, [deepLinks, downloadBusy, downloadButtonOnClick, downloadButtonOnKeyDown, downloadDisabled, downloadStatus, onDownload, playButtonOnClick, playButtonOnKeyDown, selected]);
+    }, [autoScrollIntoView, deepLinks, downloadBusy, downloadButtonOnClick, downloadButtonOnKeyDown, downloadDisabled, downloadStatus, onDownload, playButtonOnClick, playButtonOnKeyDown, selected]);
     const renderMenu = React.useMemo(() => function renderMenu() {
         return (
             <div className={styles['context-menu-content']} onPointerDown={popupMenuOnPointerDown} onContextMenu={popupMenuOnContextMenu} onClick={popupMenuOnClick} onKeyDown={popupMenuOnKeyDown}>
@@ -295,6 +301,7 @@ Video.propTypes = {
     scheduled: PropTypes.bool,
     seasonWatched: PropTypes.bool,
     selected: PropTypes.bool,
+    autoScrollIntoView: PropTypes.bool,
     downloadStatus: PropTypes.string,
     downloadBusy: PropTypes.bool,
     downloadDisabled: PropTypes.bool,
