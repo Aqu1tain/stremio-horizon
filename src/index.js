@@ -16,25 +16,32 @@ const ReactDOM = require('react-dom/client');
 const { HashRouter } = require('react-router-dom');
 const i18n = require('i18next');
 const { initReactI18next } = require('react-i18next');
-const stremioTranslations = require('stremio-translations');
 const horizonTranslations = require('./horizon-translations');
+const { createTranslationBackend } = require('./common/translationBackend');
 const App = require('./App');
 const { CoreProvider } = require('./core');
 const { FileDropProvider, PlatformProvider } = require('./common');
 
-const translations = Object.fromEntries(Object.entries(stremioTranslations()).map(([key, value]) => [key, {
-    translation: {
-        ...value,
-        ...(horizonTranslations[key] || {})
-    }
-}]));
+const initialLanguage = 'en-US';
+const initialTranslations = require('stremio-translations/en-US.json');
+const translationBackend = createTranslationBackend(horizonTranslations);
 
 i18n
+    .use(translationBackend)
     .use(initReactI18next)
     .init({
-        resources: translations,
-        lng: 'en-US',
-        fallbackLng: 'en-US',
+        resources: {
+            [initialLanguage]: {
+                translation: {
+                    ...initialTranslations,
+                    ...(horizonTranslations[initialLanguage] || {})
+                }
+            }
+        },
+        partialBundledLanguages: true,
+        load: 'currentOnly',
+        lng: initialLanguage,
+        fallbackLng: initialLanguage,
         interpolation: {
             escapeValue: false
         }

@@ -35,6 +35,8 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
+      - name: Check initial bundle budget and lazy routes
+        run: pnpm bundle:check
       - name: Test
         run: pnpm test
       - name: Lint

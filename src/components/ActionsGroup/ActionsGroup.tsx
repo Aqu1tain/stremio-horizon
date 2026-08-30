@@ -2,9 +2,13 @@
 
 import classNames from 'classnames';
 import React from 'react';
-import Icon from '@stremio/stremio-icons/react';
 import { Tooltip } from 'stremio/common/Tooltips';
 import styles from './ActionsGroup.less';
+
+const Icon = React.lazy(() => import(
+    /* webpackChunkName: "legacy-icons" */
+    '@stremio/stremio-icons/react'
+).then((module) => ({ default: module.default })));
 
 type Item = {
     icon: string;
@@ -35,7 +39,9 @@ const ActionsGroup = ({ items, className }: Props) => {
                             item.label &&
                                 <Tooltip label={item.label} position={'top'} />
                         }
-                        <Icon name={item.icon} className={styles['icon']} />
+                        <React.Suspense fallback={null}>
+                            <Icon name={item.icon} className={styles['icon']} />
+                        </React.Suspense>
                     </div>
                 ))
             }

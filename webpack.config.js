@@ -227,7 +227,25 @@ module.exports = (env, argv) => ({
             new WorkboxPlugin.GenerateSW({
                 maximumFileSizeToCacheInBytes: 20000000,
                 clientsClaim: true,
-                skipWaiting: true
+                skipWaiting: true,
+                exclude: [
+                    /\.map$/,
+                    /scripts\/locale-.*\.js$/,
+                    /scripts\/legacy-icons\..*\.js$/,
+                ],
+                runtimeCaching: [
+                    {
+                        urlPattern: /\/scripts\/(?:locale-|legacy-icons\.).*\.js$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'optional-ui-chunks',
+                            expiration: {
+                                maxEntries: 60,
+                                maxAgeSeconds: 60 * 60 * 24 * 365,
+                            },
+                        },
+                    },
+                ],
             }),
         new CopyWebpackPlugin({
             patterns: [
@@ -245,6 +263,7 @@ module.exports = (env, argv) => ({
             template: './src/index.html',
             inject: false,
             scriptLoading: 'blocking',
+            chunks: ['main'],
             faviconsPath: 'favicons',
             imagesPath: 'images',
         }),

@@ -10,6 +10,8 @@
         "start": "webpack serve --mode development",
         "start-prod": "webpack serve --mode production",
         "build": "webpack --mode production",
+        "bundle:report": "node scripts/check-bundle-size.js",
+        "bundle:check": "node scripts/check-bundle-size.js --check",
         "test": "jest",
         "lint": "eslint src",
         "scan-translations": "pnpx jest ./tests/i18nScan.test.js"
