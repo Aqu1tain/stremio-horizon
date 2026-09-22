@@ -1,5 +1,12 @@
 # Stremio Horizon
 
+> [!IMPORTANT]
+> **This project is archived and no longer maintained.**
+>
+> I no longer have the time to develop Stremio Horizon, and [Nuvio](https://nuvio.tv) has recently become the best alternative to it. It shares a philosophy very close to mine, so there is no point in keeping this project going.
+>
+> If you liked Horizon, go check out [Nuvio](https://nuvio.tv) ([source](https://github.com/tapframe/NuvioStreaming)). The code here stays available as-is, and the last desktop build remains downloadable from the [releases page](https://github.com/Aqu1tain/stremio-horizon-app/releases/latest).
+
 [![Based on](https://img.shields.io/badge/based%20on-stremio--web%20v5.0.0--beta.39-blue)](https://github.com/Stremio/stremio-web/tree/v5.0.0-beta.39)
 
 An alternative web UI for [Stremio](https://www.stremio.com), focused on modern design and usability.
